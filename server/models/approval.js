@@ -8,21 +8,21 @@ const approvalSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        require: true
+        required: true
     },
     document: {
         type: String,
-        require: true
+        required: true
     },
     date: {
         type: String,
-        require: true
+        required: true
     },
     approvers: [
         {
             approverTitle: {
                 type: String,
-                require: true
+                required: true
             },
             approverDetails: {
                 userId: {
@@ -31,11 +31,11 @@ const approvalSchema = new mongoose.Schema({
                 },
                 userType: {
                     type: String,
-                    require: true
+                    required: true
                 },
                 username: {
                     type: String,
-                    require: true
+                    required: true
                 },
             },
             approvalStatus: {
@@ -44,6 +44,10 @@ const approvalSchema = new mongoose.Schema({
             },
             approvedDate: {
                 type: Date
+            },
+            description: {
+                type: String,
+                required: false
             }
         }
     ],
@@ -54,11 +58,11 @@ const approvalSchema = new mongoose.Schema({
         },
         organizerName: {
             type: String,
-            require: true
+            required: true
         },
         department: {
             type: String,
-            require: true
+            required: true
         },
     }
 })

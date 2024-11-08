@@ -39,6 +39,11 @@ const ticketSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+    },
+    paymentImage: {
+        type: String,
+        default: "",
+        required: false
     }
 }, { timestamps: true })
 
