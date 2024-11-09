@@ -12,7 +12,7 @@ userRouter.post('/login', async (req, res) => {
     try {
         const user = await UserModel.findOne({ userId, password });
         if (user) {
-            const secret = (user.userType === "student" || user.userType === "faculty" || user.userType === "organizer") ? JWT_USER_SECRET : JWT_ADMIN_SECRET;
+            const secret = (user.userType === "student" || user.userType === "faculty") ? JWT_USER_SECRET : JWT_ADMIN_SECRET;
             const token = jwt.sign({ userId: user.userId }, secret);
             res.json({ token });
         } else {
@@ -132,6 +132,35 @@ userRouter.post('/createstudent', adminAuth, async (req, res) => {
     }
 })
 
+userRouter.post('/createfaculty', adminAuth, async (req, res) => {
+    const { userId, department } = req.body;
+    try {
+        const faculty = await UserModel.findOne({ userId });
+        if (faculty) {
+            res.status(409).json({
+                message: "User already exists"
+            })
+        } else {
+            await UserModel.create({
+                userId: userId,
+                userType: "faculty",
+                username: userId,
+                password: userId,
+                department: department,
+                ticketIds: []
+            });
+            res.status(200).json({
+                message: `Faculty added successfully`
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
 userRouter.delete('/deletestudent', adminAuth, async (req, res) => {
     const { fromRollno, toRollno } = req.body;
     try {
@@ -151,6 +180,28 @@ userRouter.delete('/deletestudent', adminAuth, async (req, res) => {
             })
         }
 
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+userRouter.delete('/deletefaculty', adminAuth, async (req, res) => {
+    const { userId } = req.body;
+    try {
+        const faculty = await UserModel.findOne({ userId })
+        if (faculty) {
+            await UserModel.deleteOne({ userId })
+            res.status(200).json({
+                message: `Faculty deleted successfully`
+            })
+        }
+        else {
+            res.status(404).json({
+                message: `Faculty not found with ${userId}`
+            })
+        }
     } catch (error) {
         res.status(500).json({
             message: "Internal server error"

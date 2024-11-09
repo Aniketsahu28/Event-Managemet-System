@@ -3,29 +3,45 @@ const ObjectId = mongoose.Schema.ObjectId;
 
 const organizerSchema = new mongoose.Schema({
     organizerId: {
-        type: ObjectId,
-        unique: true
+        type: String,
+        unique: true,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
     },
     organizerName: {
         type: String,
-        require: true
+        required: true
+    },
+    organizerProfile: {
+        type: String,
+        default: "https://res.cloudinary.com/dzkugyv7g/image/upload/v1703526486/UserImages/b6gahysyir4yywwjn086.webp"
     },
     department: {
         type: String,
-        require: true
+        required: true
+    },
+    organizerType: {
+        type: String,
+        required: true
+    },
+    userType: {
+        type: String,
+        default: "organizer"
     },
     facultyDetails: {
         userId: {
             type: String,
-            unique: true,
         },
         userType: {
             type: String,
-            require: true
+            required: true
         },
         username: {
             type: String,
-            require: true
+            required: true
         },
     },
     eventIds: [
@@ -35,5 +51,7 @@ const organizerSchema = new mongoose.Schema({
     ]
 })
 
-const organizerModel = mongoose.model('organizer', organizerSchema);
-export default organizerModel;
+const OrganizerModel = mongoose.model('organizers', organizerSchema);
+module.exports = {
+    OrganizerModel
+}
