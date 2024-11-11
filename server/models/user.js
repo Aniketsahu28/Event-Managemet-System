@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
             ticketId: { type: ObjectId }
         }
     ]
-})
+}, { timestamps: true })
 
 const UserModel = mongoose.model('users', userSchema);
 module.exports = {

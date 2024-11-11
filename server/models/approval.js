@@ -61,7 +61,7 @@ const approvalSchema = new mongoose.Schema({
             required: true
         },
     }
-});
+}, { timestamps: true });
 
 const ApprovalModel = mongoose.model('approvals', approvalSchema);
 module.exports = {

@@ -1,15 +1,10 @@
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.ObjectId;
 
-const eventSchema = mongoose.Schema({
-    eventId: {
-        type: ObjectId,
-        unique: true
-    },
+const eventSchema = new mongoose.Schema({
     organizerDetails: {
         organizerId: {
-            type: ObjectId,
-            unique: true
+            type: String,
         },
         organizerName: {
             type: String,
@@ -20,11 +15,6 @@ const eventSchema = mongoose.Schema({
             require: true
         },
     },
-    participantsIds: [
-        {
-            participantId: { type: ObjectId }
-        }
-    ],
     title: {
         type: String,
         required: true
@@ -34,11 +24,10 @@ const eventSchema = mongoose.Schema({
         required: true
     },
     banner: {
-        type: URL,
-        required: true
+        type: String,
     },
     date: {
-        type: Date,
+        type: String,
         required: true
     },
     time: {
@@ -77,14 +66,16 @@ const eventSchema = mongoose.Schema({
         default: 0
     },
     paymentQR: {
-        type: URL,
+        type: String,
         default: ''
     },
     UPI_ID: {
         type: String,
         default: ''
     }
-})
+}, { timestamps: true })
 
-const eventModel = mongoose.model('event', eventSchema);
-export default eventModel;
+const EventModel = mongoose.model('events', eventSchema);
+module.exports = {
+    EventModel
+}

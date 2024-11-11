@@ -2,13 +2,9 @@ const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.ObjectId
 
 const ticketSchema = new mongoose.Schema({
-    ticketId: {
-        type: ObjectId,
-        unique: true,
-    },
     userDetails: {
         userId: {
-            type: ObjectId,
+            type: String,
         },
         username: {
             type: String,
@@ -18,9 +14,13 @@ const ticketSchema = new mongoose.Schema({
             type: String,
             require: true
         },
+        profilePicture: {
+            type: String,
+            default: "https://res.cloudinary.com/dzkugyv7g/image/upload/v1703526486/UserImages/b6gahysyir4yywwjn086.webp"
+        }
     },
     eventDetails: {
-        eventid: {
+        eventId: {
             type: ObjectId,
         },
         title: {
@@ -28,7 +28,7 @@ const ticketSchema = new mongoose.Schema({
             required: true
         },
         date: {
-            type: Date,
+            type: String,
             required: true
         },
         time: {
@@ -43,9 +43,10 @@ const ticketSchema = new mongoose.Schema({
     paymentImage: {
         type: String,
         default: "",
-        required: false
     }
 }, { timestamps: true })
 
-const ticketModel = mongoose.model('ticket', ticketSchema);
-export default ticketModel;
+const TicketModel = mongoose.model('tickets', ticketSchema);
+module.exports = {
+    TicketModel
+}
