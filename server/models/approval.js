@@ -1,11 +1,6 @@
-const mongoose = require('mongoose')
-const ObjectId = mongoose.Schema.ObjectId;
+const mongoose = require('mongoose');
 
 const approvalSchema = new mongoose.Schema({
-    approvalId: {
-        type: ObjectId,
-        unique: true
-    },
     title: {
         type: String,
         required: true
@@ -27,7 +22,7 @@ const approvalSchema = new mongoose.Schema({
             approverDetails: {
                 userId: {
                     type: String,
-                    unique: true,
+                    required: true
                 },
                 userType: {
                     type: String,
@@ -43,18 +38,19 @@ const approvalSchema = new mongoose.Schema({
                 default: false
             },
             approvedDate: {
-                type: Date
+                type: String,
+                default: ""
             },
             description: {
                 type: String,
-                required: false
+                default: ""
             }
         }
     ],
     organizerDetails: {
         organizerId: {
-            type: ObjectId,
-            unique: true
+            type: String,
+            required: true // Removed `unique: true` constraint
         },
         organizerName: {
             type: String,
@@ -65,7 +61,9 @@ const approvalSchema = new mongoose.Schema({
             required: true
         },
     }
-})
+});
 
-const approvalModel = mongoose.model('approval', approvalSchema);
-export default approvalModel;
+const ApprovalModel = mongoose.model('approvals', approvalSchema);
+module.exports = {
+    ApprovalModel
+};

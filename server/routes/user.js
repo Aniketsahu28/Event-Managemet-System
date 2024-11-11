@@ -39,6 +39,42 @@ userRouter.get('/userinfo', userAuth, async (req, res) => {
     }
 })
 
+userRouter.get('/allstudents', adminAuth, async (req, res) => {
+    try {
+        const students = await UserModel.find({ "userType": "student" })
+        if (students.length > 0) {
+            res.status(200).json({
+                students
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "No students found"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" })
+    }
+})
+
+userRouter.get('/allfaculty', adminAuth, async (req, res) => {
+    try {
+        const faculties = await UserModel.find({ "userType": "faculty" })
+        if (faculties.length > 0) {
+            res.status(200).json({
+                faculties
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "No faculty found"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" })
+    }
+})
+
 userRouter.patch('/changepassword', userAuth, async (req, res) => {
     const userId = req.userId;
     const { password, newPassword } = req.body;
