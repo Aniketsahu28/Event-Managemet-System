@@ -34,8 +34,8 @@ const approvalSchema = new mongoose.Schema({
                 },
             },
             approvalStatus: {
-                type: Boolean,
-                default: false
+                type: String,
+                default: "pending"
             },
             approvedDate: {
                 type: String,
@@ -47,10 +47,14 @@ const approvalSchema = new mongoose.Schema({
             }
         }
     ],
+    currentApprover: {
+        type: Number,
+        default: 0
+    },
     organizerDetails: {
         organizerId: {
             type: String,
-            required: true // Removed `unique: true` constraint
+            required: true
         },
         organizerName: {
             type: String,

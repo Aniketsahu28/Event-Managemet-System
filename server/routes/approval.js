@@ -32,7 +32,6 @@ approvalRouter.post('/addapproval', organizerAuth, async (req, res) => {
 
     try {
         const organizer = await OrganizerModel.findOne({ organizerId });
-        console.log(approvers[0].approverDetails)
         await ApprovalModel.create({
             title,
             document,
@@ -64,7 +63,12 @@ approvalRouter.post('/addapproval', organizerAuth, async (req, res) => {
 approvalRouter.get('/facultyapprovals', userAuth, async (req, res) => {
     const userId = req.userId;
     try {
-        const facultyapprovals = await ApprovalModel.find({ 'approvers.approverDetails.userId': userId })
+        const facultyapprovals = await ApprovalModel.find({
+            $expr: {
+                $eq: [{ $arrayElemAt: ["$approvers.approverDetails.userId", "$currentApprover"] }, userId]
+            }
+        });
+
         if (facultyapprovals.length > 0) {
             res.status(200).json({
                 facultyapprovals
@@ -80,13 +84,110 @@ approvalRouter.get('/facultyapprovals', userAuth, async (req, res) => {
     }
 })
 
-//edit approval endpoint
+approvalRouter.delete('/deleteapproval', organizerAuth, async (req, res) => {
+    const { approvalId } = req.body;
+    try {
+        const approval = await ApprovalModel.findOne({ "_id": approvalId })
+        if (approval) {
+            await ApprovalModel.deleteOne({ "_id": approvalId });
+            res.status(200).json({
+                message: "Approval deleted successfully"
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "Approval not found"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
 
-//delete approval endpoint
+approvalRouter.patch('/editapproval', organizerAuth, async (req, res) => {
+    const { approvalId, title, document } = req.body;
+    try {
+        const approvalDoc = await ApprovalModel.findById(approvalId);
+        if (approvalDoc) {
+            await ApprovalModel.updateOne({ "_id": approvalId },
+                {
+                    $set: {
+                        title: title,
+                        document: document,
+                        [`approvers.${approvalDoc.currentApprover}.approvalStatus`]: "pending",
+                        [`approvers.${approvalDoc.currentApprover}.approvedDate`]: "",
+                        [`approvers.${approvalDoc.currentApprover}.description`]: "",
+                    },
+                })
 
-//validate approval endpoint
+            res.status(200).json({
+                message: "Approval edited!"
+            })
+        }
+        else {
+            res.status(404).json({ message: "Approval not found" })
+        }
 
-//Think upon : how to approval requests will be sent to faculties one after the other (it should not go simultaneously to everyone in the approvers list)
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" })
+    }
+})
+
+approvalRouter.post('/validateapproval', userAuth, async (req, res) => {
+    const { approvalId, status, description } = req.body;
+    const date = new Date();
+    try {
+        const approvalDoc = await ApprovalModel.findOne({
+            "_id": approvalId,
+            $expr: {
+                $eq: [{ $arrayElemAt: ["$approvers.approvalStatus", "$currentApprover"] }, "pending"]
+            }
+        });
+        if (approvalDoc) {
+            if (status === "approve") {
+                const currentApproverIndex = approvalDoc.currentApprover;
+                await ApprovalModel.updateOne(
+                    { "_id": approvalId },
+                    {
+                        $set: {
+                            [`approvers.${currentApproverIndex}.approvalStatus`]: "approved",
+                            [`approvers.${currentApproverIndex}.approvedDate`]: `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}`,
+                            [`approvers.${currentApproverIndex}.description`]: description,
+                        },
+                        $inc: { currentApprover: 1 }
+                    }
+                );
+
+                res.status(200).json({ message: "Approval granted!" });
+
+            } else {
+                // Handle rejection case
+                const currentApproverIndex = approvalDoc.currentApprover;
+                await ApprovalModel.updateOne(
+                    { "_id": approvalId },
+                    {
+                        $set: {
+                            [`approvers.${currentApproverIndex}.approvalStatus`]: "rejected",
+                            [`approvers.${currentApproverIndex}.approvedDate`]: `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}`,
+                            [`approvers.${currentApproverIndex}.description`]: description,
+                        }
+                    }
+                );
+
+                res.status(200).json({ message: "Approval rejected!" });
+
+            }
+        }
+        else {
+            res.status(404).json({ message: "Approval already validated" });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 module.exports = {
     approvalRouter
