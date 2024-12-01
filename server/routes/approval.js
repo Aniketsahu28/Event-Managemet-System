@@ -51,7 +51,7 @@ approvalRouter.post('/addapproval', organizerAuth, async (req, res) => {
             }))
         })
 
-        res.status(200).json({
+        res.status(201).json({
             message: "Approval sent successfully"
         })
 

@@ -76,7 +76,7 @@ organizerRouter.post('/createorganizer', adminAuth, async (req, res) => {
             },
             eventIds: []
         });
-        res.status(200).json({
+        res.status(201).json({
             message: `Organizer added successfully`
         })
 

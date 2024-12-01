@@ -179,7 +179,7 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
                 },
                 paymentImage: paymentImage
             })
-            res.status(200).json({
+            res.status(201).json({
                 message: "Ticket booked successfully"
             })
         }

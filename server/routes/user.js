@@ -151,7 +151,7 @@ userRouter.post('/createstudent', adminAuth, async (req, res) => {
         }
         if (newUsers.length > 0) {
             await UserModel.insertMany(newUsers);
-            res.status(200).json({
+            res.status(201).json({
                 message: `User added from ${fromRollno} to ${toRollno} successfully`
             })
         }
@@ -185,7 +185,7 @@ userRouter.post('/createfaculty', adminAuth, async (req, res) => {
                 department: department,
                 ticketIds: []
             });
-            res.status(200).json({
+            res.status(201).json({
                 message: `Faculty added successfully`
             })
         }
