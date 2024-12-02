@@ -11,7 +11,7 @@ import Login from './pages/Login';
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
   return (
-    <div className={`py-[12px] px-[16px] sm:py-[20px] sm:px-[60px] ${currentTheme === "light" ? "bg-white" : "bg-black"} min-h-[100vh]`}>
+    <div className={`py-[12px] px-[16px] sm:py-[20px] sm:px-[60px] w-full ${currentTheme === "light" ? "bg-white" : "bg-black"} min-h-[100vh]`}>
       <Router>
         <span className='block md:hidden'><MobileNavbar /></span>
         <span className='hidden md:block'><DeskNavbar /></span>
