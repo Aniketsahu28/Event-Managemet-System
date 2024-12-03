@@ -21,7 +21,7 @@ const MobileNavbar = () => {
     }
 
     return (
-        <div className={`h-full flex flex-col gap-5 pt-2 pb-3 px-4 bg-gradient-to-r from-blue_200 to-blue_300 rounded-lg transition-all duration-200 w-full`}>
+        <div className={`mx-4 h-full flex flex-col gap-5 pt-2 pb-3 px-4 bg-gradient-to-r from-blue_200 to-blue_300 rounded-lg transition-all duration-200`}>
             <div className=" flex justify-between items-center">
                 <Link
                     to="/"

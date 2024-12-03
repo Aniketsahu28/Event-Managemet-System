@@ -19,7 +19,7 @@ const DeskNavbar = () => {
     }
 
     return (
-        <div className="w-full py-3 px-7 bg-gradient-to-r from-blue_200 to-blue_300 rounded-lg flex justify-between items-center">
+        <div className="mx-16 py-3 px-7 bg-gradient-to-r from-blue_200 to-blue_300 rounded-lg flex justify-between items-center">
             <Link to="/" className="font-montserrat text-xl font-semibold text-yellow">
                 AGNELEVENTS
             </Link>
