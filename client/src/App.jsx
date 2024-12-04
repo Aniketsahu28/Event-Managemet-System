@@ -7,11 +7,12 @@ import { themeAtom } from './store/themeAtom';
 import Events from "./pages/Events"
 import Organizers from "./pages/Organizers"
 import Login from './pages/Login';
+import Footer from './components/Footer';
 
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
   return (
-    <div className={`py-3 sm:py-5 w-full ${currentTheme === "light" ? "bg-white" : "bg-black"} min-h-[100vh]`} id='appTop'>
+    <div className={`pt-3 sm:pt-5 w-full ${currentTheme === "light" ? "bg-white" : "bg-black"} min-h-[100vh]`} id='appTop'>
       <Router>
         <span className='block md:hidden'><MobileNavbar /></span>
         <span className='hidden md:block'><DeskNavbar /></span>
@@ -21,6 +22,7 @@ function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/organizers" element={<Organizers />} />
         </Routes>
+        <Footer />
       </Router>
     </div>
   )
