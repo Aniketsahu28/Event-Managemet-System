@@ -177,7 +177,7 @@ const Events = () => {
                     <p className="text-lg sm:text-xl text-white/60">Find something that interests you, discover the clubs organizing them, and register to be a part of it all. Stay connected and never miss out on what's happening on campus!"</p>
                     <span className="flex flex-col sm:flex-row gap-4 sm:gap-8">
                         <Link to="/organizers" className="flex gap-2  items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"><span>View Clubs</span> <IoIosArrowUp className="rotate-90" /></Link>
-                        <button href="#here" className="flex gap-2  items-center justify-center px-4 py-2 text-white rounded-md text-lg border-2 border-blue_100" onClick={(e) => scrollIntoViewSmooth(e, "appTop")}><span>Go to Top</span> <IoIosArrowUp /></button>
+                        <button className="flex gap-2  items-center justify-center px-4 py-2 text-white rounded-md text-lg border-2 border-blue_100" onClick={(e) => scrollIntoViewSmooth(e, "appTop")}><span>Go to Top</span> <IoIosArrowUp /></button>
                     </span>
                 </div>
             </div>
