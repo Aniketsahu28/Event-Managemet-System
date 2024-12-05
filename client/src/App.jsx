@@ -8,6 +8,7 @@ import Events from "./pages/Events"
 import Organizers from "./pages/Organizers"
 import Login from './pages/Login';
 import Footer from './components/Footer';
+import AddNewEvent from './pages/AddNewEvent';
 
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/events" element={<Events />} />
           <Route path="/organizers" element={<Organizers />} />
+          <Route path="/addEvent" element={<AddNewEvent />} />
         </Routes>
         <Footer />
       </Router>

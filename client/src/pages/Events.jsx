@@ -18,8 +18,7 @@ const Events = () => {
 
     return (
         <div
-            className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col gap-20 justify-center ${currentTheme === "light" ? "text-black" : "text-white"
-                }`}
+            className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col gap-20 justify-center ${currentTheme === "light" ? "text-black" : "text-white"}`}
         >
             {/* Hightlight section */}
             <div className="h-[300px] sm:h-[400px] lg:h-[500px] custom_shadow rounded-lg bg-gray">
