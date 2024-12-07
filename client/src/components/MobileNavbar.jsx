@@ -2,22 +2,21 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LuSun } from "react-icons/lu";
 import { IoMoonOutline } from "react-icons/io5";
-import { PiUserCircleLight } from "react-icons/pi";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import HamburgerButton from "./HamburgerButton"
-import { authTokenAtom, isAuthenticated } from "../store/authTokenAtom";
+import { userAtom, isAuthenticated } from "../store/userAtom";
 
 const MobileNavbar = () => {
     const [currentTheme, setCurrentTheme] = useRecoilState(themeAtom);
     const location = useLocation();
     const [expanded, setExpanded] = useState(false);
     const isUserAuthenticated = useRecoilValue(isAuthenticated)
-    const setAuthToken = useSetRecoilState(authTokenAtom)
+    const setUser = useSetRecoilState(userAtom);
 
     const logoutUser = () => {
         setExpanded(!expanded);
-        setAuthToken(null)
+        setUser(null)
     }
 
     return (

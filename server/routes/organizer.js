@@ -13,7 +13,7 @@ organizerRouter.post('/login', async (req, res) => {
         const user = await OrganizerModel.findOne({ organizerId, password });
         if (user) {
             const token = jwt.sign({ organizerId: user.organizerId }, JWT_USER_SECRET);
-            res.json({ token });
+            res.json({ token, user });
         } else {
             res.status(401).json({
                 message: "Invalid userId or password"

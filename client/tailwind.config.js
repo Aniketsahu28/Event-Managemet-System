@@ -20,7 +20,7 @@ export default {
         white: "#FFFFFF",
         red: "#DB2828",
         yellow: "#FDD835",
-        green: "#21BAA5",
+        green: "#0F9D58",
       },
     },
   },

@@ -14,7 +14,7 @@ userRouter.post('/login', async (req, res) => {
         if (user) {
             const secret = (user.userType === "student" || user.userType === "faculty") ? JWT_USER_SECRET : JWT_ADMIN_SECRET;
             const token = jwt.sign({ userId: user.userId }, secret);
-            res.json({ token });
+            res.json({ token, user });
         } else {
             res.status(401).json({
                 message: "Invalid userId or password"

@@ -8,10 +8,10 @@ export const authTokenAtom = atom({
     effects_UNSTABLE: [persistAtom]
 })
 
-export const isAuthenticated = selector({
-    key: "isAuthenticatedSelector",
-    get: ({ get }) => {
-        const token = get(authTokenAtom)
-        return token !== null
-    }
-})
+// export const isAuthenticated = selector({
+//     key: "isAuthenticatedSelector",
+//     get: ({ get }) => {
+//         const token = get(authTokenAtom)
+//         return token !== null
+//     }
+// })
