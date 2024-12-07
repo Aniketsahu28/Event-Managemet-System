@@ -241,7 +241,6 @@ const AddNewEvent = () => {
                         placeholder="Ex:New Year Party"
                         required
                         ref={titleRef}
-                        value={eventDetails.title}
                         onChange={useDebounce(addTitleToEventDetails)}
                     />
                 </span>
