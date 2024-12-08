@@ -53,6 +53,10 @@ const eventSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    seatsFilled: {
+        type: Number,
+        default: 0
+    },
     prizes: [
         { type: String }
     ],

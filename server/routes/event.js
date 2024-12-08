@@ -115,7 +115,7 @@ eventRouter.get('/allevents', async (req, res) => {
 })
 
 eventRouter.get('/eventdetails', async (req, res) => {
-    const { eventId } = req.body;
+    const { eventId } = req.query;
     try {
         const eventDetails = await EventModel.findOne({ "_id": eventId });
         res.status(200).json({
