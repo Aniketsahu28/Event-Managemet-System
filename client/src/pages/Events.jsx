@@ -8,6 +8,7 @@ import { IoIosArrowUp } from "react-icons/io";
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import axios from "axios";
+import EventTimer from "../components/EventTimer";
 
 const Events = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -57,13 +58,89 @@ const Events = () => {
         }
     };
 
+    const [windowStatus, setWindowStatus] = useState(
+        window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : "desktop"
+    );
+
+    function checkWindowSize() {
+        setWindowStatus(window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : "desktop");
+    }
+
+    window.onresize = checkWindowSize;
+
     return (
         <div
             className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col gap-20 justify-center ${currentTheme === "light" ? "text-black" : "text-white"}`}
         >
             {/* Hightlight section */}
-            <div className="h-[300px] sm:h-[400px] lg:h-[500px] custom_shadow rounded-lg bg-gray">
-                {/* To do */}
+            <div className="h-[500px] sm:h-[280px] lg:h-[500px] custom_shadow rounded-lg bg-gray overflow-hidden relative">
+                <CarouselProvider
+                    naturalSlideWidth={windowStatus === 'mobile' ? 2000 : windowStatus === 'tablet' ? 2000 : 1000}
+                    naturalSlideHeight={windowStatus === 'mobile' ? 3050 : windowStatus === 'tablet' ? 800 : 360}
+                    totalSlides={todaysEvents.length + upcomingEvents.length + pastEvents.slice(0, 5).length}
+                    visibleSlides={1}
+                    step={1}
+                    interval={5000}
+                    isPlaying={true}
+                >
+                    <Slider>
+                        <div className="flex justify-center items-center">
+                            {
+                                todaysEvents.map((event, index) => (
+                                    <Slide index={index} key={index}>
+                                        <Link to={`/events/${event?._id}`} className="relative">
+                                            <img
+                                                src={event.banner}
+                                                alt="Event banner"
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <span className="absolute bottom-0 z-10 left-0 text-white m-4 sm:m-7 lg:m-10 flex flex-col gap-4">
+                                                <h2 className="text-2xl sm:text-3xl flex gap-2 items-end"><span>{event?.title}</span><span className="text-xl">in</span></h2>
+                                                <EventTimer date={event.date} time={event.time} />
+                                            </span>
+                                            <div className="w-full h-[30%] bg-gradient-to-t from-black to-black/0 absolute bottom-0 z-0" />
+                                        </Link>
+                                    </Slide>
+                                ))
+                            }
+                            {
+                                upcomingEvents.map((event, index) => (
+                                    <Slide index={index} key={index}>
+                                        <Link to={`/events/${event?._id}`} className="relative">
+                                            <img
+                                                src={event.banner}
+                                                alt="Event banner"
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <span className="absolute bottom-0 z-10 left-0 text-white m-4 sm:m-7 lg:m-10 flex flex-col gap-4">
+                                                <h2 className="text-2xl sm:text-3xl flex gap-2 items-end"><span>{event?.title}</span><span className="text-xl">in</span></h2>
+                                                <EventTimer date={event.date} time={event.time} />
+                                            </span>
+                                            <div className="w-full h-[30%] bg-gradient-to-t from-black to-black/0 absolute bottom-0 z-0" />
+                                        </Link>
+                                    </Slide>
+                                ))
+                            }
+                            {
+                                pastEvents.slice(0, 5).map((event, index) => (
+                                    <Slide index={index} key={index}>
+                                        <Link to={`/events/${event?._id}`} className="relative">
+                                            <img
+                                                src={event.banner}
+                                                alt="Event banner"
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <span className="absolute bottom-0 z-10 left-0 text-white m-4 sm:m-7 lg:m-10 flex flex-col gap-4">
+                                                <h2 className="text-2xl sm:text-3xl">{event?.title}</h2>
+                                            </span>
+                                            <div className="w-full h-[20%] bg-gradient-to-t from-black to-black/0 absolute bottom-0 z-0" />
+                                        </Link>
+                                    </Slide>
+                                ))
+                            }
+                        </div>
+                    </Slider>
+                </CarouselProvider>
             </div>
 
             {/* Upcoming events */}

@@ -9,6 +9,7 @@ import { GrLocationPin } from "react-icons/gr";
 import { GoPeople } from "react-icons/go";
 import { MdCurrencyRupee } from "react-icons/md";
 import DOMPurify from "dompurify";
+import EventTimer from "../components/EventTimer";
 
 const EventDetails = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -65,13 +66,16 @@ const EventDetails = () => {
             className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col font-lato gap-16 justify-center ${currentTheme === "light" ? "text-black" : "text-white"
                 }`}
         >
-            <div className="h-[300px] sm:h-[400px] lg:h-[500px] custom_shadow rounded-lg bg-gray flex items-center justify-center overflow-hidden relative">
+            <div className="h-[500px] sm:h-[280px] lg:h-[500px] custom_shadow rounded-lg bg-gray flex items-center justify-center overflow-hidden relative">
                 <img
                     src={event?.banner}
                     alt="Event banner"
                     className="w-full h-full object-cover"
                 />
-                <div className="w-full h-[20%] bg-gradient-to-t from-black to-black/0 absolute bottom-0" />
+                <span className="absolute bottom-0 z-10 sm:left-0 text-white m-4 sm:m-7 lg:m-10">
+                    <EventTimer date={event?.date} time={event?.time} />
+                </span>
+                <div className="w-full h-[30%] bg-gradient-to-t from-black to-black/0 absolute bottom-0 z-0" />
             </div>
 
             <div className="flex flex-col gap-10 lg:gap-0 lg:flex-row justify-between">
