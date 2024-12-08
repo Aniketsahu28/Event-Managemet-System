@@ -3,6 +3,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import { userAtom } from "../store/userAtom";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 const Login = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -10,7 +11,6 @@ const Login = () => {
     const [userId, setUserId] = useState("");
     const [password, setPassword] = useState("");
     const setUser = useSetRecoilState(userAtom);
-    // const user = useRecoilValue(userAtom)
 
     const handleChange = (e, setter) => {
         setter(e.target.value);
@@ -35,7 +35,6 @@ const Login = () => {
     }
 
     const handleUserLogin = async () => {
-        console.log('user')
         try {
             const response = await axios.post(
                 "http://localhost:3000/api/user/login",
@@ -59,6 +58,7 @@ const Login = () => {
                 alert("You are logged in");
                 setUserId("");
                 setPassword("");
+                return <Navigate to="/" />
             }
         } catch (error) {
             console.error(error);

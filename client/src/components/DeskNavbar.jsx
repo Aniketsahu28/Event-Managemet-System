@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LuSun } from "react-icons/lu";
 import { IoMoonOutline } from "react-icons/io5";
 import { PiUserCircleLight } from "react-icons/pi";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import { userAtom, isAuthenticated } from "../store/userAtom";
 
@@ -11,7 +11,7 @@ const DeskNavbar = () => {
     const [profilePopUp, setProfilePopUp] = useState(false);
     const [currentTheme, setCurrentTheme] = useRecoilState(themeAtom);
     const isUserAuthenticated = useRecoilValue(isAuthenticated);
-    const setUser = useSetRecoilState(userAtom);
+    const [user, setUser] = useRecoilState(userAtom);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -63,8 +63,8 @@ const DeskNavbar = () => {
                 </span>
                 {isUserAuthenticated ? (
                     <span className="relative font-lato">
-                        <PiUserCircleLight
-                            className="text-4xl my-[1px] cursor-pointer"
+                        <img src={user.userInfo.userType === 'student' ? user.userInfo.profilePicture : user.userInfo.organizerProfile} alt="Profile"
+                            className="w-[36px] rounded-full my-[1px] cursor-pointer"
                             onClick={() => setProfilePopUp(!profilePopUp)}
                         />
                         {profilePopUp && (

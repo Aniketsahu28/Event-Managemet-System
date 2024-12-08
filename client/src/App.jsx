@@ -11,6 +11,8 @@ import Login from './pages/Login';
 import Footer from './components/Footer';
 import AddNewEvent from './pages/AddNewEvent';
 import Profile from './pages/Profile'
+import ProtectiveRoutes from './components/ProtectiveRoutes';
+import EventDetails from './pages/EventDetails';
 
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
@@ -24,9 +26,10 @@ function App() {
           <Route path="/" element={<Events />} />
           <Route path="/login" element={<Login />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/organizers" element={<Organizers />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/addevent" element={<AddNewEvent />} />
+          <Route path="/profile" element={<ProtectiveRoutes><Profile /></ProtectiveRoutes>} />
+          <Route path="/addevent" element={<ProtectiveRoutes><AddNewEvent /></ProtectiveRoutes>} />
         </Routes>
         <Footer />
       </div>
