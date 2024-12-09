@@ -61,11 +61,9 @@ const Events = () => {
     const [windowStatus, setWindowStatus] = useState(
         window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : "desktop"
     );
-
     function checkWindowSize() {
         setWindowStatus(window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : "desktop");
     }
-
     window.onresize = checkWindowSize;
 
     return (

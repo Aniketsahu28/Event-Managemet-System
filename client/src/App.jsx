@@ -13,6 +13,7 @@ import AddNewEvent from './pages/AddNewEvent';
 import Profile from './pages/Profile'
 import ProtectiveRoutes from './components/ProtectiveRoutes';
 import EventDetails from './pages/EventDetails';
+import OrganizerDetails from './pages/OrganizerDetails';
 
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
@@ -28,6 +29,7 @@ function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/organizers" element={<Organizers />} />
+          <Route path="/organizers/:id" element={<OrganizerDetails />} />
           <Route path="/profile" element={<ProtectiveRoutes><Profile /></ProtectiveRoutes>} />
           <Route path="/addevent" element={<ProtectiveRoutes><AddNewEvent /></ProtectiveRoutes>} />
         </Routes>
