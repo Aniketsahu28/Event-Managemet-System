@@ -40,9 +40,9 @@ organizerRouter.get('/allorganizers', async (req, res) => {
 })
 
 organizerRouter.get('/organizerdetails', async (req, res) => {
-    const { organizerId } = req.body;
+    const { organizerId } = req.query;
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId });
+        const organizer = await OrganizerModel.findOne({ "_id": organizerId });
         if (organizer) {
             res.status(200).json({
                 organizer

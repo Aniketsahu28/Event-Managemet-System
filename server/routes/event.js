@@ -130,7 +130,7 @@ eventRouter.get('/eventdetails', async (req, res) => {
 })
 
 eventRouter.get('/organizerevents', async (req, res) => {
-    const { organizerId } = req.body;
+    const { organizerId } = req.query;
     try {
         const organizerEvents = await EventModel.find({ "organizerDetails.organizerId": organizerId });
         if (organizerEvents.length > 0) {
