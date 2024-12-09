@@ -22,7 +22,7 @@ const Events = () => {
 
     const fetchEvents = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/event/allevents');
+            const response = await axios.get('http://192.168.0.110:3000/api/event/allevents');
 
             const today = new Date();
 
@@ -73,7 +73,7 @@ const Events = () => {
             className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col gap-20 justify-center ${currentTheme === "light" ? "text-black" : "text-white"}`}
         >
             {/* Hightlight section */}
-            <div className="h-[500px] sm:h-[280px] lg:h-[500px] custom_shadow rounded-lg bg-gray overflow-hidden relative">
+            <div className="custom_shadow rounded-lg bg-gray overflow-hidden relative">
                 <CarouselProvider
                     naturalSlideWidth={windowStatus === 'mobile' ? 2000 : windowStatus === 'tablet' ? 2000 : 1000}
                     naturalSlideHeight={windowStatus === 'mobile' ? 3050 : windowStatus === 'tablet' ? 800 : 360}
@@ -81,7 +81,7 @@ const Events = () => {
                     visibleSlides={1}
                     step={1}
                     interval={5000}
-                    isPlaying={true}
+                // isPlaying={true}
                 >
                     <Slider>
                         <div className="flex justify-center items-center">
@@ -145,69 +145,36 @@ const Events = () => {
 
             {/* Upcoming events */}
             <div className="flex flex-col justify-center gap-10">
-                <div className="flex justify-between flex-col sm:flex-row gap-4">
-                    <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">Upcoming Events</h2>
-                    <select
-                        name="upcomingEvents"
-                        id="upcomingEvents"
-                        className={`outline-none border-2 p-2 rounded-lg ${currentTheme === "light" ? "bg-white text-black border-gray/60" : "bg-black text-white border-white/40"
-                            }`}
-                    >
-                        <option value="all">All Events</option>
-                        <option value="oneDay">One Day Events</option>
-                        <option value="multipleDay">Multiple Day Events</option>
-                    </select>
-                </div>
-
-                {/* Event carousel for mobile*/}
-                <span className="block sm:hidden">
+                <h2 className="sm:hidden text-2xl sm:text-3xl font-montserrat font-semibold">Upcoming Events</h2>
+                <span>
                     <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
                         totalSlides={upcomingEvents.length}
-                        visibleSlides={1}
+                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : 4}
                         step={1}
-                        className="flex flex-col"
+                        className="flex flex-col gap-10"
+                        isIntrinsicHeight={true}
                     >
-                        <Slider>
-                            <div className="flex justify-center items-center">
-                                {
-                                    upcomingEvents.map((upcomingEvent, index) => (
-                                        <Slide index={index} key={index}>
-                                            <EventCard
-                                                id={upcomingEvent._id}
-                                                title={upcomingEvent.title}
-                                                banner={upcomingEvent.banner}
-                                                description={upcomingEvent.description}
-                                                time={upcomingEvent.time}
-                                                date={upcomingEvent.date}
-                                                price={upcomingEvent.eventFee}
-                                            />
-                                        </Slide>
-                                    ))
-                                }
-                            </div>
-                        </Slider>
-                        <div className="flex items-center justify-center gap-6 mt-4">
-                            <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
-                            {upcomingEvents.length} Events
-                            <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
+                        <div className="hidden sm:flex items-center justify-between gap-6">
+                            <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
+                                Upcoming Events
+                            </h2>
+                            <span className="flex gap-4">
+                                <ButtonBack
+                                    className={`border-2 p-2 rounded-full ${currentTheme === "light" ? "border-black" : "border-white"
+                                        }`}
+                                >
+                                    <IoIosArrowUp className="-rotate-90 text-xl" />
+                                </ButtonBack>
+                                <ButtonNext
+                                    className={`border-2 p-2 rounded-full ${currentTheme === "light" ? "border-black" : "border-white"
+                                        }`}
+                                >
+                                    <IoIosArrowUp className="rotate-90 text-xl" />
+                                </ButtonNext>
+                            </span>
                         </div>
-                    </CarouselProvider>
-                </span>
-
-                {/* Event carousel for tablet*/}
-                <span className="hidden sm:block lg:hidden">
-                    <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
-                        totalSlides={upcomingEvents.length}
-                        visibleSlides={2}
-                        step={2}
-                        className="flex flex-col"
-                    >
                         <Slider>
-                            <div className="flex justify-center items-center">
+                            <div className="flex justify-center items-center w-full">
                                 {
                                     upcomingEvents.map((upcomingEvent, index) => (
                                         <Slide index={index} key={index}>
@@ -225,44 +192,7 @@ const Events = () => {
                                 }
                             </div>
                         </Slider>
-                        <div className="flex items-center justify-center gap-6 mt-4">
-                            <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
-                            {upcomingEvents.length} Events
-                            <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
-                        </div>
-                    </CarouselProvider>
-                </span>
-
-                {/* Event Carousel for desktop */}
-                <span className="hidden lg:block">
-                    <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
-                        totalSlides={upcomingEvents.length}
-                        visibleSlides={4}
-                        step={4}
-                        className="flex flex-col"
-                    >
-                        <Slider>
-                            <div className="flex justify-center items-center">
-                                {
-                                    upcomingEvents.map((upcomingEvent, index) => (
-                                        <Slide index={index} key={index}>
-                                            <EventCard
-                                                id={upcomingEvent._id}
-                                                title={upcomingEvent.title}
-                                                banner={upcomingEvent.banner}
-                                                description={upcomingEvent.description}
-                                                time={upcomingEvent.time}
-                                                date={upcomingEvent.date}
-                                                price={upcomingEvent.eventFee}
-                                            />
-                                        </Slide>
-                                    ))
-                                }
-                            </div>
-                        </Slider>
-                        <div className="flex items-center justify-center gap-6">
+                        <div className="sm:hidden flex items-center justify-center gap-6">
                             <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
                             {upcomingEvents.length} Events
                             <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
@@ -273,124 +203,54 @@ const Events = () => {
 
             {/* today's events */}
             <div className="flex flex-col justify-center gap-10">
-                <div className="flex justify-between flex-col sm:flex-row gap-4">
-                    <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">Today's Events</h2>
-                    <select
-                        name="upcomingEvents"
-                        id="upcomingEvents"
-                        className={`outline-none border-2 p-2 rounded-lg ${currentTheme === "light" ? "bg-white text-black border-gray/60" : "bg-black text-white border-white/40"
-                            }`}
-                    >
-                        <option value="all">All Events</option>
-                        <option value="oneDay">One Day Events</option>
-                        <option value="multipleDay">Multiple Day Events</option>
-                    </select>
-                </div>
-
-                {/* Event carousel for mobile*/}
-                <span className="block sm:hidden">
+                <h2 className="sm:hidden text-2xl sm:text-3xl font-montserrat font-semibold">Today's Events</h2>
+                <span>
                     <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
                         totalSlides={todaysEvents.length}
-                        visibleSlides={1}
+                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : 4}
                         step={1}
-                        className="flex flex-col"
+                        className="flex flex-col gap-10"
+                        isIntrinsicHeight={true}
                     >
-                        <Slider>
-                            <div className="flex justify-center items-center">
-                                {
-                                    todaysEvents.map((todaysEvent, index) => (
-                                        <Slide index={index} key={index}>
-                                            <EventCard
-                                                id={todaysEvent._id}
-                                                title={todaysEvent.title}
-                                                banner={todaysEvent.banner}
-                                                description={todaysEvent.description}
-                                                time={todaysEvent.time}
-                                                date={todaysEvent.date}
-                                                price={todaysEvent.eventFee}
-                                            />
-                                        </Slide>
-                                    ))
-                                }
-                            </div>
-                        </Slider>
-                        <div className="flex items-center justify-center gap-6 mt-4">
-                            <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
-                            {todaysEvents.length} Events
-                            <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
+                        <div className="hidden sm:flex items-center justify-between gap-6">
+                            <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
+                                Today's Events
+                            </h2>
+                            <span className="flex gap-4">
+                                <ButtonBack
+                                    className={`border-2 p-2 rounded-full ${currentTheme === "light" ? "border-black" : "border-white"
+                                        }`}
+                                >
+                                    <IoIosArrowUp className="-rotate-90 text-xl" />
+                                </ButtonBack>
+                                <ButtonNext
+                                    className={`border-2 p-2 rounded-full ${currentTheme === "light" ? "border-black" : "border-white"
+                                        }`}
+                                >
+                                    <IoIosArrowUp className="rotate-90 text-xl" />
+                                </ButtonNext>
+                            </span>
                         </div>
-                    </CarouselProvider>
-                </span>
-
-                {/* Event carousel for tablet*/}
-                <span className="hidden sm:block lg:hidden">
-                    <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
-                        totalSlides={todaysEvents.length}
-                        visibleSlides={2}
-                        step={2}
-                        className="flex flex-col"
-                    >
                         <Slider>
-                            <div className="flex justify-center items-center">
+                            <div className="flex justify-center items-center w-full">
                                 {
-                                    todaysEvents.map((todaysEvent, index) => (
+                                    todaysEvents.map((event, index) => (
                                         <Slide index={index} key={index}>
                                             <EventCard
-                                                id={todaysEvent._id}
-                                                title={todaysEvent.title}
-                                                banner={todaysEvent.banner}
-                                                description={todaysEvent.description}
-                                                time={todaysEvent.time}
-                                                date={todaysEvent.date}
-                                                price={todaysEvent.eventFee}
+                                                id={event._id}
+                                                title={event.title}
+                                                banner={event.banner}
+                                                description={event.description}
+                                                time={event.time}
+                                                date={event.date}
+                                                price={event.eventFee}
                                             />
                                         </Slide>
                                     ))
                                 }
                             </div>
                         </Slider>
-                        <div className="flex items-center justify-center gap-6 mt-4">
-                            <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
-                            {todaysEvents.length} Events
-                            <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
-                        </div>
-                    </CarouselProvider>
-                </span>
-
-                {/* Event Carousel for desktop */}
-                <span className="hidden lg:block">
-                    <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
-                        totalSlides={todaysEvents.length}
-                        visibleSlides={4}
-                        step={4}
-                        className="flex flex-col"
-                    >
-                        <Slider>
-                            <div className="flex justify-center items-center">
-                                {
-                                    todaysEvents.map((todaysEvent, index) => (
-                                        <Slide index={index} key={index}>
-                                            <EventCard
-                                                id={todaysEvent._id}
-                                                title={todaysEvent.title}
-                                                banner={todaysEvent.banner}
-                                                description={todaysEvent.description}
-                                                time={todaysEvent.time}
-                                                date={todaysEvent.date}
-                                                price={todaysEvent.eventFee}
-                                            />
-                                        </Slide>
-                                    ))
-                                }
-                            </div>
-                        </Slider>
-                        <div className="flex items-center justify-center gap-6">
+                        <div className="sm:hidden flex items-center justify-center gap-6">
                             <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
                             {todaysEvents.length} Events
                             <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
@@ -401,124 +261,54 @@ const Events = () => {
 
             {/* Past events */}
             <div className="flex flex-col justify-center gap-10">
-                <div className="flex justify-between flex-col sm:flex-row gap-4">
-                    <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">Past Events</h2>
-                    <select
-                        name="upcomingEvents"
-                        id="upcomingEvents"
-                        className={`outline-none border-2 p-2 rounded-lg ${currentTheme === "light" ? "bg-white text-black border-gray/60" : "bg-black text-white border-white/40"
-                            }`}
-                    >
-                        <option value="all">All Events</option>
-                        <option value="oneDay">One Day Events</option>
-                        <option value="multipleDay">Multiple Day Events</option>
-                    </select>
-                </div>
-
-                {/* Event carousel for mobile*/}
-                <span className="block sm:hidden">
+                <h2 className="sm:hidden text-2xl sm:text-3xl font-montserrat font-semibold">Past Events</h2>
+                <span>
                     <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
                         totalSlides={pastEvents.length}
-                        visibleSlides={1}
+                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : 4}
                         step={1}
-                        className="flex flex-col"
+                        className="flex flex-col gap-10"
+                        isIntrinsicHeight={true}
                     >
-                        <Slider>
-                            <div className="flex justify-center items-center">
-                                {
-                                    pastEvents.map((pastEvent, index) => (
-                                        <Slide index={index} key={index}>
-                                            <EventCard
-                                                id={pastEvent._id}
-                                                title={pastEvent.title}
-                                                banner={pastEvent.banner}
-                                                description={pastEvent.description}
-                                                time={pastEvent.time}
-                                                date={pastEvent.date}
-                                                price={pastEvent.eventFee}
-                                            />
-                                        </Slide>
-                                    ))
-                                }
-                            </div>
-                        </Slider>
-                        <div className="flex items-center justify-center gap-6 mt-4">
-                            <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
-                            {pastEvents.length} Events
-                            <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
+                        <div className="hidden sm:flex items-center justify-between gap-6">
+                            <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
+                                Past Events
+                            </h2>
+                            <span className="flex gap-4">
+                                <ButtonBack
+                                    className={`border-2 p-2 rounded-full ${currentTheme === "light" ? "border-black" : "border-white"
+                                        }`}
+                                >
+                                    <IoIosArrowUp className="-rotate-90 text-xl" />
+                                </ButtonBack>
+                                <ButtonNext
+                                    className={`border-2 p-2 rounded-full ${currentTheme === "light" ? "border-black" : "border-white"
+                                        }`}
+                                >
+                                    <IoIosArrowUp className="rotate-90 text-xl" />
+                                </ButtonNext>
+                            </span>
                         </div>
-                    </CarouselProvider>
-                </span>
-
-                {/* Event carousel for tablet*/}
-                <span className="hidden sm:block lg:hidden">
-                    <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
-                        totalSlides={pastEvents.length}
-                        visibleSlides={2}
-                        step={2}
-                        className="flex flex-col"
-                    >
                         <Slider>
-                            <div className="flex justify-center items-center">
+                            <div className="flex justify-center items-center w-full">
                                 {
-                                    pastEvents.map((pastEvent, index) => (
+                                    pastEvents.map((event, index) => (
                                         <Slide index={index} key={index}>
                                             <EventCard
-                                                id={pastEvent._id}
-                                                title={pastEvent.title}
-                                                banner={pastEvent.banner}
-                                                description={pastEvent.description}
-                                                time={pastEvent.time}
-                                                date={pastEvent.date}
-                                                price={pastEvent.eventFee}
+                                                id={event._id}
+                                                title={event.title}
+                                                banner={event.banner}
+                                                description={event.description}
+                                                time={event.time}
+                                                date={event.date}
+                                                price={event.eventFee}
                                             />
                                         </Slide>
                                     ))
                                 }
                             </div>
                         </Slider>
-                        <div className="flex items-center justify-center gap-6 mt-4">
-                            <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
-                            {pastEvents.length} Events
-                            <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>
-                        </div>
-                    </CarouselProvider>
-                </span>
-
-                {/* Event Carousel for desktop */}
-                <span className="hidden lg:block">
-                    <CarouselProvider
-                        naturalSlideWidth={1000}
-                        naturalSlideHeight={900}
-                        totalSlides={pastEvents.length}
-                        visibleSlides={4}
-                        step={4}
-                        className="flex flex-col"
-                    >
-                        <Slider>
-                            <div className="flex justify-center items-center">
-                                {
-                                    pastEvents.map((pastEvent, index) => (
-                                        <Slide index={index} key={index}>
-                                            <EventCard
-                                                id={pastEvent._id}
-                                                title={pastEvent.title}
-                                                banner={pastEvent.banner}
-                                                description={pastEvent.description}
-                                                time={pastEvent.time}
-                                                date={pastEvent.date}
-                                                price={pastEvent.eventFee}
-                                            />
-                                        </Slide>
-                                    ))
-                                }
-                            </div>
-                        </Slider>
-                        <div className="flex items-center justify-center gap-6">
+                        <div className="sm:hidden flex items-center justify-center gap-6">
                             <ButtonBack className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="-rotate-90 text-xl" /></ButtonBack>
                             {pastEvents.length} Events
                             <ButtonNext className={`border-2 p-2 rounded-full ${currentTheme === 'light' ? "border-black" : "border-white"}`}><IoIosArrowUp className="rotate-90 text-xl" /></ButtonNext>

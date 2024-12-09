@@ -17,7 +17,7 @@ const EventCard = ({ id, title, description, banner, date, time, price }) => {
     }
 
     return (
-        <Link to={`/events/${id}`} className='mx-2 sm:mx-3 lg:mx-5 min-w-[90%] sm:min-w-[45%] lg:min-w-[22%] custom_shadow rounded-lg p-3 flex flex-col gap-2 bg-blue_200'>
+        <Link to={`/events/${id}`} className='hover:scale-95 transition-all w-[320px] sm:w-[330px] custom_shadow rounded-lg p-3 flex flex-col gap-2 bg-blue_200'>
             <div className='w-full h-40 bg-gray rounded-lg flex items-center justify-center overflow-hidden'>
                 <img src={banner} alt="Event" className='h-full w-full object-cover' />
             </div>
