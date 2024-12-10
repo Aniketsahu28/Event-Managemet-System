@@ -39,6 +39,10 @@ const ticketSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        eventFee: {
+            type: Number,
+            default: 0
+        },
     },
     paymentImage: {
         type: String,

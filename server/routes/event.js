@@ -176,11 +176,34 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
                     date: event.date,
                     time: event.time,
                     venue: event.venue,
+                    eventFee: event.eventFee,
                 },
                 paymentImage: paymentImage
             })
             res.status(201).json({
                 message: "Ticket booked successfully"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+eventRouter.get('/usertickets', userAuth, async (req, res) => {
+    const userId = req.userId;
+    try {
+        const userTickets = await TicketModel.find({ 'userDetails.userId': userId })
+        if (userTickets.length > 0) {
+            res.status(200).json({
+                userTickets
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "No tickets found"
             })
         }
 
