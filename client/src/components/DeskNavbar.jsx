@@ -63,8 +63,12 @@ const DeskNavbar = () => {
                 </span>
                 {isUserAuthenticated ? (
                     <span className="relative font-lato">
+                        {/* <img src={user.userInfo.userType === 'student' ? user.userInfo.profilePicture : user.userInfo.organizerProfile} alt="Profile"
+                            className="w-[36px] rounded-full my-[1px] cursor-pointer border-2 border-black"
+                            onClick={() => setProfilePopUp(!profilePopUp)}
+                        /> */}
                         <img src={user.userInfo.userType === 'student' ? user.userInfo.profilePicture : user.userInfo.organizerProfile} alt="Profile"
-                            className="w-[36px] rounded-full my-[1px] cursor-pointer"
+                            className="w-10 h-10 rounded-full my-[1px] cursor-pointer object-cover"
                             onClick={() => setProfilePopUp(!profilePopUp)}
                         />
                         {profilePopUp && (

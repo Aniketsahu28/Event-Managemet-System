@@ -150,14 +150,13 @@ const EventDetails = () => {
                 else {
                     alert(response.data.message)
                 }
+                setPopup(false)
             }
             catch (error) {
                 console.error(error)
             }
         }
     };
-
-    console.log(event);
 
     return (
         <>
@@ -196,7 +195,7 @@ const EventDetails = () => {
                         </label>
                     </span>
                     <button
-                        className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-green disabled:false"
+                        className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-green"
                         onClick={handleBooking}
                     >
                         Book Ticket
