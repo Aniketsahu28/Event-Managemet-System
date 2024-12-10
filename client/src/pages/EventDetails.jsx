@@ -162,7 +162,8 @@ const EventDetails = () => {
     return (
         <>
             <PopupScreen>
-                <div className="bg-white rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32">
+                <div className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light" ? "text-black bg-white" : "text-white bg-gray"
+                    }`}>
                     <span className="flex justify-between items-center">
                         <p className="text-2xl font-montserrat font-medium">Payment</p>
                         <RxCross2
@@ -174,12 +175,12 @@ const EventDetails = () => {
                         <img
                             src=""
                             alt="Payment QR"
-                            className="h-48 w-48 bg-black rounded-lg"
+                            className="h-48 w-48 bg-white custom_shadow rounded-lg"
                         />
                         <p className="text-lg">UPI id : abcdefgh@upisbi</p>
                         <label
                             htmlFor="paymentQR"
-                            className=" items-center gap-4 flex cursor-pointer border-2 border-black/40 rounded-lg p-2"
+                            className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === 'light' ? "border-black/40" : "border-white/60"}`}
                         >
                             <input
                                 id="paymentQR"
@@ -189,7 +190,7 @@ const EventDetails = () => {
                             />
                             <p>Upload screenshot of payment</p>
                             <IoCloudUploadOutline
-                                className={`text-2xl ${currentTheme === "light" ? "text-black/50" : "text-black"
+                                className={`text-2xl ${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                     }`}
                             />
                         </label>
