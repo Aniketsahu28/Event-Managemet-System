@@ -158,7 +158,7 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
         const alreadyPresent = await TicketModel.findOne({ 'userDetails.userId': userId, 'eventDetails.eventId': eventId })
         if (alreadyPresent) {
             res.status(200).json({
-                message: "Ticket already bought"
+                message: "Ticket already booked"
             })
         } else {
             const user = await UserModel.findOne({ userId });
