@@ -9,6 +9,7 @@ import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-re
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import axios from "axios";
 import EventTimer from "../components/EventTimer";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Events = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -22,7 +23,7 @@ const Events = () => {
 
     const fetchEvents = async () => {
         try {
-            const response = await axios.get('http://192.168.0.110:3000/api/event/allevents');
+            const response = await axios.get(`${BACKEND_URL}/api/event/allevents`);
 
             const today = new Date();
 

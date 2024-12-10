@@ -6,6 +6,7 @@ import axios from 'axios';
 import { IoIosArrowUp } from "react-icons/io";
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import EventCard from '../components/EventCard';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const OrganizerDetails = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -21,7 +22,7 @@ const OrganizerDetails = () => {
         const fetchOrganizer = async () => {
             try {
                 const response = await axios.get(
-                    "http://localhost:3000/api/organizer/organizerdetails",
+                    `${BACKEND_URL}/api/organizer/organizerdetails`,
                     {
                         params: {
                             organizerId: id,
@@ -43,7 +44,7 @@ const OrganizerDetails = () => {
             const fetchOrganizerEvents = async () => {
                 try {
                     const response = await axios.get(
-                        "http://localhost:3000/api/event/organizerevents",
+                        `${BACKEND_URL}/api/event/organizerevents`,
                         {
                             params: {
                                 organizerId: organizer.organizerId,

@@ -69,7 +69,7 @@ const DeskNavbar = () => {
                         />
                         {profilePopUp && (
                             <div
-                                className={`absolute flex flex-col gap-4 custom_shadow py-4 px-6 -right-6 rounded-lg ${currentTheme === "light" ? "bg-white" : "bg-gray"
+                                className={`absolute flex flex-col gap-4 custom_shadow py-4 px-6 -right-6 rounded-lg z-50 ${currentTheme === "light" ? "bg-white" : "bg-gray"
                                     }`}
                             >
                                 <button

@@ -8,6 +8,7 @@ import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AddNewEvent = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -36,7 +37,7 @@ const AddNewEvent = () => {
         eventForDepts: [],
         speakers: [],
         isLimitedSeats: false,
-        maxSeats: 0,
+        maxSeats: 100000,
         prizes: [],
         isEventFree: true,
         eventFee: 0,
@@ -161,7 +162,7 @@ const AddNewEvent = () => {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:3000/api/event/addevent",
+            const response = await axios.post(`${BACKEND_URL}/api/event/addevent`,
                 {
                     title: eventDetails.title,
                     description: eventDetails.description,

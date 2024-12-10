@@ -4,6 +4,7 @@ import { themeAtom } from "../store/themeAtom";
 import { userAtom } from "../store/userAtom";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -37,7 +38,7 @@ const Login = () => {
     const handleUserLogin = async () => {
         try {
             const response = await axios.post(
-                "http://localhost:3000/api/user/login",
+                `${BACKEND_URL}/api/user/login`,
                 {
                     userId,
                     password,
@@ -68,7 +69,7 @@ const Login = () => {
     const handleOrganizerLogin = async () => {
         try {
             const response = await axios.post(
-                "http://localhost:3000/api/organizer/login",
+                `${BACKEND_URL}/api/organizer/login`,
                 {
                     organizerId: userId,
                     password,

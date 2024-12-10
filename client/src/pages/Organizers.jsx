@@ -29,7 +29,7 @@ const Organizers = () => {
     const fetchEvents = async () => {
         try {
             const response = await axios.get(
-                "http://192.168.0.110:3000/api/organizer/allorganizers"
+                `${BACKEND_URL}/api/organizer/allorganizers`
             );
             const cultural = [];
             const technicalStudentsClub = [];
