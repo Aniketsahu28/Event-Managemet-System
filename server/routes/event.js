@@ -192,6 +192,21 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
     }
 })
 
+eventRouter.delete('/deleteticket', organizerAuth, async (req, res) => {
+    const { ticketId } = req.body;
+    try {
+        await TicketModel.deleteOne({ "_id": ticketId })
+        res.status(200).json({
+            message: "Participant deleted",
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
 eventRouter.get('/usertickets', userAuth, async (req, res) => {
     const userId = req.userId;
     try {
@@ -199,6 +214,28 @@ eventRouter.get('/usertickets', userAuth, async (req, res) => {
         if (userTickets.length > 0) {
             res.status(200).json({
                 userTickets
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "No tickets found"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+eventRouter.get('/eventtickets', organizerAuth, async (req, res) => {
+    const { eventId } = req.query;
+    try {
+        const eventTickets = await TicketModel.find({ 'eventDetails.eventId': eventId })
+        if (eventTickets.length > 0) {
+            res.status(200).json({
+                eventTickets
             })
         }
         else {
