@@ -167,7 +167,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                         </span>
                         <button
                             type="submit"
-                            className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-green"
+                            className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
                         >
                             Save Changes
                         </button>
@@ -233,7 +233,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                         </div>
                         <button
                             type="submit"
-                            className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-green"
+                            className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
                         >
                             Save Changes
                         </button>
