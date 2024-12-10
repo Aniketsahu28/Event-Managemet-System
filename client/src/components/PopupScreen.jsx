@@ -1,9 +1,8 @@
-import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { popupAtom } from '../store/popupAtom'
 
 const PopupScreen = ({ children }) => {
-    const [popup, setPopup] = useRecoilState(popupAtom)
+    const popup = useRecoilValue(popupAtom)
 
     return (
         <div

@@ -11,6 +11,7 @@ import {
     ButtonNext,
 } from "pure-react-carousel";
 import { IoIosArrowUp } from "react-icons/io";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Organizers = () => {
     const currentTheme = useRecoilValue(themeAtom);
@@ -78,8 +79,6 @@ const Organizers = () => {
         );
     }
     window.onresize = checkWindowSize;
-
-    console.log(cultural)
 
     return (
         <div

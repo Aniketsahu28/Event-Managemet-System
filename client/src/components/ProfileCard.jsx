@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import { IoIosArrowUp } from "react-icons/io";
 import { popupAtom } from "../store/popupAtom";
@@ -15,13 +15,12 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const ProfileCard = ({ name, userId, department, image }) => {
     const [user, setUser] = useRecoilState(userAtom);
     const currentTheme = useRecoilValue(themeAtom);
-    const setPopup = useSetRecoilState(popupAtom);
+    const [popup, setPopup] = useRecoilState(popupAtom);
     const username = useRef(null);
     const oldPassword = useRef(null);
     const newPassword = useRef(null);
     const reEnteredNewPassword = useRef(null);
     const [profileHover, setProfileHover] = useState(false);
-    const [popupElement, setPopupElement] = useState("");
 
     const changeUsername = async (event) => {
         event.preventDefault();
@@ -52,7 +51,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             username: _username,
                         },
                     }));
-                    setPopup(false)
+                    setPopup(null)
                 }
             } catch (error) {
                 console.log(error);
@@ -87,7 +86,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
 
                 if (response.statusText === "OK") {
                     alert(response.data.message);
-                    setPopup(false);
+                    setPopup(null);
                     oldPassword.current.value = "";
                     newPassword.current.value = "";
                     reEnteredNewPassword.current.value = "";
@@ -134,8 +133,8 @@ const ProfileCard = ({ name, userId, department, image }) => {
 
     return (
         <>
-            <PopupScreen>
-                {popupElement === "username" && (
+            {popup === "username" && (
+                <PopupScreen>
                     <form
                         onSubmit={changeUsername}
                         className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
@@ -149,7 +148,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             </p>
                             <RxCross2
                                 className="text-2xl cursor-pointer"
-                                onClick={() => setPopup(false)}
+                                onClick={() => setPopup(null)}
                             />
                         </span>
                         <span className="flex flex-col gap-2">
@@ -172,8 +171,10 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             Save Changes
                         </button>
                     </form>
-                )}
-                {popupElement === "password" && (
+                </PopupScreen>
+            )}
+            {popup === "password" && (
+                <PopupScreen>
                     <form
                         onSubmit={changePassword}
                         className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
@@ -187,7 +188,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             </p>
                             <RxCross2
                                 className="text-2xl cursor-pointer"
-                                onClick={() => setPopup(false)}
+                                onClick={() => setPopup(null)}
                             />
                         </span>
                         <div className="flex flex-col gap-4">
@@ -238,8 +239,8 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             Save Changes
                         </button>
                     </form>
-                )}
-            </PopupScreen>
+                </PopupScreen>
+            )}
             <div
                 className={`flex flex-col sm:flex-row items-center sm:items-stretch justify-center gap-6 custom_shadow p-4 sm:p-6 rounded-lg w-fit ${currentTheme === "light"
                     ? "text-black bg-white"
@@ -275,8 +276,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             <FaRegPenToSquare
                                 className={`text-xl ${currentTheme === 'light' ? "text-black/60 hover:text-black" : "text-white/60 hover:text-white"}`}
                                 onClick={() => {
-                                    setPopupElement("username");
-                                    setPopup(true);
+                                    setPopup("username");
                                 }}
                             />
                         </h2>
@@ -296,8 +296,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     <button
                         className="w-fit flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
                         onClick={() => {
-                            setPopupElement("password");
-                            setPopup(true);
+                            setPopup("password");
                         }}
                     >
                         <span>Change Password</span> <IoIosArrowUp className="rotate-90" />

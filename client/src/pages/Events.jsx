@@ -80,7 +80,7 @@ const Events = () => {
                     visibleSlides={1}
                     step={1}
                     interval={5000}
-                // isPlaying={true}
+                    isPlaying={true}
                 >
                     <Slider>
                         <div className="flex justify-center items-center">
@@ -94,8 +94,10 @@ const Events = () => {
                                                 className="w-full h-full object-cover"
                                             />
                                             <span className="absolute bottom-0 z-10 left-0 text-white m-4 sm:m-7 lg:m-10 flex flex-col gap-4">
-                                                <h2 className="text-2xl sm:text-3xl flex gap-2 items-end"><span>{event?.title}</span><span className="text-xl">in</span></h2>
-                                                <EventTimer date={event.date} time={event.time} />
+                                                <h2 className="text-2xl sm:text-3xl flex gap-2 items-end"><span>{event?.title}</span>
+                                                    {/* <span className="text-xl">in</span> */}
+                                                </h2>
+                                                {/* <EventTimer date={event.date} time={event.time} /> */}
                                             </span>
                                             <div className="w-full h-[30%] bg-gradient-to-t from-black to-black/0 absolute bottom-0 z-0" />
                                         </Link>
@@ -112,8 +114,10 @@ const Events = () => {
                                                 className="w-full h-full object-cover"
                                             />
                                             <span className="absolute bottom-0 z-10 left-0 text-white m-4 sm:m-7 lg:m-10 flex flex-col gap-4">
-                                                <h2 className="text-2xl sm:text-3xl flex gap-2 items-end"><span>{event?.title}</span><span className="text-xl">in</span></h2>
-                                                <EventTimer date={event.date} time={event.time} />
+                                                <h2 className="text-2xl sm:text-3xl flex gap-2 items-end"><span>{event?.title}</span>
+                                                    {/* <span className="text-xl">in</span> */}
+                                                </h2>
+                                                {/* <EventTimer date={event.date} time={event.time} /> */}
                                             </span>
                                             <div className="w-full h-[30%] bg-gradient-to-t from-black to-black/0 absolute bottom-0 z-0" />
                                         </Link>

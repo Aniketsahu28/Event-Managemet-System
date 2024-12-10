@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useEffect, useRef, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -16,21 +16,35 @@ import { RxCross2 } from "react-icons/rx";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { isAuthenticated, userAtom } from "../store/userAtom";
+import ParticipantCard from "../components/ParticipantCard";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
     const currentTheme = useRecoilValue(themeAtom);
     const { id } = useParams();
     const [event, setEvent] = useState();
+    const [eventTickets, setEventTickets] = useState();
+    const [searchedEventTickets, setSearchedEventTickets] = useState();
+    const [searchTerm, setSearchTerm] = useState("")
     const [paymentUrl, setPaymentUrl] = useState("");
     const sanitizedDescription = DOMPurify.sanitize(event?.description);
-    const setPopup = useSetRecoilState(popupAtom);
+    const [popup, setPopup] = useRecoilState(popupAtom);
     const user = useRecoilValue(userAtom);
-    const isUserAuthenticated = useRecoilValue(isAuthenticated)
+    const isUserAuthenticated = useRecoilValue(isAuthenticated);
 
     useEffect(() => {
         fetchEvents();
     }, []);
+
+    useEffect(() => {
+        if (
+            isUserAuthenticated &&
+            user.userInfo.userType === "organizer" &&
+            event?.organizerDetails.organizerId === user.userInfo.organizerId
+        ) {
+            fetchEventTickets();
+        }
+    }, [event]);
 
     function canBookEvent(eventDate, eventTime) {
         const eventDateTimeString = `${eventDate}T${eventTime}:00`;
@@ -53,6 +67,25 @@ const EventDetails = () => {
             setEvent(response.data.eventDetails);
         } catch (error) {
             console.error("Error fetching events:", error);
+        }
+    };
+
+    const fetchEventTickets = async () => {
+        try {
+            const response = await axios.get(
+                `${BACKEND_URL}/api/event/eventtickets`,
+                {
+                    params: {
+                        eventId: id,
+                    },
+                    headers: {
+                        token: user.token,
+                    },
+                }
+            );
+            setEventTickets(response.data.eventTickets);
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -92,32 +125,31 @@ const EventDetails = () => {
 
     const getTicket = async () => {
         if (!isUserAuthenticated) {
-            alert("Please login to continue")
+            alert("Please login to continue");
             return;
         }
         if (!event?.isEventFree) {
-            setPopup(true);
+            setPopup("paymentPopup");
         } else {
             try {
-                const response = await axios.post(`${BACKEND_URL}/api/event/bookticket`,
+                const response = await axios.post(
+                    `${BACKEND_URL}/api/event/bookticket`,
                     {
-                        eventId: event._id
+                        eventId: event._id,
                     },
                     {
                         headers: {
-                            "token": user.token
-                        }
+                            token: user.token,
+                        },
                     }
-                )
+                );
                 if (response.statusText === "OK") {
-                    alert(response.data.message)
+                    alert(response.data.message);
+                } else {
+                    alert(response.data.message);
                 }
-                else {
-                    alert(response.data.message)
-                }
-            }
-            catch (error) {
-                console.error(error)
+            } catch (error) {
+                console.error(error);
             }
         }
     };
@@ -129,79 +161,94 @@ const EventDetails = () => {
 
     const handleBooking = async () => {
         if (paymentUrl === "") {
-            alert("Payment required to proceed")
-        }
-        else {
+            alert("Payment required to proceed");
+        } else {
             try {
-                const response = await axios.post(`${BACKEND_URL}/api/event/bookticket`,
+                const response = await axios.post(
+                    `${BACKEND_URL}/api/event/bookticket`,
                     {
                         eventId: event._id,
-                        paymentImage: paymentUrl
+                        paymentImage: paymentUrl,
                     },
                     {
                         headers: {
-                            "token": user.token
-                        }
+                            token: user.token,
+                        },
                     }
-                )
+                );
                 if (response.statusText === "OK") {
-                    alert(response.data.message)
+                    alert(response.data.message);
+                } else {
+                    alert(response.data.message);
                 }
-                else {
-                    alert(response.data.message)
-                }
-                setPopup(false)
-            }
-            catch (error) {
-                console.error(error)
+                setPopup(null);
+            } catch (error) {
+                console.error(error);
             }
         }
     };
 
+    const handleSearchParticipant = (e) => {
+        setSearchTerm(e.target.value)
+        const searchResult = eventTickets.filter((ticket) => {
+            return ticket.userDetails.userId.includes(e.target.value);
+        });
+        setSearchedEventTickets(searchResult);
+    }
+
     return (
         <>
-            <PopupScreen>
-                <div className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light" ? "text-black bg-white" : "text-white bg-gray"
-                    }`}>
-                    <span className="flex justify-between items-center">
-                        <p className="text-2xl font-montserrat font-medium">Payment</p>
-                        <RxCross2
-                            className="text-2xl cursor-pointer"
-                            onClick={() => setPopup(false)}
-                        />
-                    </span>
-                    <span className="flex flex-col gap-2 items-center">
-                        <img
-                            src=""
-                            alt="Payment QR"
-                            className="h-48 w-48 bg-white custom_shadow rounded-lg"
-                        />
-                        <p className="text-lg">UPI id : abcdefgh@upisbi</p>
-                        <label
-                            htmlFor="paymentQR"
-                            className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === 'light' ? "border-black/40" : "border-white/60"}`}
-                        >
-                            <input
-                                id="paymentQR"
-                                type="file"
-                                className="hidden"
-                                onChange={takePaymentScreenshot}
-                            />
-                            <p>Upload screenshot of payment</p>
-                            <IoCloudUploadOutline
-                                className={`text-2xl ${currentTheme === "light" ? "text-black/80" : "text-white/80"
-                                    }`}
-                            />
-                        </label>
-                    </span>
-                    <button
-                        className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-green"
-                        onClick={handleBooking}
+            {popup === "paymentPopup" && (
+                <PopupScreen>
+                    <div
+                        className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
                     >
-                        Book Ticket
-                    </button>
-                </div>
-            </PopupScreen>
+                        <span className="flex justify-between items-center">
+                            <p className="text-2xl font-montserrat font-medium">Payment</p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <span className="flex flex-col gap-2 items-center">
+                            <img
+                                src=""
+                                alt="Payment QR"
+                                className="h-48 w-48 bg-white custom_shadow rounded-lg"
+                            />
+                            <p className="text-lg">UPI id : abcdefgh@upisbi</p>
+                            <label
+                                htmlFor="paymentQR"
+                                className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === "light"
+                                    ? "border-black/40"
+                                    : "border-white/60"
+                                    }`}
+                            >
+                                <input
+                                    id="paymentQR"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={takePaymentScreenshot}
+                                />
+                                <p>Upload screenshot of payment</p>
+                                <IoCloudUploadOutline
+                                    className={`text-2xl ${currentTheme === "light" ? "text-black/80" : "text-white/80"
+                                        }`}
+                                />
+                            </label>
+                        </span>
+                        <button
+                            className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                            onClick={handleBooking}
+                        >
+                            Book Ticket
+                        </button>
+                    </div>
+                </PopupScreen>
+            )}
             <div
                 className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col font-lato gap-16 justify-center ${currentTheme === "light" ? "text-black" : "text-white"
                     }`}
@@ -213,7 +260,7 @@ const EventDetails = () => {
                         className="w-full h-full object-cover"
                     />
                     <span className="absolute bottom-0 z-10 sm:left-0 text-white m-4 sm:m-7 lg:m-10">
-                        <EventTimer date={event?.date} time={event?.time} />
+                        {/* <EventTimer date={event?.date} time={event?.time} /> */}
                     </span>
                     <div className="w-full h-[30%] bg-gradient-to-t from-black to-black/0 absolute bottom-0 z-0" />
                 </div>
@@ -342,17 +389,54 @@ const EventDetails = () => {
                                     </span>
                                 </p>
                             )}
-                            {(event?.seatsFilled < event?.maxSeats) && canBookEvent(event?.date, event?.time) && (
-                                <button
-                                    className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
-                                    onClick={getTicket}
-                                >
-                                    Get Ticket
-                                </button>
-                            )}
+                            {event?.seatsFilled < event?.maxSeats &&
+                                canBookEvent(event?.date, event?.time) && (
+                                    <button
+                                        className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
+                                        onClick={getTicket}
+                                    >
+                                        Get Ticket
+                                    </button>
+                                )}
                         </div>
                     </div>
                 </div>
+
+                {/* Participants info only shown to organizers */}
+                {isUserAuthenticated &&
+                    user.userInfo.userType === "organizer" &&
+                    event?.organizerDetails.organizerId === user.userInfo.organizerId && (
+                        <div className="w-full flex flex-col gap-6">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
+                                <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
+                                    Participants
+                                </h2>
+                                <input
+                                    type="text"
+                                    name="userId"
+                                    className={`w-full sm:w-[50%] lg:w-[25%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                        ? "bg-white/60  placeholder-black/60"
+                                        : "bg-gray/60 border-white text-white placeholder-white/60"
+                                        }`}
+                                    placeholder="Search participant by id"
+                                    value={searchTerm}
+                                    onChange={handleSearchParticipant}
+                                />
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between sm:justify-start">
+                                {eventTickets?.length > 0
+                                    ?
+                                    searchTerm === ""
+                                        ? eventTickets.map((ticket, index) => (
+                                            <ParticipantCard key={index} ticket={ticket} />
+                                        ))
+                                        : searchedEventTickets.map((ticket, index) => (
+                                            <ParticipantCard key={index} ticket={ticket} />
+                                        ))
+                                    : "No tickets found"}
+                            </div>
+                        </div>
+                    )}
             </div>
         </>
     );
