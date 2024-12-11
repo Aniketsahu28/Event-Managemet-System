@@ -160,29 +160,42 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
             res.status(200).json({
                 message: "Ticket already booked"
             })
-        } else {
+        }
+        else {
             const user = await UserModel.findOne({ userId });
             const event = await EventModel.findOne({ "_id": eventId });
-            await TicketModel.create({
-                userDetails: {
-                    userId: user.userId,
-                    username: user.username,
-                    department: user.department,
-                    profilePicture: user.profilePicture
-                },
-                eventDetails: {
-                    eventId: event._id,
-                    title: event.title,
-                    date: event.date,
-                    time: event.time,
-                    venue: event.venue,
-                    eventFee: event.eventFee,
-                },
-                paymentImage: paymentImage
-            })
-            res.status(201).json({
-                message: "Ticket booked successfully"
-            })
+            if (event.seatsFilled < event.maxSeats) {
+                await TicketModel.create({
+                    userDetails: {
+                        userId: user.userId,
+                        username: user.username,
+                        department: user.department,
+                        profilePicture: user.profilePicture
+                    },
+                    eventDetails: {
+                        eventId: event._id,
+                        title: event.title,
+                        date: event.date,
+                        time: event.time,
+                        venue: event.venue,
+                        eventFee: event.eventFee,
+                    },
+                    paymentImage: paymentImage
+                })
+
+                await EventModel.updateOne({ "_id": eventId },
+                    { $inc: { seatsFilled: 1 } }
+                );
+
+                res.status(201).json({
+                    message: "Ticket booked successfully"
+                })
+            }
+            else {
+                res.status(400).json({
+                    message: "Event is full"
+                })
+            }
         }
 
     } catch (error) {
@@ -195,10 +208,21 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
 eventRouter.delete('/deleteticket', organizerAuth, async (req, res) => {
     const { ticketId } = req.body;
     try {
-        await TicketModel.deleteOne({ "_id": ticketId })
-        res.status(200).json({
-            message: "Participant deleted",
-        })
+        const ticket = await TicketModel.findOne({ '_id': ticketId })
+        if (ticket) {
+            await TicketModel.deleteOne({ "_id": ticketId })
+            await EventModel.updateOne({ "_id": ticket.eventDetails.eventId },
+                { $inc: { seatsFilled: -1 } }
+            );
+            res.status(200).json({
+                message: "Participant removed",
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "Participant already removed",
+            })
+        }
 
     } catch (error) {
         res.status(500).json({
