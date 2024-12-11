@@ -159,7 +159,6 @@ const Login = () => {
             <button
                 type="submit"
                 className="px-4 py-2 text-white bg-blue_100 font-lato w-full rounded-md text-lg border-blue_100 border-2"
-                onClick={handleLogin}
             >
                 Login
             </button>

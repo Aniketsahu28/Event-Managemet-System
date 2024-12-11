@@ -176,6 +176,7 @@ const EventDetails = () => {
                         },
                     }
                 );
+                console.log(response)
                 if (response.statusText === "OK") {
                     alert(response.data.message);
                 } else {
@@ -406,7 +407,7 @@ const EventDetails = () => {
                 {isUserAuthenticated &&
                     user.userInfo.userType === "organizer" &&
                     event?.organizerDetails.organizerId === user.userInfo.organizerId && (
-                        <div className="w-full flex flex-col gap-6">
+                        <div className="w-full flex flex-col gap-6 lg:gap-10">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                                 <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
                                     Participants

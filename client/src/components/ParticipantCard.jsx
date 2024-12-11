@@ -31,7 +31,8 @@ const ParticipantCard = ({ ticket }) => {
             setPopup(null)
         }
         catch (error) {
-            console.log(error);
+            alert(error.response.data.message);
+            setPopup(null)
         }
     }
 
