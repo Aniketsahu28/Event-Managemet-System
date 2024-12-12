@@ -17,6 +17,8 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { isAuthenticated, userAtom } from "../store/userAtom";
 import ParticipantCard from "../components/ParticipantCard";
+import { IoIosArrowUp } from "react-icons/io";
+import EditEventDetails from "../components/EditEventDetails";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
@@ -250,6 +252,11 @@ const EventDetails = () => {
                     </div>
                 </PopupScreen>
             )}
+            {popup === "editeventdetails" && (
+                <PopupScreen>
+                    <EditEventDetails event={event} setEvent={setEvent} />
+                </PopupScreen>
+            )}
             <div
                 className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col font-lato gap-16 justify-center ${currentTheme === "light" ? "text-black" : "text-white"
                     }`}
@@ -410,7 +417,7 @@ const EventDetails = () => {
                         <div className="w-full flex flex-col gap-6 lg:gap-10">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                                 <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                                    Participants
+                                    Participants {event.isLimitedSeats && `(${event.seatsFilled} / ${event.maxSeats})`}
                                 </h2>
                                 <input
                                     type="text"
@@ -436,6 +443,20 @@ const EventDetails = () => {
                                         ))
                                     : "No tickets found"}
                             </div>
+                            <span className="flex gap-4 mx-auto">
+                                <button
+                                    className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-red"
+                                >
+                                    Close Participation
+                                </button>
+                                <button
+                                    className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
+                                    onClick={() => setPopup('editeventdetails')}
+                                >
+                                    <span>Edit event details</span>
+                                    <IoIosArrowUp className="rotate-90" />
+                                </button>
+                            </span>
                         </div>
                     )}
             </div>

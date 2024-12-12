@@ -1,23 +1,40 @@
 import React, { useRef, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { RxCross2 } from "react-icons/rx";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { themeAtom } from "../store/themeAtom";
-import { IoCloudUploadOutline } from "react-icons/io5";
+import { popupAtom } from "../store/popupAtom";
 import { useDebounce } from "../hooks/useDebounce";
 import JoditEditor from "jodit-react";
+import { IoCloudUploadOutline } from "react-icons/io5";
 import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
-import { RxCross2 } from "react-icons/rx";
-import axios from "axios";
-import { userAtom } from "../store/userAtom";
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const AddNewEvent = () => {
+const EditEventDetails = ({ event, setEvent }) => {
     const currentTheme = useRecoilValue(themeAtom);
-    const user = useRecoilValue(userAtom);
-    const titleRef = useRef(null);
+    const setPopup = useSetRecoilState(popupAtom);
     const descriptionRef = useRef(null);
     const speakerRef = useRef(null);
     const prizeRef = useRef(null);
-    const UPI_IDRef = useRef(null);
+    const [bannerHover, setBannerHover] = useState(false);
+    const [payment, setPayment] = useState(false);
+    const [isCustom, setIsCustom] = useState(false);
+    const [eventDetails, setEventDetails] = useState({
+        title: event.title,
+        description: event.description,
+        banner: event.banner,
+        date: event.date,
+        time: event.time,
+        venue: event.venue,
+        eventForDepts: event.eventForDepts,
+        speakers: event.speakers,
+        isLimitedSeats: event.isLimitedSeats,
+        maxSeats: event.maxSeats,
+        prizes: event.prizes,
+        isEventFree: event.isEventFree,
+        eventFee: event.eventFee,
+        paymentQR: event.paymentQR,
+        UPI_ID: event.UPI_ID,
+    });
+
     const departments = [
         "All Departments",
         "Computer",
@@ -26,46 +43,11 @@ const AddNewEvent = () => {
         "Mechanical",
         "Electrical",
     ];
-    const [isCustom, setIsCustom] = useState(false);
-    const [eventDetails, setEventDetails] = useState({
-        title: "",
-        description: "",
-        banner: "",
-        date: "",
-        time: "",
-        venue: "",
-        eventForDepts: [],
-        speakers: [],
-        isLimitedSeats: false,
-        maxSeats: 100000,
-        prizes: [],
-        isEventFree: true,
-        eventFee: 0,
-        paymentQR: "",
-        UPI_ID: "",
-    });
 
-    const handleVenueChange = (event) => {
-        const value = event.target.value;
-        if (value === "custom") {
-            setIsCustom(true);
-            setEventDetails({
-                ...eventDetails,
-                venue: "",
-            });
-        } else {
-            setIsCustom(false);
-            setEventDetails({
-                ...eventDetails,
-                venue: value,
-            });
-        }
-    };
-
-    const addTitleToEventDetails = () => {
+    const addTitleToEventDetails = (e) => {
         setEventDetails((prevDetails) => ({
             ...prevDetails,
-            title: titleRef.current.value,
+            title: e.target.value,
         }));
     };
 
@@ -101,6 +83,23 @@ const AddNewEvent = () => {
                 ...prevDetails,
                 eventForDepts: [...depts, dept]
             }))
+        }
+    };
+
+    const handleVenueChange = (event) => {
+        const value = event.target.value;
+        if (value === "custom") {
+            setIsCustom(true);
+            setEventDetails({
+                ...eventDetails,
+                venue: "",
+            });
+        } else {
+            setIsCustom(false);
+            setEventDetails({
+                ...eventDetails,
+                venue: value,
+            });
         }
     };
 
@@ -153,84 +152,34 @@ const AddNewEvent = () => {
         }
     };
 
-    const addUPI_IDToEventDetails = () => {
+    const addUPI_IDToEventDetails = (e) => {
         setEventDetails((prevDetails) => ({
             ...prevDetails,
-            UPI_ID: UPI_IDRef.current.value,
+            UPI_ID: e.target.value,
         }));
     };
 
-    const handleFormSubmit = async (e) => {
+    const handleSaveChanges = (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post(`${BACKEND_URL}/api/event/addevent`,
-                {
-                    title: eventDetails.title,
-                    description: eventDetails.description,
-                    banner: eventDetails.banner,
-                    date: eventDetails.date,
-                    time: eventDetails.time,
-                    venue: eventDetails.venue,
-                    eventForDepts: eventDetails.eventForDepts,
-                    speakers: eventDetails.speakers,
-                    isLimitedSeats: eventDetails.isLimitedSeats,
-                    maxSeats: eventDetails.maxSeats,
-                    prizes: eventDetails.prizes,
-                    isEventFree: eventDetails.isEventFree,
-                    eventFee: eventDetails.eventFee,
-                    paymentQR: eventDetails.paymentQR,
-                    UPI_ID: eventDetails.UPI_ID,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "token": user.token
-                    },
-                }
-            )
-
-            if (response.statusText !== "OK") {
-                alert("Error in adding event");
-            }
-            else {
-                alert(response.data.message);
-                setEventDetails({
-                    title: "",
-                    description: "",
-                    banner: "",
-                    date: "",
-                    time: "",
-                    venue: "",
-                    eventForDepts: [],
-                    speakers: [],
-                    isLimitedSeats: false,
-                    maxSeats: 0,
-                    prizes: [],
-                    isEventFree: true,
-                    eventFee: 0,
-                    paymentQR: "",
-                    UPI_ID: "",
-                })
-            }
-        }
-        catch (error) {
-            console.log(error);
-        }
-    };
+        alert("Event details updated")
+        setPopup(null)
+    }
 
     return (
         <div
-            className={`mx-4 sm:mx-16 py-10 sm:py-16 flex flex-col gap-10 items-center ${currentTheme === "light" ? "text-black" : "text-white"
+            className={`rounded-lg mx-auto px-8 py-4 w-[60%] h-[90vh] overflow-y-scroll flex flex-col gap-8 font-lato mt-10 ${currentTheme === "light"
+                ? "text-black bg-white"
+                : "text-white bg-gray"
                 }`}
         >
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                Add New Event
-            </h2>
-            <form
-                className={`custom_shadow w-full sm:w-[90%] lg:w-[70%] rounded-xl font-lato p-4 sm:p-8 flex flex-col lg:grid lg:grid-cols-12 gap-8 ${currentTheme === "light" ? "bg-white" : "bg-gray"
-                    }`}
-                onSubmit={handleFormSubmit}
-            >
+            <span className="flex justify-between items-center">
+                <p className="text-2xl font-montserrat font-medium">Edit Event Details</p>
+                <RxCross2
+                    className="text-2xl cursor-pointer"
+                    onClick={() => setPopup(null)}
+                />
+            </span>
+            <form onSubmit={handleSaveChanges} className="grid grid-cols-12 gap-8">
                 <span className="flex flex-col col-span-12 gap-2">
                     <label htmlFor="EventTitle">Event Title <span className="text-red">*</span></label>
                     <input
@@ -240,10 +189,10 @@ const AddNewEvent = () => {
                             ? "border-gray/50 text-black placeholder-black/60"
                             : "bg-gray border-white text-white placeholder-white/60"
                             }`}
-                        placeholder="Ex:New Year Party"
+                        placeholder="Ex : New Year Party"
+                        value={eventDetails.title}
+                        onChange={addTitleToEventDetails}
                         required
-                        ref={titleRef}
-                        onChange={useDebounce(addTitleToEventDetails)}
                     />
                 </span>
                 <span className="flex flex-col gap-2 col-span-12">
@@ -257,24 +206,31 @@ const AddNewEvent = () => {
                     </span>
                 </span>
                 <span className="flex flex-col gap-2 col-span-6">
-                    <label htmlFor="EventBanner">Upload Event Banner</label>
+                    <label htmlFor="EventBanner">Event Banner</label>
                     <div
-                        className={`p-6 flex flex-col items-center justify-center gap-4 rounded-lg border-[1px] border-gray/50 text-black ${currentTheme === "light"
-                            ? "border-gray/50 text-black placeholder-black/60"
+                        className={`relative h-36 overflow-hidden flex flex-col items-center justify-center gap-4 rounded-lg border-[1px] border-gray/50 text-black ${currentTheme === "light"
+                            ? "border-gray/50 text-black placeholder-black/60 bg-white"
                             : "bg-gray border-white text-white placeholder-white/60"
                             }`}
+                        onMouseEnter={() => setBannerHover(true)}
+                        onMouseLeave={() => setBannerHover(false)}
                     >
-                        <IoCloudUploadOutline
-                            className={`text-5xl ${currentTheme === "light" ? "text-black/50" : "text-white/50"
-                                }`}
-                        />
-                        <input
-                            type="file"
-                            name="EventBanner"
-                            id="EventBanner"
-                            className=" w-full sm:w-fit items-center justify-center cursor-pointer black"
-                            onChange={addBannerToEventDetails}
-                        />
+                        <img src={event.banner} alt="Event banner" className="object-cover" />
+                        {bannerHover && (
+                            <label
+                                htmlFor="banner"
+                                className={`absolute top-0 left-0 w-full h-full items-center gap-2 flex flex-col justify-center cursor-pointer p-2 bg-black/60 text-white lato`}
+                            >
+                                <input
+                                    id="banner"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={addBannerToEventDetails}
+                                />
+                                <IoCloudUploadOutline className={`text-5xl text-white`} />
+                                <p className="text-center">Update event banner</p>
+                            </label>
+                        )}
                     </div>
                 </span>
                 <span className="col-span-6 grid grid-cols-6">
@@ -601,22 +557,31 @@ const AddNewEvent = () => {
                     </span>
                 }
                 {!eventDetails.isEventFree && <span className="flex flex-col gap-2 col-span-6">
-                    <label htmlFor="UPIQR">Upload UPI QR</label>
+                    <label htmlFor="UPIQR">Payment QR Code</label>
                     <div
-                        className={`p-6 flex flex-col items-center justify-center gap-4 rounded-lg border-[1px] border-gray/50 text-black ${currentTheme === "light" ? "" : "bg-gray border-white text-white"
+                        className={`relative h-36 overflow-hidden flex flex-col items-center justify-center gap-4 rounded-lg border-[1px] border-gray/50 text-black ${currentTheme === "light"
+                            ? "border-gray/50 text-black placeholder-black/60 bg-white"
+                            : "bg-gray border-white text-white placeholder-white/60"
                             }`}
+                        onMouseEnter={() => setPayment(true)}
+                        onMouseLeave={() => setPayment(false)}
                     >
-                        <IoCloudUploadOutline
-                            className={`text-5xl ${currentTheme === "light" ? "text-black/50" : "text-white/50"
-                                }`}
-                        />
-                        <input
-                            type="file"
-                            name="UPIQR"
-                            id="UPIQR"
-                            className="w-full sm:w-fit items-center justify-center cursor-pointer"
-                            onChange={addPaymentQRToEventDetails}
-                        />
+                        <img src={event.paymentQR} alt="Payment QR code" className="h-36 w-36 object-cover" />
+                        {payment && (
+                            <label
+                                htmlFor="upiqr"
+                                className={`absolute top-0 left-0 w-full h-full items-center gap-2 flex flex-col justify-center cursor-pointer p-2 bg-black/60 text-white lato`}
+                            >
+                                <input
+                                    id="upiqr"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={addPaymentQRToEventDetails}
+                                />
+                                <IoCloudUploadOutline className={`text-5xl text-white`} />
+                                <p className="text-center">Update payment QR code</p>
+                            </label>
+                        )}
                     </div>
                 </span>}
                 {!eventDetails.isEventFree && <span className="flex flex-col gap-2 col-span-6">
@@ -629,23 +594,19 @@ const AddNewEvent = () => {
                             : "bg-gray placeholder-white/60 border-white text-white"
                             }`}
                         placeholder="Ex: john.doe@okhdfcbank"
-                        ref={UPI_IDRef}
+                        value={eventDetails.UPI_ID}
                         onChange={addUPI_IDToEventDetails}
                     />
                 </span>}
-                <span className="col-span-12 text-center mt-6 font-semibold text-lg">
-                    Mention any other important information about event in the event
-                    description
-                </span>
                 <button
                     type="submit"
-                    className="px-8 mx-auto py-2 text-black bg-green rounded-lg col-span-12 text-lg w-fit"
+                    className="col-span-12 px-6 py-2 mt-10 text-black rounded-md text-lg bg-green"
                 >
-                    Add Event
+                    Save Changes
                 </button>
             </form>
         </div>
     );
 };
 
-export default AddNewEvent;
+export default EditEventDetails;

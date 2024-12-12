@@ -2,35 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
+* {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
 }
 
 /* Custom scroll bar code */
-body {
+body,
+div {
   --sb-track-color: #001f33;
   --sb-thumb-color: #0066aa;
   --sb-size: 6px;
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,
+div::-webkit-scrollbar {
   width: var(--sb-size);
 }
 
-body::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track {
   background: var(--sb-track-color);
   border-radius: 6px;
 }
 
-body::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb {
   background: var(--sb-thumb-color);
   border-radius: 6px;
 }
 
 @supports not selector(::-webkit-scrollbar) {
-  body {
+  body,
+  div {
     scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
   }
 }
