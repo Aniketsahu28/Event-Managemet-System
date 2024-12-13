@@ -132,7 +132,7 @@ const OrganizerDetails = () => {
                             <Slider>
                                 <div className="flex justify-center items-center w-full">
                                     {
-                                        events.upcoming?.map((upcomingEvent, index) => (
+                                        [...events.upcoming].reverse().map((upcomingEvent, index) => (
                                             <Slide index={index} key={index}>
                                                 <EventCard
                                                     id={upcomingEvent._id}
@@ -190,7 +190,7 @@ const OrganizerDetails = () => {
                             <Slider>
                                 <div className="flex justify-center items-center w-full">
                                     {
-                                        events.todays?.map((event, index) => (
+                                        [...events.todays].reverse().map((event, index) => (
                                             <Slide index={index} key={index}>
                                                 <EventCard
                                                     id={event._id}
@@ -248,7 +248,7 @@ const OrganizerDetails = () => {
                             <Slider>
                                 <div className="flex justify-center items-center w-full">
                                     {
-                                        events.past?.map((event, index) => (
+                                        [...events.past].reverse().map((event, index) => (
                                             <Slide index={index} key={index}>
                                                 <EventCard
                                                     id={event._id}

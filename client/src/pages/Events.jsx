@@ -85,7 +85,7 @@ const Events = () => {
                     <Slider>
                         <div className="flex justify-center items-center">
                             {
-                                todaysEvents.map((event, index) => (
+                                [...todaysEvents].reverse().map((event, index) => (
                                     <Slide index={index} key={index}>
                                         <Link to={`/events/${event?._id}`} className="relative">
                                             <img
@@ -105,7 +105,7 @@ const Events = () => {
                                 ))
                             }
                             {
-                                upcomingEvents.map((event, index) => (
+                                [...upcomingEvents].reverse().map((event, index) => (
                                     <Slide index={index} key={index}>
                                         <Link to={`/events/${event?._id}`} className="relative">
                                             <img
@@ -125,7 +125,7 @@ const Events = () => {
                                 ))
                             }
                             {
-                                pastEvents.slice(0, 5).map((event, index) => (
+                                [...pastEvents].reverse().slice(0, 5).map((event, index) => (
                                     <Slide index={index} key={index}>
                                         <Link to={`/events/${event?._id}`} className="relative">
                                             <img
@@ -179,7 +179,7 @@ const Events = () => {
                         <Slider>
                             <div className="flex justify-center items-center w-full">
                                 {
-                                    upcomingEvents.map((upcomingEvent, index) => (
+                                    [...upcomingEvents].reverse().map((upcomingEvent, index) => (
                                         <Slide index={index} key={index}>
                                             <EventCard
                                                 id={upcomingEvent._id}
@@ -237,7 +237,7 @@ const Events = () => {
                         <Slider>
                             <div className="flex justify-center items-center w-full">
                                 {
-                                    todaysEvents.map((event, index) => (
+                                    [...todaysEvents].reverse().map((event, index) => (
                                         <Slide index={index} key={index}>
                                             <EventCard
                                                 id={event._id}
@@ -295,7 +295,7 @@ const Events = () => {
                         <Slider>
                             <div className="flex justify-center items-center w-full">
                                 {
-                                    pastEvents.map((event, index) => (
+                                    [...pastEvents].reverse().map((event, index) => (
                                         <Slide index={index} key={index}>
                                             <EventCard
                                                 id={event._id}

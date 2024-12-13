@@ -164,17 +164,17 @@ const Profile = () => {
                             onChange={useDebounce(searchTickets)}
                         />
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-10 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between">
+                    <div className="flex flex-col sm:flex-row gap-10 flex-wrap w-full sm:w-fit items-center sm:items-start">
                         {tickets?.length > 0
                             ? searchedTicket.current.value === ""
-                                ? tickets.map((ticket) => (
+                                ? [...tickets].reverse().map((ticket) => (
                                     <EventTicket
                                         key={ticket._id}
                                         event={ticket.eventDetails}
                                         user={user.userInfo}
                                     />
                                 ))
-                                : search.map((ticket) => (
+                                : [search].reverse().map((ticket) => (
                                     <EventTicket
                                         key={ticket._id}
                                         event={ticket.eventDetails}
