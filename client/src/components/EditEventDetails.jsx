@@ -7,10 +7,14 @@ import { useDebounce } from "../hooks/useDebounce";
 import JoditEditor from "jodit-react";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
+import { userAtom } from "../store/userAtom";
+import axios from "axios";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EditEventDetails = ({ event, setEvent }) => {
     const currentTheme = useRecoilValue(themeAtom);
     const setPopup = useSetRecoilState(popupAtom);
+    const user = useRecoilValue(userAtom)
     const descriptionRef = useRef(null);
     const speakerRef = useRef(null);
     const prizeRef = useRef(null);
@@ -159,15 +163,73 @@ const EditEventDetails = ({ event, setEvent }) => {
         }));
     };
 
-    const handleSaveChanges = (e) => {
+    const handleSaveChanges = async (e) => {
         e.preventDefault();
-        alert("Event details updated")
-        setPopup(null)
+        try {
+            const response = await axios.patch(
+                `${BACKEND_URL}/api/event/editevent`,
+                {
+                    eventId: event._id,
+                    title: eventDetails.title,
+                    description: eventDetails.description,
+                    banner: eventDetails.banner,
+                    date: eventDetails.date,
+                    time: eventDetails.time,
+                    venue: eventDetails.venue,
+                    eventForDepts: eventDetails.eventForDepts,
+                    speakers: eventDetails.speakers,
+                    isLimitedSeats: eventDetails.isLimitedSeats,
+                    maxSeats: eventDetails.maxSeats,
+                    prizes: eventDetails.prizes,
+                    isEventFree: eventDetails.isEventFree,
+                    eventFee: eventDetails.eventFee,
+                    paymentQR: eventDetails.paymentQR,
+                    UPI_ID: eventDetails.UPI_ID,
+                },
+                {
+                    headers: {
+                        token: user.token,
+                    },
+                }
+            );
+
+            if (response.statusText === "OK") {
+                alert(response.data.message)
+                setEvent({
+                    _id: event._id,
+                    organizerDetails: {
+                        department: event.organizerDetails.department,
+                        organizerId: event.organizerDetails.organizerId,
+                        organizerName: event.organizerDetails.organizerName
+                    },
+                    title: eventDetails.title,
+                    description: eventDetails.description,
+                    banner: eventDetails.banner,
+                    date: eventDetails.date,
+                    time: eventDetails.time,
+                    venue: eventDetails.venue,
+                    eventForDepts: eventDetails.eventForDepts,
+                    speakers: eventDetails.speakers,
+                    isLimitedSeats: eventDetails.isLimitedSeats,
+                    seatsFilled: event.seatsFilled,
+                    maxSeats: eventDetails.maxSeats,
+                    prizes: eventDetails.prizes,
+                    isEventFree: eventDetails.isEventFree,
+                    eventFee: eventDetails.eventFee,
+                    paymentQR: eventDetails.paymentQR,
+                    UPI_ID: eventDetails.UPI_ID,
+                })
+                setPopup(null)
+            }
+        }
+        catch (error) {
+            alert(error)
+        }
     }
 
     return (
         <div
-            className={`rounded-lg mx-auto px-8 py-4 w-[60%] h-[90vh] overflow-y-scroll flex flex-col gap-8 font-lato mt-10 ${currentTheme === "light"
+            className={`rounded-lg mx-auto px-4 lg:px-8 py-4 w-[90%] lg:w-[60%] h-[90vh] overflow-y-scroll flex flex-col gap-8 font-lato mt-10 ${currentTheme === "light"
                 ? "text-black bg-white"
                 : "text-white bg-gray"
                 }`}
@@ -179,7 +241,7 @@ const EditEventDetails = ({ event, setEvent }) => {
                     onClick={() => setPopup(null)}
                 />
             </span>
-            <form onSubmit={handleSaveChanges} className="grid grid-cols-12 gap-8">
+            <form onSubmit={handleSaveChanges} className="flex flex-col lg:grid grid-cols-12 gap-8">
                 <span className="flex flex-col col-span-12 gap-2">
                     <label htmlFor="EventTitle">Event Title <span className="text-red">*</span></label>
                     <input
@@ -215,7 +277,7 @@ const EditEventDetails = ({ event, setEvent }) => {
                         onMouseEnter={() => setBannerHover(true)}
                         onMouseLeave={() => setBannerHover(false)}
                     >
-                        <img src={event.banner} alt="Event banner" className="object-cover" />
+                        <img src={eventDetails.banner} alt="Event banner" className="object-cover" />
                         {bannerHover && (
                             <label
                                 htmlFor="banner"
@@ -430,7 +492,8 @@ const EditEventDetails = ({ event, setEvent }) => {
                                 e.preventDefault();
                                 setEventDetails((prevDetails) => ({
                                     ...prevDetails,
-                                    isLimitedSeats: false
+                                    isLimitedSeats: false,
+                                    maxSeats: 100000
                                 }))
                             }}
                         >
@@ -508,7 +571,8 @@ const EditEventDetails = ({ event, setEvent }) => {
                                 e.preventDefault();
                                 setEventDetails((prevDetails) => ({
                                     ...prevDetails,
-                                    isEventFree: true
+                                    isEventFree: true,
+                                    eventFee: 0
                                 }))
                             }}
                         >

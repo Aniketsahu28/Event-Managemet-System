@@ -443,7 +443,7 @@ const EventDetails = () => {
                                         ))
                                     : "No tickets found"}
                             </div>
-                            <span className="flex gap-4 mx-auto">
+                            <span className="flex flex-col sm:flex-row gap-4 mx-auto mt-6">
                                 <button
                                     className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-red"
                                 >
