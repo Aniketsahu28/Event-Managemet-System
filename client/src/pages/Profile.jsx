@@ -5,18 +5,26 @@ import { themeAtom } from "../store/themeAtom";
 import ProfileCard from "../components/ProfileCard";
 import EventTicket from "../components/EventTicket";
 import { useDebounce } from "../hooks/useDebounce";
+import EventCard from "../components/EventCard"
 import axios from "axios";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Profile = () => {
     const currentTheme = useRecoilValue(themeAtom);
     const user = useRecoilValue(userAtom);
+    const [events, setEvents] = useState();
     const [tickets, setTickets] = useState();
     const [search, setSearched] = useState();
+    const searchedEvent = useRef(null);
     const searchedTicket = useRef(null);
 
     useEffect(() => {
-        fetchUserTickets();
+        if (user.userInfo.userType === 'organizer') {
+            fetchOrganizerEvents();
+        }
+        else {
+            fetchUserTickets();
+        }
     }, []);
 
     const fetchUserTickets = async () => {
@@ -44,54 +52,139 @@ const Profile = () => {
         setSearched(searchResult);
     };
 
+    const searchEvents = () => {
+        const searchResult = events.filter((event) => {
+            return event.title.toLowerCase().includes(searchedEvent.current.value.toLowerCase());
+        });
+        setSearched(searchResult);
+    };
+
+    const fetchOrganizerEvents = async () => {
+        try {
+            const response = await axios.get(
+                `${BACKEND_URL}/api/event/organizerevents`,
+                {
+                    params: {
+                        organizerId: user.userInfo.organizerId,
+                    },
+                }
+            );
+
+            setEvents(response.data.organizerEvents)
+
+        } catch (error) {
+            alert(error)
+        }
+    };
+
     return (
         <div
             className={`items-center sm:items-start mx-4 sm:mx-16 py-10 sm:py-20 flex flex-col gap-20 ${currentTheme === "light" ? "text-black" : "text-white"
                 }`}
         >
-            <ProfileCard
-                name={user?.userInfo.username}
-                userId={user?.userInfo.userId}
-                department={user?.userInfo.department}
-                image={user?.userInfo.profilePicture}
-            />
-            <div className="w-full flex flex-col gap-10">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
-                    <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                        Your Event Tickets
-                    </h2>
-                    <input
-                        type="text"
-                        name="userId"
-                        className={`w-full sm:w-[50%] lg:w-[25%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
-                            ? "bg-white/60  placeholder-black/60"
-                            : "bg-gray/60 border-white text-white placeholder-white/60"
-                            }`}
-                        placeholder="Search ticket by title"
-                        ref={searchedTicket}
-                        onChange={useDebounce(searchTickets)}
-                    />
+            {user?.userInfo.userType === "organizer" ? (
+                <ProfileCard
+                    name={user?.userInfo.organizerName}
+                    userId={user?.userInfo.organizerId}
+                    department={user?.userInfo.department}
+                    image={user?.userInfo.organizerProfile}
+                />
+            ) : (
+                <ProfileCard
+                    name={user?.userInfo.username}
+                    userId={user?.userInfo.userId}
+                    department={user?.userInfo.department}
+                    image={user?.userInfo.profilePicture}
+                />
+            )}
+
+            {user.userInfo.userType === "organizer" ? (
+                <div className="w-full flex flex-col gap-10">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
+                        <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
+                            Your Events
+                        </h2>
+                        <input
+                            type="text"
+                            name="userId"
+                            className={`w-full sm:w-[50%] lg:w-[25%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                ? "bg-white/60  placeholder-black/60"
+                                : "bg-gray/60 border-white text-white placeholder-white/60"
+                                }`}
+                            placeholder="Search event by title"
+                            ref={searchedEvent}
+                            onChange={useDebounce(searchEvents)}
+                        />
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-10 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between">
+                        {events?.length > 0
+                            ? searchedEvent.current.value === ""
+                                ? [...events].reverse().map((event) => (
+                                    <EventCard
+                                        key={event._id}
+                                        id={event._id}
+                                        title={event.title}
+                                        banner={event.banner}
+                                        description={event.description}
+                                        time={event.time}
+                                        date={event.date}
+                                        price={event.eventFee}
+                                    />
+                                ))
+                                : [...search].reverse().map((event) => (
+                                    <EventCard
+                                        key={event._id}
+                                        id={event._id}
+                                        title={event.title}
+                                        banner={event.banner}
+                                        description={event.description}
+                                        time={event.time}
+                                        date={event.date}
+                                        price={event.eventFee}
+                                    />
+                                ))
+                            : "No events found"}
+                    </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-10 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between">
-                    {tickets?.length > 0
-                        ? searchedTicket.current.value === ""
-                            ? tickets.map((ticket) => (
-                                <EventTicket
-                                    key={ticket._id}
-                                    event={ticket.eventDetails}
-                                    user={user.userInfo}
-                                />
-                            ))
-                            : search.map((ticket) => (
-                                <EventTicket
-                                    key={ticket._id}
-                                    event={ticket.eventDetails}
-                                    user={user.userInfo}
-                                />
-                            ))
-                        : "No tickets found"}
+            ) : (
+                <div className="w-full flex flex-col gap-10">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
+                        <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
+                            Your Event Tickets
+                        </h2>
+                        <input
+                            type="text"
+                            name="userId"
+                            className={`w-full sm:w-[50%] lg:w-[25%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                ? "bg-white/60  placeholder-black/60"
+                                : "bg-gray/60 border-white text-white placeholder-white/60"
+                                }`}
+                            placeholder="Search ticket by title"
+                            ref={searchedTicket}
+                            onChange={useDebounce(searchTickets)}
+                        />
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-10 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between">
+                        {tickets?.length > 0
+                            ? searchedTicket.current.value === ""
+                                ? tickets.map((ticket) => (
+                                    <EventTicket
+                                        key={ticket._id}
+                                        event={ticket.eventDetails}
+                                        user={user.userInfo}
+                                    />
+                                ))
+                                : search.map((ticket) => (
+                                    <EventTicket
+                                        key={ticket._id}
+                                        event={ticket.eventDetails}
+                                        user={user.userInfo}
+                                    />
+                                ))
+                            : "No tickets found"}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

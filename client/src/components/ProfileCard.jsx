@@ -30,28 +30,54 @@ const ProfileCard = ({ name, userId, department, image }) => {
             alert("Enter username");
         } else {
             try {
-                const response = await axios.patch(
-                    `${BACKEND_URL}/api/user/editUsername`,
-                    {
-                        username: _username,
-                    },
-                    {
-                        headers: {
-                            token: user.token,
-                        },
-                    }
-                );
-
-                if (response.statusText === "OK") {
-                    alert(response.data.message);
-                    setUser((oldinfo) => ({
-                        ...oldinfo,
-                        userInfo: {
-                            ...oldinfo.userInfo,
+                if (user.userInfo.userType === "organizer") {
+                    const response = await axios.patch(
+                        `${BACKEND_URL}/api/organizer/editUsername`,
+                        {
                             username: _username,
                         },
-                    }));
-                    setPopup(null)
+                        {
+                            headers: {
+                                token: user.token,
+                            },
+                        }
+                    );
+
+                    if (response.statusText === "OK") {
+                        alert(response.data.message);
+                        setUser((oldinfo) => ({
+                            ...oldinfo,
+                            userInfo: {
+                                ...oldinfo.userInfo,
+                                organizerName: _username,
+                            },
+                        }));
+                        setPopup(null);
+                    }
+                } else {
+                    const response = await axios.patch(
+                        `${BACKEND_URL}/api/user/editUsername`,
+                        {
+                            username: _username,
+                        },
+                        {
+                            headers: {
+                                token: user.token,
+                            },
+                        }
+                    );
+
+                    if (response.statusText === "OK") {
+                        alert(response.data.message);
+                        setUser((oldinfo) => ({
+                            ...oldinfo,
+                            userInfo: {
+                                ...oldinfo.userInfo,
+                                username: _username,
+                            },
+                        }));
+                        setPopup(null);
+                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -72,7 +98,9 @@ const ProfileCard = ({ name, userId, department, image }) => {
         } else {
             try {
                 const response = await axios.patch(
-                    `${BACKEND_URL}/api/user/changepassword`,
+                    user.userInfo.userType === "organizer"
+                        ? `${BACKEND_URL}/api/organizer/changepassword`
+                        : `${BACKEND_URL}/api/user/changepassword`,
                     {
                         password: _oldPassword,
                         newPassword: _newPassword,
@@ -87,9 +115,6 @@ const ProfileCard = ({ name, userId, department, image }) => {
                 if (response.statusText === "OK") {
                     alert(response.data.message);
                     setPopup(null);
-                    oldPassword.current.value = "";
-                    newPassword.current.value = "";
-                    reEnteredNewPassword.current.value = "";
                 } else {
                     alert(response.data.message);
                 }
@@ -102,32 +127,59 @@ const ProfileCard = ({ name, userId, department, image }) => {
     const takeProfilePicture = async (event) => {
         const url = await useHandleFileUpload(event);
         try {
-            const response = await axios.patch(
-                `${BACKEND_URL}/api/user/editprofilePicture`,
-                {
-                    profilePicture: url,
-                },
-                {
-                    headers: {
-                        token: user.token,
-                    },
-                }
-            );
-
-            if (response.statusText === "OK") {
-                alert(response.data.message);
-                setUser((oldinfo) => ({
-                    ...oldinfo,
-                    userInfo: {
-                        ...oldinfo.userInfo,
+            if (user.userInfo.userType === "organizer") {
+                const response = await axios.patch(
+                    `${BACKEND_URL}/api/organizer/editprofilePicture`,
+                    {
                         profilePicture: url,
                     },
-                }));
+                    {
+                        headers: {
+                            token: user.token,
+                        },
+                    }
+                );
+
+                if (response.statusText === "OK") {
+                    alert(response.data.message);
+                    setUser((oldinfo) => ({
+                        ...oldinfo,
+                        userInfo: {
+                            ...oldinfo.userInfo,
+                            organizerProfile: url,
+                        },
+                    }));
+                } else {
+                    alert(response.data.message);
+                }
             } else {
-                alert(response.data.message);
+                const response = await axios.patch(
+                    `${BACKEND_URL}/api/user/editprofilePicture`,
+                    {
+                        profilePicture: url,
+                    },
+                    {
+                        headers: {
+                            token: user.token,
+                        },
+                    }
+                );
+
+                if (response.statusText === "OK") {
+                    alert(response.data.message);
+                    setUser((oldinfo) => ({
+                        ...oldinfo,
+                        userInfo: {
+                            ...oldinfo.userInfo,
+                            profilePicture: url,
+                        },
+                    }));
+                } else {
+                    alert(response.data.message);
+                }
             }
         } catch (error) {
-            console.log(error);
+            alert(error);
         }
     };
 
@@ -272,9 +324,14 @@ const ProfileCard = ({ name, userId, department, image }) => {
                 <div className="flex flex-col justify-between gap-4 sm:gap-0 items-center sm:items-start">
                     <span className="flex flex-col items-center sm:items-start">
                         <h2 className="flex gap-4 items-center justify-between">
-                            <p className="font-montserrat font-medium text-xl sm:text-2xl">{name}</p>{" "}
+                            <p className="font-montserrat font-medium text-xl sm:text-2xl">
+                                {name}
+                            </p>{" "}
                             <FaRegPenToSquare
-                                className={`text-xl ${currentTheme === 'light' ? "text-black/60 hover:text-black" : "text-white/60 hover:text-white"}`}
+                                className={`text-xl ${currentTheme === "light"
+                                    ? "text-black/60 hover:text-black"
+                                    : "text-white/60 hover:text-white"
+                                    }`}
                                 onClick={() => {
                                     setPopup("username");
                                 }}
