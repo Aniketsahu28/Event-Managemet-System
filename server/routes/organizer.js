@@ -139,6 +139,68 @@ organizerRouter.patch('/editorganizerdetails', organizerAuth, async (req, res) =
     }
 })
 
+organizerRouter.patch('/changepassword', organizerAuth, async (req, res) => {
+    const organizerId = req.organizerId;
+    const { password, newPassword } = req.body;
+    try {
+        const organizer = await OrganizerModel.findOne({ organizerId });
+        if (organizer.password !== password) {
+            res.status(401).json({
+                message: "Incorret old password"
+            })
+        } else {
+            await OrganizerModel.updateOne({ organizerId }, { $set: { password: newPassword } });
+            res.status(200).json({
+                message: "Pasword changed successfully"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
+
+organizerRouter.patch('/editprofilePicture', organizerAuth, async (req, res) => {
+    const organizerId = req.organizerId;
+    const { profilePicture } = req.body;
+    try {
+        const organizer = await OrganizerModel.findOne({ organizerId });
+        organizer.organizerProfile = profilePicture;
+
+        await OrganizerModel.updateOne({ organizerId }, organizer);
+
+        res.status(200).json({
+            message: "Profile picture updated"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+organizerRouter.patch('/editUsername', organizerAuth, async (req, res) => {
+    const organizerId = req.organizerId;
+    const { username } = req.body;
+    try {
+        const organizer = await OrganizerModel.findOne({ organizerId });
+        organizer.organizerName = username;
+
+        await OrganizerModel.updateOne({ organizerId }, organizer);
+
+        res.status(200).json({
+            message: "Username updated"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
 module.exports = {
     organizerRouter
 };
