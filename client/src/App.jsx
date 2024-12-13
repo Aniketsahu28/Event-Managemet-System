@@ -14,6 +14,7 @@ import Profile from './pages/Profile'
 import ProtectiveRoutes from './components/ProtectiveRoutes';
 import EventDetails from './pages/EventDetails';
 import OrganizerDetails from './pages/OrganizerDetails';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
@@ -21,6 +22,7 @@ function App() {
   return (
     <Router>
       <div className={`pt-3 sm:pt-5 w-full ${currentTheme === "light" ? "bg-white" : "bg-black"} min-h-[100vh]`} id='appTop'>
+        <ScrollToTop />
         <span className='block md:hidden'><MobileNavbar /></span>
         <span className='hidden md:block'><DeskNavbar /></span>
         <Routes>

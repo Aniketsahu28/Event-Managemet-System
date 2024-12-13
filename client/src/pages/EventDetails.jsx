@@ -151,7 +151,7 @@ const EventDetails = () => {
                     alert(response.data.message);
                 }
             } catch (error) {
-                console.error(error);
+                alert(error.response?.data.message || error);
             }
         }
     };
@@ -186,7 +186,7 @@ const EventDetails = () => {
                 }
                 setPopup(null);
             } catch (error) {
-                console.error(error);
+                alert(error);
             }
         }
     };
@@ -197,6 +197,33 @@ const EventDetails = () => {
             return ticket.userDetails.userId.includes(e.target.value);
         });
         setSearchedEventTickets(searchResult);
+    }
+
+    const toggleParticipation = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.patch(`${BACKEND_URL}/api/event/toggleparticipation`,
+                {
+                    eventId: id,
+                    status: !event.acceptingParticipation
+                },
+                {
+                    headers: {
+                        token: user.token,
+                    },
+                }
+            )
+
+            if (response.status === 200) {
+                alert(response.data.message)
+                setEvent((prev) => {
+                    return { ...prev, acceptingParticipation: !prev.acceptingParticipation }
+                })
+            }
+        }
+        catch (error) {
+            alert(error)
+        }
     }
 
     return (
@@ -397,7 +424,7 @@ const EventDetails = () => {
                                     </span>
                                 </p>
                             )}
-                            {event?.seatsFilled < event?.maxSeats &&
+                            {event?.acceptingParticipation && event?.seatsFilled < event?.maxSeats &&
                                 canBookEvent(event?.date, event?.time) && (
                                     <button
                                         className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
@@ -444,11 +471,20 @@ const EventDetails = () => {
                                     : "No tickets found"}
                             </div>
                             <span className="flex flex-col sm:flex-row gap-4 mx-auto mt-6">
-                                <button
-                                    className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-red"
-                                >
-                                    Close Participation
-                                </button>
+                                {event?.acceptingParticipation === true ?
+                                    <button
+                                        className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-yellow"
+                                        onClick={toggleParticipation}
+                                    >
+                                        Close Participation
+                                    </button> :
+                                    <button
+                                        className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                                        onClick={toggleParticipation}
+                                    >
+                                        Resume Participation
+                                    </button>
+                                }
                                 <button
                                     className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
                                     onClick={() => setPopup('editeventdetails')}

@@ -7,6 +7,8 @@ import EventTicket from "../components/EventTicket";
 import { useDebounce } from "../hooks/useDebounce";
 import EventCard from "../components/EventCard"
 import axios from "axios";
+import { FaPlus } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Profile = () => {
@@ -101,13 +103,25 @@ const Profile = () => {
             {user.userInfo.userType === "organizer" ? (
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
-                        <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                            Your Events
-                        </h2>
+                        <span className="flex items-center justify-between w-full sm:w-fit gap-8">
+                            <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
+                                Your Events
+                            </h2>
+                            <Link
+                                to="/addEvent"
+                                className="w-fit flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                                onClick={() => {
+                                    setPopup("password");
+                                }}
+                            >
+                                <span>Add Event</span>
+                                <FaPlus />
+                            </Link>
+                        </span>
                         <input
                             type="text"
                             name="userId"
-                            className={`w-full sm:w-[50%] lg:w-[25%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                            className={`w-full sm:w-[40%] lg:w-[25%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
                                 ? "bg-white/60  placeholder-black/60"
                                 : "bg-gray/60 border-white text-white placeholder-white/60"
                                 }`}
@@ -129,6 +143,8 @@ const Profile = () => {
                                         time={event.time}
                                         date={event.date}
                                         price={event.eventFee}
+                                        organizerId={event.organizerDetails.organizerId}
+                                        setEvents={setEvents}
                                     />
                                 ))
                                 : [...search].reverse().map((event) => (
@@ -141,6 +157,8 @@ const Profile = () => {
                                         time={event.time}
                                         date={event.date}
                                         price={event.eventFee}
+                                        organizerId={event.organizerDetails.organizerId}
+                                        setEvents={setEvents}
                                     />
                                 ))
                             : "No events found"}
