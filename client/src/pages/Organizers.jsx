@@ -11,6 +11,7 @@ import {
     ButtonNext,
 } from "pure-react-carousel";
 import { IoIosArrowUp } from "react-icons/io";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Organizers = () => {
@@ -58,7 +59,7 @@ const Organizers = () => {
             );
             setOthers(others);
         } catch (error) {
-            console.error("Error fetching events:", error);
+            toast.error(error.response?.data.message || error);
         }
     };
 

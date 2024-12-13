@@ -4,6 +4,7 @@ import { themeAtom } from "../store/themeAtom";
 import { userAtom } from "../store/userAtom";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
@@ -50,19 +51,21 @@ const Login = () => {
                 }
             );
             if (!response.statusText) {
-                alert("Invalid user id or password");
+                toast.error('Invalid user id or password!');
             } else {
                 setUser({
                     userInfo: response.data.user,
                     token: response.data.token,
                 });
-                alert("You are logged in");
+                toast.success("You are logged in", {
+                    duration: 3000
+                });
                 setUserId("");
                 setPassword("");
                 return <Navigate to="/" />
             }
         } catch (error) {
-            console.error(error);
+            toast.error(error.response?.data.message || error);
         }
     };
 
@@ -81,18 +84,20 @@ const Login = () => {
                 }
             );
             if (!response.statusText) {
-                alert("Invalid user id or password");
+                toast.error('Invalid user id or password!');
             } else {
                 setUser({
                     userInfo: response.data.user,
                     token: response.data.token,
                 });
-                alert("You are logged in");
+                toast.success('You are logged in', {
+                    duration: 3000
+                });
                 setUserId("");
                 setPassword("");
             }
         } catch (error) {
-            console.error(error);
+            toast.error(error.response?.data.message || error);
         }
     };
 

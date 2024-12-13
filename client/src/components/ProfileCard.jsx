@@ -10,6 +10,7 @@ import axios from "axios";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { FaRegPenToSquare } from "react-icons/fa6";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const ProfileCard = ({ name, userId, department, image }) => {
@@ -27,7 +28,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
         const _username = username.current.value;
 
         if (!_username) {
-            alert("Enter username");
+            toast("Enter username");
         } else {
             try {
                 if (user.userInfo.userType === "organizer") {
@@ -44,7 +45,9 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     );
 
                     if (response.statusText === "OK") {
-                        alert(response.data.message);
+                        toast.success(response.data.message, {
+                            duration: 3000
+                        });
                         setUser((oldinfo) => ({
                             ...oldinfo,
                             userInfo: {
@@ -68,7 +71,9 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     );
 
                     if (response.statusText === "OK") {
-                        alert(response.data.message);
+                        toast.success(response.data.message, {
+                            duration: 3000
+                        });
                         setUser((oldinfo) => ({
                             ...oldinfo,
                             userInfo: {
@@ -80,7 +85,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     }
                 }
             } catch (error) {
-                console.log(error);
+                toast.error(error.response?.data.message || error);
             }
         }
     };
@@ -92,9 +97,9 @@ const ProfileCard = ({ name, userId, department, image }) => {
         const _reEnteredNewPassword = reEnteredNewPassword.current.value;
 
         if (!_oldPassword || !_newPassword || !_reEnteredNewPassword) {
-            alert("Enter your password");
+            toast("Enter your password");
         } else if (_newPassword !== _reEnteredNewPassword) {
-            alert("New Password and Re-entered password must be same.");
+            toast.error("New Password and Re-entered password must be same.");
         } else {
             try {
                 const response = await axios.patch(
@@ -113,13 +118,15 @@ const ProfileCard = ({ name, userId, department, image }) => {
                 );
 
                 if (response.statusText === "OK") {
-                    alert(response.data.message);
+                    toast.success(response.data.message, {
+                        duration: 3000
+                    });
                     setPopup(null);
                 } else {
-                    alert(response.data.message);
+                    toast(response.data.message);
                 }
             } catch (error) {
-                alert(error.response.data.message);
+                toast.error(error.response?.data.message || error);
             }
         }
     };
@@ -141,7 +148,9 @@ const ProfileCard = ({ name, userId, department, image }) => {
                 );
 
                 if (response.statusText === "OK") {
-                    alert(response.data.message);
+                    toast.success(response.data.message, {
+                        duration: 3000
+                    });
                     setUser((oldinfo) => ({
                         ...oldinfo,
                         userInfo: {
@@ -150,7 +159,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                         },
                     }));
                 } else {
-                    alert(response.data.message);
+                    toast.error(error.response?.data.message || error);
                 }
             } else {
                 const response = await axios.patch(
@@ -166,7 +175,9 @@ const ProfileCard = ({ name, userId, department, image }) => {
                 );
 
                 if (response.statusText === "OK") {
-                    alert(response.data.message);
+                    toast.success(response.data.message, {
+                        duration: 3000
+                    });
                     setUser((oldinfo) => ({
                         ...oldinfo,
                         userInfo: {
@@ -175,11 +186,11 @@ const ProfileCard = ({ name, userId, department, image }) => {
                         },
                     }));
                 } else {
-                    alert(response.data.message);
+                    toast(response.data.message);
                 }
             }
         } catch (error) {
-            alert(error);
+            toast.error(error.response?.data.message || error);
         }
     };
 

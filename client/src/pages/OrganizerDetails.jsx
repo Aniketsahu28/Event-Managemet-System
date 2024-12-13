@@ -6,6 +6,7 @@ import axios from 'axios';
 import { IoIosArrowUp } from "react-icons/io";
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import EventCard from '../components/EventCard';
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const OrganizerDetails = () => {
@@ -32,7 +33,7 @@ const OrganizerDetails = () => {
 
                 setOrganizer(response.data.organizer);
             } catch (error) {
-                console.error("Error fetching organizer:", error);
+                toast.error(error.response?.data.message || error);
             }
         };
 
@@ -75,7 +76,7 @@ const OrganizerDetails = () => {
                     })
 
                 } catch (error) {
-                    console.error("Error fetching events:", error);
+                    toast.error(error.response?.data.message || error);
                 }
             };
 

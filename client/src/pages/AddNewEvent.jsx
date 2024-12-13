@@ -8,6 +8,7 @@ import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AddNewEvent = () => {
@@ -190,10 +191,12 @@ const AddNewEvent = () => {
             )
 
             if (response.statusText !== "OK") {
-                alert("Error in adding event");
+                toast.error(error.response?.data.message || error);
             }
             else {
-                alert(response.data.message);
+                toast.success(response.data.message, {
+                    duration: 3000
+                });
                 setEventDetails({
                     title: "",
                     description: "",
@@ -214,7 +217,7 @@ const AddNewEvent = () => {
             }
         }
         catch (error) {
-            console.log(error);
+            toast.error(error.response?.data.message || error);
         }
     };
 

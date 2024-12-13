@@ -9,6 +9,7 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { userAtom } from "../store/userAtom";
 import axios from "axios";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EditEventDetails = ({ event, setEvent }) => {
@@ -194,7 +195,9 @@ const EditEventDetails = ({ event, setEvent }) => {
             );
 
             if (response.statusText === "OK") {
-                alert(response.data.message)
+                toast.success(response.data.message, {
+                    duration: 3000
+                });
                 setEvent({
                     _id: event._id,
                     organizerDetails: {
@@ -223,7 +226,7 @@ const EditEventDetails = ({ event, setEvent }) => {
             }
         }
         catch (error) {
-            alert(error)
+            toast.error(error.response?.data.message || error);
         }
     }
 

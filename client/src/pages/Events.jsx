@@ -9,6 +9,7 @@ import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-re
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import axios from "axios";
 import EventTimer from "../components/EventTimer";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Events = () => {
@@ -47,7 +48,7 @@ const Events = () => {
             setPastEvents(past);
         }
         catch (error) {
-            console.error("Error fetching events:", error);
+            toast.error(error.response?.data.message || error);
         }
     }
 

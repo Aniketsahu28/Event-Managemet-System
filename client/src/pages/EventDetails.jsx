@@ -19,6 +19,7 @@ import { isAuthenticated, userAtom } from "../store/userAtom";
 import ParticipantCard from "../components/ParticipantCard";
 import { IoIosArrowUp } from "react-icons/io";
 import EditEventDetails from "../components/EditEventDetails";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
@@ -68,7 +69,7 @@ const EventDetails = () => {
 
             setEvent(response.data.eventDetails);
         } catch (error) {
-            console.error("Error fetching events:", error);
+            toast.error(error.response?.data.message || error);
         }
     };
 
@@ -87,7 +88,7 @@ const EventDetails = () => {
             );
             setEventTickets(response.data.eventTickets);
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data.message || error);
         }
     };
 
@@ -127,7 +128,7 @@ const EventDetails = () => {
 
     const getTicket = async () => {
         if (!isUserAuthenticated) {
-            alert("Please login to continue");
+            toast("Please login to continue")
             return;
         }
         if (!event?.isEventFree) {
@@ -146,12 +147,14 @@ const EventDetails = () => {
                     }
                 );
                 if (response.statusText === "OK") {
-                    alert(response.data.message);
+                    toast.success(response.data.message, {
+                        duration: 3000
+                    });
                 } else {
-                    alert(response.data.message);
+                    toast(response.data.message);
                 }
             } catch (error) {
-                alert(error.response?.data.message || error);
+                toast.error(error.response?.data.message || error);
             }
         }
     };
@@ -163,7 +166,7 @@ const EventDetails = () => {
 
     const handleBooking = async () => {
         if (paymentUrl === "") {
-            alert("Payment required to proceed");
+            toast("Payment required to proceed");
         } else {
             try {
                 const response = await axios.post(
@@ -178,15 +181,16 @@ const EventDetails = () => {
                         },
                     }
                 );
-                console.log(response)
                 if (response.statusText === "OK") {
-                    alert(response.data.message);
+                    toast.success(response.data.message, {
+                        duration: 3000
+                    });
                 } else {
-                    alert(response.data.message);
+                    toast(response.data.message);
                 }
                 setPopup(null);
             } catch (error) {
-                alert(error);
+                toast.error(error.response?.data.message || error);
             }
         }
     };
@@ -215,14 +219,16 @@ const EventDetails = () => {
             )
 
             if (response.status === 200) {
-                alert(response.data.message)
+                toast.success(response.data.message, {
+                    duration: 3000
+                });
                 setEvent((prev) => {
                     return { ...prev, acceptingParticipation: !prev.acceptingParticipation }
                 })
             }
         }
         catch (error) {
-            alert(error)
+            toast.error(error.response?.data.message || error);
         }
     }
 

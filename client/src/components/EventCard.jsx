@@ -12,6 +12,7 @@ import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
 import { popupAtom } from "../store/popupAtom";
 import { themeAtom } from "../store/themeAtom";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventCard = ({
@@ -51,15 +52,15 @@ const EventCard = ({
             );
 
             if (response.status === 200) {
-                alert(response.data.message);
+                toast.success(response.data.message, {
+                    duration: 3000
+                });
                 setEvents((prevEvents) => {
                     return prevEvents.filter((event) => event._id !== id)
                 })
             }
         } catch (error) {
-            alert(
-                error.response?.data?.message || error.message || "An error occurred"
-            );
+            toast.error(error.response?.data.message || error);
         }
     };
 

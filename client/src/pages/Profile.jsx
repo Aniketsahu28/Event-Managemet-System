@@ -9,6 +9,7 @@ import EventCard from "../components/EventCard"
 import axios from "axios";
 import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Profile = () => {
@@ -41,7 +42,7 @@ const Profile = () => {
                 setTickets(response.data.userTickets);
             }
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data.message || error);
         }
     };
 
@@ -75,7 +76,7 @@ const Profile = () => {
             setEvents(response.data.organizerEvents)
 
         } catch (error) {
-            alert(error)
+            toast.error(error.response?.data.message || error)
         }
     };
 
