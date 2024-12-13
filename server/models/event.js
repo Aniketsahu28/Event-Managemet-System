@@ -15,6 +15,10 @@ const eventSchema = new mongoose.Schema({
             require: true
         },
     },
+    acceptingParticipation: {
+        type: Boolean,
+        default: true
+    },
     title: {
         type: String,
         required: true
