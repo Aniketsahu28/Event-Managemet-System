@@ -17,7 +17,8 @@ const Profile = () => {
     const user = useRecoilValue(userAtom);
     const [events, setEvents] = useState();
     const [tickets, setTickets] = useState();
-    const [search, setSearched] = useState();
+    const [searchEvent, setSearchedEvent] = useState();
+    const [searchTicket, setSearchedTicket] = useState();
     const searchedEvent = useRef(null);
     const searchedTicket = useRef(null);
 
@@ -52,14 +53,14 @@ const Profile = () => {
                 .toLowerCase()
                 .includes(searchedTicket.current.value.toLowerCase());
         });
-        setSearched(searchResult);
+        setSearchedTicket(searchResult);
     };
 
     const searchEvents = () => {
         const searchResult = events.filter((event) => {
             return event.title.toLowerCase().includes(searchedEvent.current.value.toLowerCase());
         });
-        setSearched(searchResult);
+        setSearchedEvent(searchResult);
     };
 
     const fetchOrganizerEvents = async () => {
@@ -148,7 +149,7 @@ const Profile = () => {
                                         setEvents={setEvents}
                                     />
                                 ))
-                                : [...search].reverse().map((event) => (
+                                : [...searchEvent].reverse().map((event) => (
                                     <EventCard
                                         key={event._id}
                                         id={event._id}
@@ -193,7 +194,7 @@ const Profile = () => {
                                         user={user.userInfo}
                                     />
                                 ))
-                                : [search].reverse().map((ticket) => (
+                                : [...searchTicket].reverse().map((ticket) => (
                                     <EventTicket
                                         key={ticket._id}
                                         event={ticket.eventDetails}
