@@ -99,7 +99,7 @@ const EventCard = ({
                 className="hover:scale-95 transition-all w-[320px] sm:w-[330px] custom_shadow rounded-lg p-3 flex flex-col gap-2 bg-blue_200 relative"
             >
                 <button
-                    className={`${isUserAuthenticated && user?.userInfo.organizerId === organizerId ? "block" : "hidden"
+                    className={`${isUserAuthenticated && user?.userInfo.userType === 'organizer' && user?.userInfo.organizerId === organizerId ? "block" : "hidden"
                         } p-3 bg-red w-fit rounded-full absolute right-3`}
                     onClick={(e) => {
                         e.preventDefault()
