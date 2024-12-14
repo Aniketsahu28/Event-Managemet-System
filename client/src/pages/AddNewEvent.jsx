@@ -190,10 +190,7 @@ const AddNewEvent = () => {
                 }
             )
 
-            if (response.statusText !== "OK") {
-                toast.error(error.response?.data.message || error);
-            }
-            else {
+            if (response.status === 200) {
                 toast.success(response.data.message, {
                     duration: 3000
                 });

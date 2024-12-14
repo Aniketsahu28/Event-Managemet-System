@@ -44,7 +44,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                         }
                     );
 
-                    if (response.statusText === "OK") {
+                    if (response.status === 200) {
                         toast.success(response.data.message, {
                             duration: 3000
                         });
@@ -70,7 +70,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                         }
                     );
 
-                    if (response.statusText === "OK") {
+                    if (response.status === 200) {
                         toast.success(response.data.message, {
                             duration: 3000
                         });
@@ -117,7 +117,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     }
                 );
 
-                if (response.statusText === "OK") {
+                if (response.status === 200) {
                     toast.success(response.data.message, {
                         duration: 3000
                     });
@@ -147,7 +147,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     }
                 );
 
-                if (response.statusText === "OK") {
+                if (response.status === 200) {
                     toast.success(response.data.message, {
                         duration: 3000
                     });
@@ -174,7 +174,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     }
                 );
 
-                if (response.statusText === "OK") {
+                if (response.status === 200) {
                     toast.success(response.data.message, {
                         duration: 3000
                     });

@@ -6,7 +6,7 @@ import { MdCurrencyRupee } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { userAtom } from "../store/userAtom";
+import { isAuthenticated, userAtom } from "../store/userAtom";
 import axios from "axios";
 import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
@@ -28,6 +28,7 @@ const EventCard = ({
 }) => {
     const currentTheme = useRecoilValue(themeAtom)
     const user = useRecoilValue(userAtom);
+    const isUserAuthenticated = useRecoilValue(isAuthenticated)
     const [popup, setPopup] = useRecoilState(popupAtom)
     const sanitizedDescription = DOMPurify.sanitize(description);
     const trimmedDescription =
@@ -98,7 +99,7 @@ const EventCard = ({
                 className="hover:scale-95 transition-all w-[320px] sm:w-[330px] custom_shadow rounded-lg p-3 flex flex-col gap-2 bg-blue_200 relative"
             >
                 <button
-                    className={`${user?.userInfo.organizerId === organizerId ? "block" : "hidden"
+                    className={`${isUserAuthenticated && user?.userInfo.organizerId === organizerId ? "block" : "hidden"
                         } p-3 bg-red w-fit rounded-full absolute right-3`}
                     onClick={(e) => {
                         e.preventDefault()

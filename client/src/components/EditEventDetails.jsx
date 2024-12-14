@@ -194,7 +194,7 @@ const EditEventDetails = ({ event, setEvent }) => {
                 }
             );
 
-            if (response.statusText === "OK") {
+            if (response.status === 200) {
                 toast.success(response.data.message, {
                     duration: 3000
                 });

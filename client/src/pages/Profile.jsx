@@ -38,7 +38,7 @@ const Profile = () => {
                 },
             });
 
-            if (response.statusText === "OK") {
+            if (response.status === 200) {
                 setTickets(response.data.userTickets);
             }
         } catch (error) {

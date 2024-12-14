@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 
 const EventTicket = ({ event, user }) => {
     const currentTheme = useRecoilValue(themeAtom)
+    console.log(event)
     return (
         <Link to={`/events/${event.eventId}`} className='bg-[#67fd59] rounded-xl w-80 font-lato h-fit text-black'>
             <div className='p-4 flex flex-col gap-4'>

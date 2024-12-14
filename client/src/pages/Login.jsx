@@ -50,9 +50,7 @@ const Login = () => {
                     },
                 }
             );
-            if (!response.statusText) {
-                toast.error('Invalid user id or password!');
-            } else {
+            if (response.status === 200) {
                 setUser({
                     userInfo: response.data.user,
                     token: response.data.token,
@@ -83,9 +81,7 @@ const Login = () => {
                     },
                 }
             );
-            if (!response.statusText) {
-                toast.error('Invalid user id or password!');
-            } else {
+            if (response.status === 200) {
                 setUser({
                     userInfo: response.data.user,
                     token: response.data.token,

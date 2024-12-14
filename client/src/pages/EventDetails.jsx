@@ -146,7 +146,7 @@ const EventDetails = () => {
                         },
                     }
                 );
-                if (response.statusText === "OK") {
+                if (response.status === 201) {
                     toast.success(response.data.message, {
                         duration: 3000
                     });
@@ -181,7 +181,7 @@ const EventDetails = () => {
                         },
                     }
                 );
-                if (response.statusText === "OK") {
+                if (response.status === 201) {
                     toast.success(response.data.message, {
                         duration: 3000
                     });
