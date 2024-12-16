@@ -251,11 +251,11 @@ const EventDetails = () => {
                         </span>
                         <span className="flex flex-col gap-2 items-center">
                             <img
-                                src=""
+                                src={event.paymentQR}
                                 alt="Payment QR"
                                 className="h-48 w-48 bg-white custom_shadow rounded-lg"
                             />
-                            <p className="text-lg">UPI id : abcdefgh@upisbi</p>
+                            <p className="text-lg">UPI id : {event.UPI_ID}</p>
                             <label
                                 htmlFor="paymentQR"
                                 className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === "light"
