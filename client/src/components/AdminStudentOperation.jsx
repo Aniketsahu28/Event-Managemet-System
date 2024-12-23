@@ -6,7 +6,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
-import StudentCard from "./StudentCard";
+import StudentCard from "./UserCard";
 import { useDebounce } from "../hooks/useDebounce";
 import { popupAtom } from "../store/popupAtom";
 import PopupScreen from "./PopupScreen";
@@ -296,10 +296,10 @@ const AdminStudentOperation = () => {
                 <div className="grid grid-cols-12 gap-4">
                     {searchRollno.current?.value === ""
                         ? students?.map((student, index) => (
-                            <StudentCard key={index} student={student} />
+                            <StudentCard key={index} userDetails={student} />
                         ))
                         : searchedStudents?.map((student, index) => (
-                            <StudentCard key={index} student={student} />
+                            <StudentCard key={index} userDetails={student} />
                         ))}
                 </div>
             </div>
