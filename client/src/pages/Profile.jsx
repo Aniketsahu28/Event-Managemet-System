@@ -26,7 +26,7 @@ const Profile = () => {
         if (user.userInfo.userType === 'organizer') {
             fetchOrganizerEvents();
         }
-        else {
+        else if (user.userInfo.userType === 'student') {
             fetchUserTickets();
         }
     }, []);
@@ -102,7 +102,7 @@ const Profile = () => {
                 />
             )}
 
-            {user.userInfo.userType === "organizer" ? (
+            {user.userInfo.userType === "organizer" &&
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                         <span className="flex items-center justify-between w-full sm:w-fit gap-8">
@@ -166,7 +166,8 @@ const Profile = () => {
                             : "No events found"}
                     </div>
                 </div>
-            ) : (
+            }
+            {user.userInfo.userType === "student" &&
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                         <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
@@ -204,7 +205,7 @@ const Profile = () => {
                             : "No tickets found"}
                     </div>
                 </div>
-            )}
+            }
         </div>
     );
 };

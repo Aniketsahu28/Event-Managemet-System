@@ -46,6 +46,15 @@ const DeskNavbar = () => {
                 >
                     Organizers
                 </Link>
+                {user?.userInfo?.userType === 'admin' && <Link
+                    to="/adminpanel"
+                    className={`${location.pathname === "/adminpanel"
+                        ? "text-white/100"
+                        : "text-white/70"
+                        }`}
+                >
+                    Admin Panel
+                </Link>}
             </span>
             <span className="flex gap-6 items-center justify-center text-white">
                 <span className="cursor-pointer">

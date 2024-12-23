@@ -3,11 +3,12 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import { userAtom } from "../store/userAtom";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
 import toast from 'react-hot-toast'
+import { useNavigate } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
+    const navigate = useNavigate();
     const currentTheme = useRecoilValue(themeAtom);
     const [userType, setUserType] = useState('student')
     const [userId, setUserId] = useState("");
@@ -25,14 +26,11 @@ const Login = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        if (userType === 'student' || userType === 'faculty') {
+        if (userType === 'student' || userType === 'faculty' || userType === 'admin') {
             handleUserLogin()
         }
-        else if (userType === 'organizer') {
-            handleOrganizerLogin()
-        }
         else {
-            console.log("admin")
+            handleOrganizerLogin()
         }
     }
 
@@ -60,7 +58,7 @@ const Login = () => {
                 });
                 setUserId("");
                 setPassword("");
-                return <Navigate to="/" />
+                navigate('/')
             }
         } catch (error) {
             toast.error(error.response?.data.message || error);
@@ -91,6 +89,7 @@ const Login = () => {
                 });
                 setUserId("");
                 setPassword("");
+                navigate('/')
             }
         } catch (error) {
             toast.error(error.response?.data.message || error);

@@ -12,7 +12,7 @@ const MobileNavbar = () => {
     const location = useLocation();
     const [expanded, setExpanded] = useState(false);
     const isUserAuthenticated = useRecoilValue(isAuthenticated)
-    const setUser = useSetRecoilState(userAtom);
+    const [user, setUser] = useRecoilState(userAtom)
 
     const logoutUser = () => {
         setExpanded(!expanded);
@@ -70,6 +70,15 @@ const MobileNavbar = () => {
                 >
                     Organizers
                 </Link>
+                {user?.userInfo?.userType === 'admin' && <Link
+                    to="/adminpanel"
+                    onClick={(e) => {
+                        setExpanded(!expanded);
+                    }}
+                    className={`w-full ${location.pathname === "/adminpanel" ? "text-white/100" : "text-white/70"}`}
+                >
+                    Admin Panel
+                </Link>}
                 {isUserAuthenticated && <Link
                     to="/profile"
                     onClick={(e) => {

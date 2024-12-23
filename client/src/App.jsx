@@ -16,6 +16,7 @@ import EventDetails from './pages/EventDetails';
 import OrganizerDetails from './pages/OrganizerDetails';
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast'
+import AdminPanel from './pages/AdminPanel';
 
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
@@ -35,6 +36,7 @@ function App() {
           <Route path="/organizers/:id" element={<OrganizerDetails />} />
           <Route path="/profile" element={<ProtectiveRoutes><Profile /></ProtectiveRoutes>} />
           <Route path="/addevent" element={<ProtectiveRoutes><AddNewEvent /></ProtectiveRoutes>} />
+          <Route path="/adminpanel" element={<ProtectiveRoutes><AdminPanel /></ProtectiveRoutes>} />
         </Routes>
         <Footer />
       </div>
