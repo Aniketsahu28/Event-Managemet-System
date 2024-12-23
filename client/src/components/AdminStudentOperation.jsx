@@ -20,6 +20,11 @@ const AdminStudentOperation = () => {
     const [students, setStudents] = useState([]);
     const [searchedStudents, setSearchedStudents] = useState();
     const searchRollno = useRef();
+    const addStudentFromRollnoRef = useRef()
+    const addStudentToRollnoRef = useRef()
+    const removeStudentFromRollnoRef = useRef()
+    const removeStudentToRollnoRef = useRef()
+    const [addStudentDepartment, setAddStudentDepartment] = useState("")
 
     useEffect(() => {
         fetchAllStudents();
@@ -48,13 +53,66 @@ const AdminStudentOperation = () => {
         setSearchedStudents(searchQueryResult);
     };
 
-
-    const handleAddStudents = () => {
-        alert("Added")
+    const handleAddStudents = async (e) => {
+        e.preventDefault();
+        if (addStudentDepartment === "") {
+            toast.error("Please select department");
+        }
+        else {
+            try {
+                const response = await axios.post(`${BACKEND_URL}/api/user/createstudent`,
+                    {
+                        fromRollno: addStudentFromRollnoRef.current.value,
+                        toRollno: addStudentToRollnoRef.current.value,
+                        department: addStudentDepartment
+                    },
+                    {
+                        headers: {
+                            token: user.token
+                        }
+                    }
+                )
+                if (response.status === 201) {
+                    toast.success(response.data.message, {
+                        duration: 3000
+                    })
+                    setPopup(null)
+                }
+                else if (response.status === 200) {
+                    toast(response.data.message)
+                }
+            }
+            catch (error) {
+                toast.error(error.response?.data.message || error)
+            }
+        }
     }
 
-    const handleRemoveStudents = () => {
-        alert("Added")
+    const handleRemoveStudents = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.delete(`${BACKEND_URL}/api/user/deletestudent`,
+                {
+                    headers: {
+                        token: user.token
+                    },
+                    data: {
+                        fromRollno: removeStudentFromRollnoRef.current.value,
+                        toRollno: removeStudentToRollnoRef.current.value
+                    }
+                }
+            )
+
+            if (response.status === 200) {
+                toast.success(response.data.message, {
+                    duration: 3000
+                });
+                setPopup(null);
+            }
+        }
+        catch (error) {
+            toast.error(error.response?.data.message || error)
+        }
     }
 
     return (
@@ -89,6 +147,7 @@ const AdminStudentOperation = () => {
                                         }`}
                                     placeholder="Starting Roll no"
                                     required
+                                    ref={addStudentFromRollnoRef}
                                 />
                             </span>
                             <span className="flex flex-col gap-2">
@@ -102,6 +161,7 @@ const AdminStudentOperation = () => {
                                         }`}
                                     placeholder="Ending Roll no"
                                     required
+                                    ref={addStudentToRollnoRef}
                                 />
                             </span>
                         </div>
@@ -114,15 +174,15 @@ const AdminStudentOperation = () => {
                                     ? "bg-white text-black border-gray/50"
                                     : "bg-gray text-white border-white"
                                     }`}
-                            // value={eventDetails.venue}
-                            // onChange={handleVenueChange}
+                                value={addStudentDepartment}
+                                onChange={(e) => setAddStudentDepartment(e.target.value)}
                             >
                                 <option value="">Department</option>
-                                <option value="computer">Computer</option>
-                                <option value="mechanical">Mechanical</option>
-                                <option value="electrical">Electrical</option>
-                                <option value="it">IT</option>
-                                <option value="extc">EXTC</option>
+                                <option value="Computer">Computer</option>
+                                <option value="Mechanical">Mechanical</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="IT">IT</option>
+                                <option value="EXTC">EXTC</option>
                             </select>
                         </span>
                     </span>
@@ -165,6 +225,7 @@ const AdminStudentOperation = () => {
                                         }`}
                                     placeholder="Starting Roll no"
                                     required
+                                    ref={removeStudentFromRollnoRef}
                                 />
                             </span>
                             <span className="flex flex-col gap-2">
@@ -178,6 +239,7 @@ const AdminStudentOperation = () => {
                                         }`}
                                     placeholder="Ending Roll no"
                                     required
+                                    ref={removeStudentToRollnoRef}
                                 />
                             </span>
                         </span>
