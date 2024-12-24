@@ -5,11 +5,11 @@ import { FaPlus } from "react-icons/fa6";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
-import StudentCard from "./UserCard";
 import { useDebounce } from "../hooks/useDebounce";
 import { popupAtom } from "../store/popupAtom";
 import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
+import UserCard from "./UserCard";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AdminFacultyOperations = () => {
@@ -185,10 +185,10 @@ const AdminFacultyOperations = () => {
                 <div className="grid grid-cols-12 gap-4">
                     {searchFacultyId.current?.value === ""
                         ? faculties?.map((faculty, index) => (
-                            <StudentCard key={index} userDetails={faculty} />
+                            <UserCard key={index} userDetails={faculty} />
                         ))
                         : searchedFaculties?.map((faculty, index) => (
-                            <StudentCard key={index} userDetails={faculty} />
+                            <UserCard key={index} userDetails={faculty} />
                         ))}
                 </div>
             </div>

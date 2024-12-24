@@ -200,7 +200,7 @@ const UserCard = ({ userDetails }) => {
                             setPopup(`removefaculty-${userDetails.userId}`)
                     }}
                 >
-                    <span className="sm:hidden">Remove Student</span>
+                    <span className="sm:hidden">Remove {userDetails.userType === 'student' ? "Student" : "Faculty"}</span>
                     <RiDeleteBin6Line className="text-xl" />
                 </button>
             </div>

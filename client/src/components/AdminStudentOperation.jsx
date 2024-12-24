@@ -6,11 +6,11 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
-import StudentCard from "./UserCard";
 import { useDebounce } from "../hooks/useDebounce";
 import { popupAtom } from "../store/popupAtom";
 import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
+import UserCard from "./UserCard";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AdminStudentOperation = () => {
@@ -296,10 +296,10 @@ const AdminStudentOperation = () => {
                 <div className="grid grid-cols-12 gap-4">
                     {searchRollno.current?.value === ""
                         ? students?.map((student, index) => (
-                            <StudentCard key={index} userDetails={student} />
+                            <UserCard key={index} userDetails={student} />
                         ))
                         : searchedStudents?.map((student, index) => (
-                            <StudentCard key={index} userDetails={student} />
+                            <UserCard key={index} userDetails={student} />
                         ))}
                 </div>
             </div>
