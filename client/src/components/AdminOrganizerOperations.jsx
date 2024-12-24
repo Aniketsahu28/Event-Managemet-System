@@ -25,8 +25,8 @@ const AdminOrganizerOperations = () => {
     const [addOrganizerDropdowns, setAddOrganizerDropdowns] = useState({
         organizerDepartment: "",
         organizerFacultyId: "",
-        organizerType: ""
-    })
+        organizerType: "",
+    });
 
     useEffect(() => {
         fetchAllOrganizers();
@@ -79,33 +79,37 @@ const AdminOrganizerOperations = () => {
     //organizerId, organizerName, department, --> facultyId, organizerType <--
     const handleAddOrganizer = async (e) => {
         e.preventDefault();
-        if (addOrganizerDropdowns.organizerDepartment === "" || addOrganizerDropdowns.organizerFacultyId === "" || addOrganizerDropdowns.organizerType === "") {
+        if (
+            addOrganizerDropdowns.organizerDepartment === "" ||
+            addOrganizerDropdowns.organizerFacultyId === "" ||
+            addOrganizerDropdowns.organizerType === ""
+        ) {
             toast.error("Please select dropdowns");
         } else {
             try {
-                const response = await axios.post(`${BACKEND_URL}/api/organizer/createorganizer`,
+                const response = await axios.post(
+                    `${BACKEND_URL}/api/organizer/createorganizer`,
                     {
                         organizerId: addOrganizerIdRef.current.value,
                         organizerName: addOrganizerNameRef.current.value,
                         department: addOrganizerDropdowns.organizerDepartment,
                         facultyId: addOrganizerDropdowns.organizerFacultyId,
-                        organizerType: addOrganizerDropdowns.organizerType
+                        organizerType: addOrganizerDropdowns.organizerType,
                     },
                     {
                         headers: {
-                            token: user.token
-                        }
+                            token: user.token,
+                        },
                     }
-                )
+                );
                 if (response.status === 201) {
                     toast.success(response.data.message, {
-                        duration: 3000
-                    })
-                    setPopup(null)
+                        duration: 3000,
+                    });
+                    setPopup(null);
                 }
-            }
-            catch (error) {
-                toast.error(error.response?.data.message || error)
+            } catch (error) {
+                toast.error(error.response?.data.message || error);
             }
         }
     };
@@ -116,7 +120,7 @@ const AdminOrganizerOperations = () => {
                 <PopupScreen>
                     <form
                         onSubmit={handleAddOrganizer}
-                        className={`rounded-lg mx-auto p-4 w-80 sm:w-[40%] flex flex-col gap-8 font-lato mt-10 sm:mt-32 ${currentTheme === "light"
+                        className={`rounded-lg mx-auto p-4 w-80 sm:w-[60%] lg:w-[40%] flex flex-col gap-8 font-lato mt-10 sm:mt-32 ${currentTheme === "light"
                             ? "text-black bg-white"
                             : "text-white bg-gray"
                             }`}
@@ -174,8 +178,8 @@ const AdminOrganizerOperations = () => {
                                     onChange={(e) => {
                                         setAddOrganizerDropdowns((prev) => ({
                                             ...prev,
-                                            organizerDepartment: e.target.value
-                                        }))
+                                            organizerDepartment: e.target.value,
+                                        }));
                                     }}
                                 >
                                     <option value="">Department</option>
@@ -201,8 +205,8 @@ const AdminOrganizerOperations = () => {
                                     onChange={(e) => {
                                         setAddOrganizerDropdowns((prev) => ({
                                             ...prev,
-                                            organizerType: e.target.value
-                                        }))
+                                            organizerType: e.target.value,
+                                        }));
                                     }}
                                 >
                                     <option value="">Organizer Type</option>
@@ -217,7 +221,9 @@ const AdminOrganizerOperations = () => {
                                 </select>
                             </span>
                             <span className="flex flex-col gap-2">
-                                <label htmlFor="organizerFaculty">Organizer Faculty Incharge</label>
+                                <label htmlFor="organizerFaculty">
+                                    Organizer Faculty Incharge
+                                </label>
                                 <select
                                     name="organizerFaculty"
                                     id="organizerFaculty"
@@ -229,13 +235,15 @@ const AdminOrganizerOperations = () => {
                                     onChange={(e) => {
                                         setAddOrganizerDropdowns((prev) => ({
                                             ...prev,
-                                            organizerFacultyId: e.target.value
-                                        }))
+                                            organizerFacultyId: e.target.value,
+                                        }));
                                     }}
                                 >
                                     <option value="">Faculty Id - Faculty Name</option>
                                     {faculties.map((faculty, index) => (
-                                        <option value={faculty.userId} key={index}>{faculty.userId} - {faculty.username}</option>
+                                        <option value={faculty.userId} key={index}>
+                                            {faculty.userId} - {faculty.username}
+                                        </option>
                                     ))}
                                 </select>
                             </span>
@@ -278,7 +286,9 @@ const AdminOrganizerOperations = () => {
                     >
                         (
                         {searchOrganizerName.current?.value === ""
-                            ? organizers?.length
+                            ? organizers
+                                ? organizers?.length
+                                : "Loading..."
                             : searchedOrganizers?.length}{" "}
                         results)
                     </span>
