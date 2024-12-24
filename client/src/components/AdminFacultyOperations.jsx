@@ -88,8 +88,8 @@ const AdminFacultyOperations = () => {
                     <form
                         onSubmit={handleAddFaculty}
                         className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
-                                ? "text-black bg-white"
-                                : "text-white bg-gray"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
                             }`}
                     >
                         <span className="flex justify-between items-center">
@@ -108,8 +108,8 @@ const AdminFacultyOperations = () => {
                                     type="number"
                                     id="userId"
                                     className={`w-full p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
-                                            ? "bg-white/60  placeholder-black/40"
-                                            : "bg-gray/60 border-white text-white placeholder-white/60"
+                                        ? "bg-white/60  placeholder-black/40"
+                                        : "bg-gray/60 border-white text-white placeholder-white/60"
                                         }`}
                                     placeholder="Enter Faculty Id"
                                     required
@@ -122,8 +122,8 @@ const AdminFacultyOperations = () => {
                                     name="department"
                                     id="department"
                                     className={`outline-none border-[1px] px-2 py-[10px] text-lg rounded-lg ${currentTheme === "light"
-                                            ? "bg-white text-black border-gray/50"
-                                            : "bg-gray text-white border-white"
+                                        ? "bg-white text-black border-gray/50"
+                                        : "bg-gray text-white border-white"
                                         }`}
                                     value={addFacultyDepartment}
                                     onChange={(e) => setAddFacultyDepartment(e.target.value)}
@@ -153,8 +153,8 @@ const AdminFacultyOperations = () => {
                         type="text"
                         name="userId"
                         className={`p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
-                                ? "bg-white/60  placeholder-black/60"
-                                : "bg-gray/60 border-white text-white placeholder-white/60"
+                            ? "bg-white/60  placeholder-black/60"
+                            : "bg-gray/60 border-white text-white placeholder-white/60"
                             }`}
                         placeholder="Search by faculty id"
                         ref={searchFacultyId}
@@ -174,12 +174,11 @@ const AdminFacultyOperations = () => {
                         className={`${currentTheme === "light" ? "text-black/40" : "text-white/60"
                             }`}
                     >
-                        (
-                        {searchFacultyId.current?.value === ""
-                            ? faculties
+                        ({!faculties
+                            ? "Loading..."
+                            : searchFacultyId.current?.value === ""
                                 ? faculties?.length
-                                : "Loading..."
-                            : searchedFaculties?.length}{" "}
+                                : searchedFaculties?.length}{" "}
                         results)
                     </span>
                 </h2>

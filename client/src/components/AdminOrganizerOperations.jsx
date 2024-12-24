@@ -284,12 +284,11 @@ const AdminOrganizerOperations = () => {
                         className={`${currentTheme === "light" ? "text-black/40" : "text-white/60"
                             }`}
                     >
-                        (
-                        {searchOrganizerName.current?.value === ""
-                            ? organizers
+                        ({!organizers ?
+                            "Loading..." :
+                            searchOrganizerName.current?.value === ""
                                 ? organizers?.length
-                                : "Loading..."
-                            : searchedOrganizers?.length}{" "}
+                                : searchedOrganizers?.length}{" "}
                         results)
                     </span>
                 </h2>
