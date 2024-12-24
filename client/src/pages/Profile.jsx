@@ -5,11 +5,11 @@ import { themeAtom } from "../store/themeAtom";
 import ProfileCard from "../components/ProfileCard";
 import EventTicket from "../components/EventTicket";
 import { useDebounce } from "../hooks/useDebounce";
-import EventCard from "../components/EventCard"
+import EventCard from "../components/EventCard";
 import axios from "axios";
 import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Profile = () => {
@@ -23,10 +23,9 @@ const Profile = () => {
     const searchedTicket = useRef(null);
 
     useEffect(() => {
-        if (user.userInfo.userType === 'organizer') {
+        if (user.userInfo.userType === "organizer") {
             fetchOrganizerEvents();
-        }
-        else if (user.userInfo.userType === 'student') {
+        } else if (user.userInfo.userType === "student") {
             fetchUserTickets();
         }
     }, []);
@@ -58,7 +57,9 @@ const Profile = () => {
 
     const searchEvents = () => {
         const searchResult = events.filter((event) => {
-            return event.title.toLowerCase().includes(searchedEvent.current.value.toLowerCase());
+            return event.title
+                .toLowerCase()
+                .includes(searchedEvent.current.value.toLowerCase());
         });
         setSearchedEvent(searchResult);
     };
@@ -74,10 +75,9 @@ const Profile = () => {
                 }
             );
 
-            setEvents(response.data.organizerEvents)
-
+            setEvents(response.data.organizerEvents);
         } catch (error) {
-            toast.error(error.response?.data.message || error)
+            toast.error(error.response?.data.message || error);
         }
     };
 
@@ -93,16 +93,19 @@ const Profile = () => {
                     department={user?.userInfo.department}
                     image={user?.userInfo.organizerProfile}
                 />
-            ) : (
+            ) : user?.userInfo.userType === "student" ||
+                user?.userInfo.userType === "faculty" ? (
                 <ProfileCard
                     name={user?.userInfo.username}
                     userId={user?.userInfo.userId}
                     department={user?.userInfo.department}
                     image={user?.userInfo.profilePicture}
                 />
+            ) : (
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-montserrat font-semibold mx-auto">I am Admin</h1>
             )}
 
-            {user.userInfo.userType === "organizer" &&
+            {user.userInfo.userType === "organizer" && (
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                         <span className="flex items-center justify-between w-full sm:w-fit gap-8">
@@ -135,39 +138,43 @@ const Profile = () => {
                     <div className="flex flex-col sm:flex-row gap-10 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between">
                         {events?.length > 0
                             ? searchedEvent.current.value === ""
-                                ? [...events].reverse().map((event) => (
-                                    <EventCard
-                                        key={event._id}
-                                        id={event._id}
-                                        title={event.title}
-                                        banner={event.banner}
-                                        description={event.description}
-                                        time={event.time}
-                                        date={event.date}
-                                        price={event.eventFee}
-                                        organizerId={event.organizerDetails.organizerId}
-                                        setEvents={setEvents}
-                                    />
-                                ))
-                                : [...searchEvent].reverse().map((event) => (
-                                    <EventCard
-                                        key={event._id}
-                                        id={event._id}
-                                        title={event.title}
-                                        banner={event.banner}
-                                        description={event.description}
-                                        time={event.time}
-                                        date={event.date}
-                                        price={event.eventFee}
-                                        organizerId={event.organizerDetails.organizerId}
-                                        setEvents={setEvents}
-                                    />
-                                ))
+                                ? [...events]
+                                    .reverse()
+                                    .map((event) => (
+                                        <EventCard
+                                            key={event._id}
+                                            id={event._id}
+                                            title={event.title}
+                                            banner={event.banner}
+                                            description={event.description}
+                                            time={event.time}
+                                            date={event.date}
+                                            price={event.eventFee}
+                                            organizerId={event.organizerDetails.organizerId}
+                                            setEvents={setEvents}
+                                        />
+                                    ))
+                                : [...searchEvent]
+                                    .reverse()
+                                    .map((event) => (
+                                        <EventCard
+                                            key={event._id}
+                                            id={event._id}
+                                            title={event.title}
+                                            banner={event.banner}
+                                            description={event.description}
+                                            time={event.time}
+                                            date={event.date}
+                                            price={event.eventFee}
+                                            organizerId={event.organizerDetails.organizerId}
+                                            setEvents={setEvents}
+                                        />
+                                    ))
                             : "No events found"}
                     </div>
                 </div>
-            }
-            {user.userInfo.userType === "student" &&
+            )}
+            {user.userInfo.userType === "student" && (
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                         <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
@@ -188,24 +195,28 @@ const Profile = () => {
                     <div className="flex flex-col sm:flex-row gap-10 flex-wrap w-full sm:w-fit items-center sm:items-start">
                         {tickets?.length > 0
                             ? searchedTicket.current.value === ""
-                                ? [...tickets].reverse().map((ticket) => (
-                                    <EventTicket
-                                        key={ticket._id}
-                                        event={ticket.eventDetails}
-                                        user={user.userInfo}
-                                    />
-                                ))
-                                : [...searchTicket].reverse().map((ticket) => (
-                                    <EventTicket
-                                        key={ticket._id}
-                                        event={ticket.eventDetails}
-                                        user={user.userInfo}
-                                    />
-                                ))
+                                ? [...tickets]
+                                    .reverse()
+                                    .map((ticket) => (
+                                        <EventTicket
+                                            key={ticket._id}
+                                            event={ticket.eventDetails}
+                                            user={user.userInfo}
+                                        />
+                                    ))
+                                : [...searchTicket]
+                                    .reverse()
+                                    .map((ticket) => (
+                                        <EventTicket
+                                            key={ticket._id}
+                                            event={ticket.eventDetails}
+                                            user={user.userInfo}
+                                        />
+                                    ))
                             : "No tickets found"}
                     </div>
                 </div>
-            }
+            )}
         </div>
     );
 };

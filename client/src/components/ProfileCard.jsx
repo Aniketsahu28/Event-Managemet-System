@@ -315,7 +315,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     onMouseEnter={() => setProfileHover(true)}
                     onMouseLeave={() => setProfileHover(false)}
                 >
-                    <img src={image} alt="Profile" className="object-cover" />
+                    <img src={image} alt="Profile" className="object-cover w-full h-full" />
                     {profileHover && (
                         <label
                             htmlFor="profilePicture"
