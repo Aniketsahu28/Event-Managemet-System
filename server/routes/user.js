@@ -57,7 +57,7 @@ userRouter.get('/allstudents', adminAuth, async (req, res) => {
     }
 })
 
-userRouter.get('/allfaculty', adminAuth, async (req, res) => {
+userRouter.get('/allfaculty', async (req, res) => {
     try {
         const faculties = await UserModel.find({ "userType": "faculty" })
         if (faculties.length > 0) {
