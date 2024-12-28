@@ -141,14 +141,14 @@ const Profile = () => {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                         <span className="flex items-center justify-between w-full sm:w-fit gap-8">
                             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                                Your Events
+                                My Events
                             </h2>
                             <Link
                                 to="/addEvent"
                                 className="w-fit flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
                             >
                                 <span>Add Event</span>
-                                <FaPlus />
+                                <FaPlus className="hidden sm:block" />
                             </Link>
                         </span>
                         <input
@@ -206,16 +206,16 @@ const Profile = () => {
             {user.userInfo.userType === "organizer" && (
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
-                        <span className="flex items-center justify-between w-full sm:w-fit gap-8">
+                        <span className="flex items-center justify-between w-full sm:w-fit sm:gap-8">
                             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                                Your Approvals
+                                My Approvals
                             </h2>
                             <Link
                                 to="/addapproval"
                                 className="w-fit flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
                             >
                                 <span>Add Approval</span>
-                                <FaPlus />
+                                <FaPlus className="hidden sm:block" />
                             </Link>
                         </span>
                         <input
@@ -230,7 +230,7 @@ const Profile = () => {
                             onChange={useDebounce(searchApprovals)}
                         />
                     </div>
-                    <div className="grid grid-cols-12 gap-10">
+                    <div className="flex flex-col sm:grid grid-cols-12 gap-10">
                         {approvals?.length > 0
                             ? searchedApproval.current.value === ""
                                 ? [...approvals]
@@ -251,7 +251,7 @@ const Profile = () => {
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                         <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                            Your Event Tickets
+                            My Event Tickets
                         </h2>
                         <input
                             type="text"

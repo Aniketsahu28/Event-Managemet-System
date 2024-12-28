@@ -9,10 +9,10 @@ import { themeAtom } from "../store/themeAtom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
+import EditApprovalDetails from "./EditApprovalDetails";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const OrganizerApprovalCard = ({ approval }) => {
-    console.log(approval);
     const [popup, setPopup] = useRecoilState(popupAtom);
     const currentTheme = useRecoilValue(themeAtom);
     const user = useRecoilValue(userAtom);
@@ -89,7 +89,7 @@ const OrganizerApprovalCard = ({ approval }) => {
                                 onClick={() => setPopup(null)}
                             />
                         </span>
-                        <span className="flex justify-between">
+                        <span className="flex flex-col sm:flex-row justify-between">
                             <h2 className="font-montserrat text-xl font-medium sm:w-[60%]">
                                 {approval.title}
                             </h2>
@@ -133,7 +133,7 @@ const OrganizerApprovalCard = ({ approval }) => {
                                                     }`}
                                             />
                                         </span>
-                                        <span className="flex flex-col gap-2 w-full -mt-1">
+                                        <span className="flex flex-col sm:gap-2 w-full -mt-1">
                                             <h3 className="font-montserrat text-lg">
                                                 {approver.approverTitle}
                                             </h3>
@@ -148,9 +148,12 @@ const OrganizerApprovalCard = ({ approval }) => {
                                                 </p>
                                                 <span>@{approver.approverDetails.username}</span>
                                             </h3>
+                                            <p className={`block sm:hidden ${currentTheme === "light" ? "text-gray/60" : "text-white/60"}`}>
+                                                {approver.approvalStatus === 'pending' ? "Approval pending..." : `${approver.approvedDate}`}
+                                            </p>
                                         </span>
                                     </div>
-                                    <p className={`-mt-1 ${currentTheme === "light" ? "text-gray/60" : "text-white/60"}`}>
+                                    <p className={`hidden sm:block -mt-1 ${currentTheme === "light" ? "text-gray/60" : "text-white/60"}`}>
                                         {approver.approvalStatus === 'pending' ? "Approval pending..." : `${approver.approvedDate}`}
                                     </p>
                                 </div>
@@ -164,7 +167,12 @@ const OrganizerApprovalCard = ({ approval }) => {
                     </div>
                 </PopupScreen>
             )}
-            <div className="flex flex-col gap-6 p-4 bg-blue_300 text-white rounded-lg col-span-4 relative">
+            {/* {popup === `editapproval-${approval._id}` && (
+                <PopupScreen>
+                    <EditApprovalDetails approval={approval} />
+                </PopupScreen>
+            )} */}
+            <div className="flex flex-col gap-6 p-4 bg-blue_300 text-white rounded-lg col-span-12 lg:col-span-4 relative">
                 <h2 className="text-lg font-montserrat font-medium w-[90%]">
                     {approval.title}
                 </h2>
@@ -180,9 +188,11 @@ const OrganizerApprovalCard = ({ approval }) => {
                     >
                         Track Approval
                     </button>
-                    <button className="px-4 py-2 text-white rounded-md border-blue_100 border-2">
+                    {/* <button className="px-4 py-2 text-white rounded-md border-blue_100 border-2"
+                        onClick={() => setPopup(`editapproval-${approval._id}`)}
+                    >
                         Edit Approval
-                    </button>
+                    </button> */}
                     <button
                         className={`px-4 py-2 rounded-md text-lg text-white bg-red`}
                         onClick={() => setPopup(`removeApprover-${approval._id}`)}
