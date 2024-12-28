@@ -243,7 +243,7 @@ const Profile = () => {
                                     .map((approval) => (
                                         <OrganizerApprovalCard approval={approval} key={approval._id} />
                                     ))
-                            : "No approvals found"}
+                            : <p className="w-full sm:col-span-6">No approvals found</p>}
                     </div>
                 </div>
             )}

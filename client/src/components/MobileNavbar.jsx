@@ -70,6 +70,15 @@ const MobileNavbar = () => {
                 >
                     Organizers
                 </Link>
+                {user?.userInfo?.userType === 'faculty' && <Link
+                    to="/approvals"
+                    onClick={(e) => {
+                        setExpanded(!expanded);
+                    }}
+                    className={`w-full ${location.pathname === "/approvals" ? "text-white/100" : "text-white/70"}`}
+                >
+                    Approvals
+                </Link>}
                 {user?.userInfo?.userType === 'admin' && <Link
                     to="/adminpanel"
                     onClick={(e) => {

@@ -46,6 +46,15 @@ const DeskNavbar = () => {
                 >
                     Organizers
                 </Link>
+                {user?.userInfo?.userType === 'faculty' && <Link
+                    to="/approvals"
+                    className={`${location.pathname === "/approvals"
+                        ? "text-white/100"
+                        : "text-white/70"
+                        }`}
+                >
+                    Approvals
+                </Link>}
                 {user?.userInfo?.userType === 'admin' && <Link
                     to="/adminpanel"
                     className={`${location.pathname === "/adminpanel"
