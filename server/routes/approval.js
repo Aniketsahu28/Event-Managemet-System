@@ -172,6 +172,7 @@ approvalRouter.post('/validateapproval', userAuth, async (req, res) => {
                             [`approvers.${currentApproverIndex}.approvalStatus`]: "rejected",
                             [`approvers.${currentApproverIndex}.approvedDate`]: `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}`,
                             [`approvers.${currentApproverIndex}.description`]: description,
+                            currentApprover: 100
                         }
                     }
                 );
