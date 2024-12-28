@@ -53,11 +53,7 @@ const AdminOrganizerOperations = () => {
 
     const fetchAllFaculties = async () => {
         try {
-            const response = await axios.get(`${BACKEND_URL}/api/user/allfaculty`, {
-                headers: {
-                    token: user.token,
-                },
-            });
+            const response = await axios.get(`${BACKEND_URL}/api/user/allfaculty`);
             if (response.status === 200) {
                 setFaculties(response.data.faculties);
             }
