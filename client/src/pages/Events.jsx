@@ -61,10 +61,10 @@ const Events = () => {
     };
 
     const [windowStatus, setWindowStatus] = useState(
-        window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : "desktop"
+        window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : window.innerWidth < 1450 ? "macbook" : "desktop"
     );
     function checkWindowSize() {
-        setWindowStatus(window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : "desktop");
+        setWindowStatus(window.innerWidth < 450 ? "mobile" : window.innerWidth < 1024 ? "tablet" : window.innerWidth < 1450 ? "macbook" : "desktop");
     }
     window.onresize = checkWindowSize;
 
@@ -153,7 +153,7 @@ const Events = () => {
                 <span>
                     <CarouselProvider
                         totalSlides={upcomingEvents.length}
-                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : 4}
+                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : windowStatus === "macbook" ? 3 : 4}
                         step={1}
                         className="flex flex-col gap-10"
                         isIntrinsicHeight={true}
@@ -211,7 +211,7 @@ const Events = () => {
                 <span>
                     <CarouselProvider
                         totalSlides={todaysEvents.length}
-                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : 4}
+                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : windowStatus === "macbook" ? 3 : 4}
                         step={1}
                         className="flex flex-col gap-10"
                         isIntrinsicHeight={true}
@@ -269,7 +269,7 @@ const Events = () => {
                 <span>
                     <CarouselProvider
                         totalSlides={pastEvents.length}
-                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : 4}
+                        visibleSlides={windowStatus === "mobile" ? 1 : windowStatus === "tablet" ? 2 : windowStatus === "macbook" ? 3 : 4}
                         step={1}
                         className="flex flex-col gap-10"
                         isIntrinsicHeight={true}

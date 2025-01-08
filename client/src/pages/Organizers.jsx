@@ -11,7 +11,7 @@ import {
     ButtonNext,
 } from "pure-react-carousel";
 import { IoIosArrowUp } from "react-icons/io";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Organizers = () => {
@@ -68,7 +68,9 @@ const Organizers = () => {
             ? "mobile"
             : window.innerWidth < 1024
                 ? "tablet"
-                : "desktop"
+                : window.innerWidth < 1450
+                    ? "macbook"
+                    : "desktop"
     );
     function checkWindowSize() {
         setWindowStatus(
@@ -76,7 +78,9 @@ const Organizers = () => {
                 ? "mobile"
                 : window.innerWidth < 1024
                     ? "tablet"
-                    : "desktop"
+                    : window.innerWidth < 1450
+                        ? "macbook"
+                        : "desktop"
         );
     }
     window.onresize = checkWindowSize;
@@ -100,7 +104,9 @@ const Organizers = () => {
                                 ? 1.45
                                 : windowStatus === "tablet"
                                     ? 3
-                                    : 6
+                                    : windowStatus === "macbook"
+                                        ? 5
+                                        : 6
                         }
                         step={1}
                         className="flex flex-col gap-10"
@@ -129,7 +135,11 @@ const Organizers = () => {
                             <div className=" w-full flex justify-between">
                                 {cultural.map((club, index) => (
                                     <Slide index={index} key={index}>
-                                        <OrganizerCard id={club._id} image={club.organizerProfile} name={club.organizerName} />
+                                        <OrganizerCard
+                                            id={club._id}
+                                            image={club.organizerProfile}
+                                            name={club.organizerName}
+                                        />
                                     </Slide>
                                 ))}
                             </div>
@@ -165,7 +175,9 @@ const Organizers = () => {
                                 ? 1.45
                                 : windowStatus === "tablet"
                                     ? 3
-                                    : 6
+                                    : windowStatus === "macbook"
+                                        ? 5
+                                        : 6
                         }
                         step={1}
                         className="flex flex-col gap-10"
@@ -194,7 +206,11 @@ const Organizers = () => {
                             <div className=" w-full flex justify-between">
                                 {technicalStudentsClub.map((club, index) => (
                                     <Slide index={index} key={index}>
-                                        <OrganizerCard id={club._id} image={club.organizerProfile} name={club.organizerName} />
+                                        <OrganizerCard
+                                            id={club._id}
+                                            image={club.organizerProfile}
+                                            name={club.organizerName}
+                                        />
                                     </Slide>
                                 ))}
                             </div>
@@ -230,7 +246,9 @@ const Organizers = () => {
                                 ? 1.45
                                 : windowStatus === "tablet"
                                     ? 3
-                                    : 6
+                                    : windowStatus === "macbook"
+                                        ? 5
+                                        : 6
                         }
                         step={1}
                         className="flex flex-col gap-10"
@@ -259,7 +277,11 @@ const Organizers = () => {
                             <div className=" w-full flex justify-between">
                                 {technicalProfessionalSocietyChapter.map((club, index) => (
                                     <Slide index={index} key={index}>
-                                        <OrganizerCard id={club._id} image={club.organizerProfile} name={club.organizerName} />
+                                        <OrganizerCard
+                                            id={club._id}
+                                            image={club.organizerProfile}
+                                            name={club.organizerName}
+                                        />
                                     </Slide>
                                 ))}
                             </div>
@@ -295,7 +317,9 @@ const Organizers = () => {
                                 ? 1.45
                                 : windowStatus === "tablet"
                                     ? 3
-                                    : 6
+                                    : windowStatus === "macbook"
+                                        ? 5
+                                        : 6
                         }
                         step={1}
                         className="flex flex-col gap-10"
@@ -324,7 +348,11 @@ const Organizers = () => {
                             <div className=" w-full flex justify-between">
                                 {others.map((club, index) => (
                                     <Slide index={index} key={index}>
-                                        <OrganizerCard id={club._id} image={club.organizerProfile} name={club.organizerName} />
+                                        <OrganizerCard
+                                            id={club._id}
+                                            image={club.organizerProfile}
+                                            name={club.organizerName}
+                                        />
                                     </Slide>
                                 ))}
                             </div>
