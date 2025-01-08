@@ -9,19 +9,19 @@ import { useDebounce } from '../hooks/useDebounce';
 import JoditEditor from "jodit-react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
+import axios from 'axios';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EditApprovalDetails = ({ approval }) => {
     const currentTheme = useRecoilValue(themeAtom);
     const user = useRecoilValue(userAtom);
-    const titleRef = useRef(null);
     const descriptionRef = useRef(null);
     const [faculties, setFaculties] = useState();
     const [popup, setPopup] = useRecoilState(popupAtom)
     const [approvalDetails, setApprovalDetails] = useState({
         title: approval.title,
         description: approval.document,
-        approvers: Object.values(approval.approvers).map((approver) => ({
+        approvers: approval.approvers.map((approver) => ({
             ...approver,
             id: uuidv4(),
         })),
@@ -79,10 +79,10 @@ const EditApprovalDetails = ({ approval }) => {
         }));
     };
 
-    const addTitleToApprovalDetails = () => {
+    const addTitleToApprovalDetails = (e) => {
         setApprovalDetails((prevDetails) => ({
             ...prevDetails,
-            title: titleRef.current.value,
+            title: e.target.value
         }));
     };
 
@@ -126,13 +126,47 @@ const EditApprovalDetails = ({ approval }) => {
             };
         });
     };
+    console.log(approval)
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
+        approvalDetails.approvers.forEach((approver) => {
+            if (approver.approverTitle === 'Approver Title') {
+                toast.error("Please select approver title")
+                return;
+            }
+            else if (approver.approverDetails.userId === '') {
+                toast.error("Please select approver")
+            }
+        })
 
-    const handleFormSubmit = () => {
+        try {
+            const response = await axios.patch(`${BACKEND_URL}/api/approval/editapproval`,
+                {
+                    approvalId: approval._id,
+                    title: approvalDetails.title,
+                    document: approvalDetails.description,
+                    approvers: approvalDetails.approvers
+                },
+                {
+                    headers: {
+                        token: user.token
+                    }
+                }
+            )
 
+            if (response.status === 200) {
+                toast.success(response.data.message, {
+                    duration: 3000
+                })
+            }
+            setPopup(null)
+        } catch (error) {
+            toast.error(error.response?.data.message || error);
+        }
     }
 
     return (
-        <div className={`rounded-lg mx-auto px-4 lg:px-8 py-4 w-[90%] lg:w-[50%] h-[90vh] overflow-y-scroll flex flex-col gap-8 font-lato mt-10 ${currentTheme === "light"
+        <div className={`rounded-lg mx-auto px-4 lg:px-8 py-4 w-[90%] lg:w-[50%] max-h-[90vh] overflow-y-scroll flex flex-col gap-8 font-lato mt-10 ${currentTheme === "light"
             ? "text-black bg-white"
             : "text-white bg-gray"
             }`}>
@@ -161,8 +195,8 @@ const EditApprovalDetails = ({ approval }) => {
                             }`}
                         placeholder="Enter approval title"
                         required
-                        ref={titleRef}
-                        onChange={useDebounce(addTitleToApprovalDetails)}
+                        value={approvalDetails.title}
+                        onChange={addTitleToApprovalDetails}
                     />
                 </span>
                 <span className="flex flex-col gap-2 col-span-12">
@@ -260,7 +294,7 @@ const EditApprovalDetails = ({ approval }) => {
                     type="submit"
                     className="px-8 mx-auto py-2 text-black bg-green rounded-lg col-span-12 text-lg w-fit"
                 >
-                    Add Approval
+                    Edit Approval
                 </button>
             </form>
         </div>

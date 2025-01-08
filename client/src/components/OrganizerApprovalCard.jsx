@@ -192,7 +192,12 @@ const OrganizerApprovalCard = ({ approval }) => {
                                 }`}
                             dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
                         />
-                        <span className="flex justify-center">
+                        <span className="flex gap-4 justify-center">
+                            <button className="px-4 py-2 text-black rounded-md bg-yellow"
+                                onClick={() => setPopup(`editapproval-${approval._id}`)}
+                            >
+                                Edit Approval
+                            </button>
                             <button
                                 onClick={() => setPopup(`removeApprover-${approval._id}`)}
                                 className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-red"
@@ -203,11 +208,11 @@ const OrganizerApprovalCard = ({ approval }) => {
                     </div>
                 </PopupScreen>
             )}
-            {/* {popup === `editapproval-${approval._id}` && (
+            {popup === `editapproval-${approval._id}` && (
                 <PopupScreen>
                     <EditApprovalDetails approval={approval} />
                 </PopupScreen>
-            )} */}
+            )}
             <div className="flex flex-col gap-6 p-4 bg-blue_300 text-white rounded-lg col-span-12 lg:col-span-4 relative">
                 <h2 className="text-lg font-montserrat font-medium w-[90%]">
                     {approval.title}
@@ -230,11 +235,6 @@ const OrganizerApprovalCard = ({ approval }) => {
                     >
                         Track Approval
                     </button>
-                    {/* <button className="px-4 py-2 text-white rounded-md border-blue_100 border-2"
-                        onClick={() => setPopup(`editapproval-${approval._id}`)}
-                    >
-                        Edit Approval
-                    </button> */}
                 </span>
             </div>
         </>
