@@ -10,9 +10,10 @@ const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 organizerRouter.post('/login', async (req, res) => {
     const { organizerId, password } = req.body;
     try {
-        const user = await OrganizerModel.findOne({ organizerId, password });
+        const user = await OrganizerModel.findOne({ organizerId, password }).lean();
         if (user) {
             const token = jwt.sign({ organizerId: user.organizerId }, JWT_USER_SECRET);
+            delete user.password;
             res.json({ token, user });
         } else {
             res.status(401).json({
@@ -28,9 +29,13 @@ organizerRouter.post('/login', async (req, res) => {
 
 organizerRouter.get('/allorganizers', async (req, res) => {
     try {
-        const organizers = await OrganizerModel.find({})
+        const organizers = await OrganizerModel.find({}).lean()
+        const sanitizedOrganizers = organizers.map(organizer => {
+            delete organizer.password;
+            return organizer;
+        });
         res.status(200).json({
-            organizers
+            organizers: sanitizedOrganizers
         })
     } catch (error) {
         res.status(500).json({
@@ -42,8 +47,9 @@ organizerRouter.get('/allorganizers', async (req, res) => {
 organizerRouter.get('/organizerdetails', async (req, res) => {
     const { organizerId } = req.query;
     try {
-        const organizer = await OrganizerModel.findOne({ "_id": organizerId });
+        const organizer = await OrganizerModel.findOne({ organizerId }).lean();
         if (organizer) {
+            delete organizer.password;
             res.status(200).json({
                 organizer
             })
@@ -74,7 +80,6 @@ organizerRouter.post('/createorganizer', adminAuth, async (req, res) => {
                 userType: faculty.userType,
                 username: faculty.username,
             },
-            eventIds: []
         });
         res.status(201).json({
             message: `Organizer added successfully`

@@ -44,11 +44,6 @@ const organizerSchema = new mongoose.Schema({
             required: true
         },
     },
-    eventIds: [
-        {
-            eventId: { type: ObjectId }
-        }
-    ]
 })
 
 const OrganizerModel = mongoose.model('organizers', organizerSchema);

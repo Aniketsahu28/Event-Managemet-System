@@ -14,7 +14,15 @@ userRouter.post('/login', async (req, res) => {
         if (user) {
             const secret = (user.userType === "student" || user.userType === "faculty") ? JWT_USER_SECRET : JWT_ADMIN_SECRET;
             const token = jwt.sign({ userId: user.userId }, secret);
-            res.json({ token, user });
+            res.json({
+                token, user: {
+                    userId: user.userId,
+                    userType: user.userType,
+                    username: user.username,
+                    department: user.department,
+                    profilePicture: user.profilePicture
+                }
+            });
         } else {
             res.status(401).json({
                 message: "Invalid userId or password"
@@ -30,7 +38,8 @@ userRouter.post('/login', async (req, res) => {
 userRouter.get('/userinfo', userAuth, async (req, res) => {
     const userId = req.userId;
     try {
-        const user = await UserModel.findOne({ userId });
+        const user = await UserModel.findOne({ userId }).lean();
+        delete user.password;
         res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({
@@ -41,11 +50,16 @@ userRouter.get('/userinfo', userAuth, async (req, res) => {
 
 userRouter.get('/allstudents', adminAuth, async (req, res) => {
     try {
-        const students = await UserModel.find({ "userType": "student" })
+        const students = await UserModel.find({ "userType": "student" }).lean()
         if (students.length > 0) {
+            const sanitizedStudents = students.map(student => {
+                // delete student.password;
+                return student;
+            });
+
             res.status(200).json({
-                students
-            })
+                students: sanitizedStudents
+            });
         }
         else {
             res.status(404).json({
@@ -59,11 +73,16 @@ userRouter.get('/allstudents', adminAuth, async (req, res) => {
 
 userRouter.get('/allfaculty', async (req, res) => {
     try {
-        const faculties = await UserModel.find({ "userType": "faculty" })
+        const faculties = await UserModel.find({ "userType": "faculty" }).lean()
         if (faculties.length > 0) {
+            const sanitizedFaculties = faculties.map(faculty => {
+                delete faculty.password;
+                return faculty;
+            });
+
             res.status(200).json({
-                faculties
-            })
+                faculties: sanitizedFaculties
+            });
         }
         else {
             res.status(404).json({
@@ -164,7 +183,6 @@ userRouter.post('/createstudent', adminAuth, async (req, res) => {
                     username: rollno.toString(),
                     password: rollno.toString(),
                     department: department,
-                    ticketIds: []
                 })
             }
         }
@@ -202,7 +220,6 @@ userRouter.post('/createfaculty', adminAuth, async (req, res) => {
                 username: userId,
                 password: userId,
                 department: department,
-                ticketIds: []
             });
             res.status(201).json({
                 message: `Faculty added successfully`
