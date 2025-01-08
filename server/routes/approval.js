@@ -107,7 +107,7 @@ approvalRouter.delete('/deleteapproval', organizerAuth, async (req, res) => {
 })
 
 approvalRouter.patch('/editapproval', organizerAuth, async (req, res) => {
-    const { approvalId, title, document } = req.body;
+    const { approvalId, title, document, approvers } = req.body;
     try {
         const approvalDoc = await ApprovalModel.findById(approvalId);
         if (approvalDoc) {
@@ -116,9 +116,18 @@ approvalRouter.patch('/editapproval', organizerAuth, async (req, res) => {
                     $set: {
                         title: title,
                         document: document,
-                        [`approvers.${approvalDoc.currentApprover}.approvalStatus`]: "pending",
-                        [`approvers.${approvalDoc.currentApprover}.approvedDate`]: "",
-                        [`approvers.${approvalDoc.currentApprover}.description`]: "",
+                        approvers: approvers.map(approver => ({
+                            approverTitle: approver.approverTitle,
+                            approverDetails: {
+                                userId: approver.approverDetails.userId,
+                                userType: approver.approverDetails.userType,
+                                username: approver.approverDetails.username,
+                            },
+                            approvalStatus: "pending",
+                            approvedDate: "",
+                            description: ""
+                        })),
+                        currentApprover: 0
                     },
                 })
 
