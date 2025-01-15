@@ -19,7 +19,9 @@ import { isAuthenticated, userAtom } from "../store/userAtom";
 import ParticipantCard from "../components/ParticipantCard";
 import { IoIosArrowUp } from "react-icons/io";
 import EditEventDetails from "../components/EditEventDetails";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
+import { MdOutlineFileDownload } from "react-icons/md";
+import jsonToCsvExport from "json-to-csv-export";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
@@ -27,8 +29,9 @@ const EventDetails = () => {
     const { id } = useParams();
     const [event, setEvent] = useState();
     const [eventTickets, setEventTickets] = useState();
+    const [participantsList, setParticipantsList] = useState([]);
     const [searchedEventTickets, setSearchedEventTickets] = useState();
-    const [searchTerm, setSearchTerm] = useState("")
+    const [searchTerm, setSearchTerm] = useState("");
     const [paymentUrl, setPaymentUrl] = useState("");
     const sanitizedDescription = DOMPurify.sanitize(event?.description);
     const [popup, setPopup] = useRecoilState(popupAtom);
@@ -128,7 +131,7 @@ const EventDetails = () => {
 
     const getTicket = async () => {
         if (!isUserAuthenticated) {
-            toast("Please login to continue")
+            toast("Please login to continue");
             return;
         }
         if (!event?.isEventFree) {
@@ -148,7 +151,7 @@ const EventDetails = () => {
                 );
                 if (response.status === 201) {
                     toast.success(response.data.message, {
-                        duration: 3000
+                        duration: 3000,
                     });
                 } else {
                     toast(response.data.message);
@@ -183,7 +186,7 @@ const EventDetails = () => {
                 );
                 if (response.status === 201) {
                     toast.success(response.data.message, {
-                        duration: 3000
+                        duration: 3000,
                     });
                 } else {
                     toast(response.data.message);
@@ -196,41 +199,60 @@ const EventDetails = () => {
     };
 
     const handleSearchParticipant = (e) => {
-        setSearchTerm(e.target.value)
+        setSearchTerm(e.target.value);
         const searchResult = eventTickets.filter((ticket) => {
             return ticket.userDetails.userId.includes(e.target.value);
         });
         setSearchedEventTickets(searchResult);
-    }
+    };
 
     const toggleParticipation = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.patch(`${BACKEND_URL}/api/event/toggleparticipation`,
+            const response = await axios.patch(
+                `${BACKEND_URL}/api/event/toggleparticipation`,
                 {
                     eventId: id,
-                    status: !event.acceptingParticipation
+                    status: !event.acceptingParticipation,
                 },
                 {
                     headers: {
                         token: user.token,
                     },
                 }
-            )
+            );
 
             if (response.status === 200) {
                 toast.success(response.data.message, {
-                    duration: 3000
+                    duration: 3000,
                 });
                 setEvent((prev) => {
-                    return { ...prev, acceptingParticipation: !prev.acceptingParticipation }
-                })
+                    return {
+                        ...prev,
+                        acceptingParticipation: !prev.acceptingParticipation,
+                    };
+                });
             }
-        }
-        catch (error) {
+        } catch (error) {
             toast.error(error.response?.data.message || error);
         }
-    }
+    };
+
+    const downloadParticipantsList = () => {
+        const tickets = eventTickets;
+        tickets.forEach((ticket) => {
+            const userJoiningYear = ticket.userDetails.userId.slice(2, 4);
+            const userDate = new Date(`20${userJoiningYear}-06-01`);
+            const currentDate = new Date();
+            const difference =
+                (currentDate.getFullYear() - userDate.getFullYear()) * 12 +
+                currentDate.getMonth() - userDate.getMonth();
+            ticket.userDetails.year = Math.ceil(difference / 12);
+            const { profilePicture, ...rest } = ticket.userDetails;
+            setParticipantsList(participantsList.push(rest));
+        });
+        jsonToCsvExport({ data: participantsList, filename: event.title + " Participants" })
+    };
 
     return (
         <>
@@ -430,7 +452,8 @@ const EventDetails = () => {
                                     </span>
                                 </p>
                             )}
-                            {event?.acceptingParticipation && event?.seatsFilled < event?.maxSeats &&
+                            {event?.acceptingParticipation &&
+                                event?.seatsFilled < event?.maxSeats &&
                                 canBookEvent(event?.date, event?.time) && (
                                     <button
                                         className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
@@ -450,7 +473,9 @@ const EventDetails = () => {
                         <div className="w-full flex flex-col gap-6 lg:gap-10">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                                 <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                                    Participants {event.isLimitedSeats && `(${event.seatsFilled} / ${event.maxSeats})`}
+                                    Participants{" "}
+                                    {event.isLimitedSeats &&
+                                        `(${event.seatsFilled} / ${event.maxSeats})`}
                                 </h2>
                                 <input
                                     type="text"
@@ -466,8 +491,7 @@ const EventDetails = () => {
                             </div>
                             <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between sm:justify-start">
                                 {eventTickets?.length > 0
-                                    ?
-                                    searchTerm === ""
+                                    ? searchTerm === ""
                                         ? eventTickets.map((ticket, index) => (
                                             <ParticipantCard key={index} ticket={ticket} />
                                         ))
@@ -477,26 +501,35 @@ const EventDetails = () => {
                                     : "No tickets found"}
                             </div>
                             <span className="flex flex-col sm:flex-row gap-4 mx-auto mt-6">
-                                {event?.acceptingParticipation === true ?
+                                {event?.acceptingParticipation === true ? (
                                     <button
                                         className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-yellow"
                                         onClick={toggleParticipation}
                                     >
                                         Close Participation
-                                    </button> :
+                                    </button>
+                                ) : (
                                     <button
                                         className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
                                         onClick={toggleParticipation}
                                     >
                                         Resume Participation
                                     </button>
-                                }
+                                )}
                                 <button
                                     className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
-                                    onClick={() => setPopup('editeventdetails')}
+                                    onClick={() => setPopup("editeventdetails")}
                                 >
                                     <span>Edit event details</span>
                                     <IoIosArrowUp className="rotate-90" />
+                                </button>
+                                <button
+                                    className={`flex gap-2 items-center justify-center px-4 py-2 rounded-md text-lg border-2 ${currentTheme === "light" ? "border-black" : "border-white"
+                                        }`}
+                                    onClick={downloadParticipantsList}
+                                >
+                                    <span>Download Partipants List</span>
+                                    <MdOutlineFileDownload className="text-2xl" />
                                 </button>
                             </span>
                         </div>
