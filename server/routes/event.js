@@ -9,7 +9,7 @@ const { TicketModel } = require('../models/ticket')
 
 eventRouter.post('/addevent', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
-    const { title, description, banner, date, time, venue, eventForDepts, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, eventFee, paymentQR, UPI_ID } = req.body;
+    const { title, description, banner, date, time, venue, eventForDepts, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
         const organizer = await OrganizerModel.findOne({ organizerId });
@@ -19,7 +19,6 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
                 organizerName: organizer.organizerName,
                 department: organizer.department
             },
-            participantsIds: [],
             title,
             description,
             banner,
@@ -32,7 +31,9 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
             maxSeats,
             prizes,
             isEventFree,
+            isPriceVariation,
             eventFee,
+            eventFeeForClubMember,
             paymentQR,
             UPI_ID
         })
@@ -83,7 +84,7 @@ eventRouter.patch('/toggleparticipation', organizerAuth, async (req, res) => {
 })
 
 eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
-    const { eventId, title, description, banner, date, time, venue, eventForDepts, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, eventFee, paymentQR, UPI_ID } = req.body;
+    const { eventId, title, description, banner, date, time, venue, eventForDepts, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
         await EventModel.updateOne({ "_id": eventId }, {
@@ -99,7 +100,9 @@ eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
             maxSeats,
             prizes,
             isEventFree,
+            isPriceVariation,
             eventFee,
+            eventFeeForClubMember,
             paymentQR,
             UPI_ID
         })
@@ -172,7 +175,7 @@ eventRouter.get('/organizerevents', async (req, res) => {
 
 eventRouter.post('/bookticket', userAuth, async (req, res) => {
     const userId = req.userId;
-    const { eventId, paymentImage } = req.body;
+    const { eventId, paymentImage, iAmClubMember } = req.body;
     try {
         const alreadyPresent = await TicketModel.findOne({ 'userDetails.userId': userId, 'eventDetails.eventId': eventId })
         if (alreadyPresent) {
@@ -198,8 +201,11 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
                             date: event.date,
                             time: event.time,
                             venue: event.venue,
+                            isPriceVariation: event.isPriceVariation,
                             eventFee: event.eventFee,
+                            eventFeeForClubMember: event.eventFeeForClubMember,
                         },
+                        iAmClubMember: iAmClubMember,
                         paymentImage: paymentImage
                     })
 

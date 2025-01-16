@@ -41,7 +41,9 @@ const AddNewEvent = () => {
         maxSeats: 100000,
         prizes: [],
         isEventFree: true,
+        isPriceVariation: false,
         eventFee: 0,
+        eventFeeForClubMember: 0,
         paymentQR: "",
         UPI_ID: "",
     });
@@ -178,7 +180,9 @@ const AddNewEvent = () => {
                     maxSeats: eventDetails.maxSeats,
                     prizes: eventDetails.prizes,
                     isEventFree: eventDetails.isEventFree,
+                    isPriceVariation: eventDetails.isPriceVariation,
                     eventFee: eventDetails.eventFee,
+                    eventFeeForClubMember: eventDetails.eventFeeForClubMember,
                     paymentQR: eventDetails.paymentQR,
                     UPI_ID: eventDetails.UPI_ID,
                 },
@@ -207,7 +211,9 @@ const AddNewEvent = () => {
                     maxSeats: 0,
                     prizes: [],
                     isEventFree: true,
+                    isPriceVariation: false,
                     eventFee: 0,
+                    eventFeeForClubMember: 0,
                     paymentQR: "",
                     UPI_ID: "",
                 })
@@ -582,8 +588,57 @@ const AddNewEvent = () => {
                     </span>
                 </span>
                 {
+                    !eventDetails.isEventFree && <span className="flex flex-col gap-2 col-span-8">
+                        <label htmlFor="isPriceVariation">Event fees are different for club and non-club members ? <span className="text-red">*</span></label>
+                        <span className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                name="isPriceVariation"
+                                className={`px-4 py-2 rounded-full border-[1px] 
+                            ${currentTheme === "light"
+                                        ? eventDetails.isPriceVariation === true
+                                            ? "text-white border-blue_100 bg-blue_100"
+                                            : "border-black/50 text-black/70 border-[1px]"
+                                        : eventDetails.isPriceVariation === true
+                                            ? "text-white border-blue_100 bg-blue_100"
+                                            : "border-white/60 text-white/60 border-[1px]"
+                                    }`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setEventDetails((prevDetails) => ({
+                                        ...prevDetails,
+                                        isPriceVariation: true
+                                    }))
+                                }}
+                            >
+                                Yes, Fees are different
+                            </button>
+                            <button
+                                name="isPriceVariation"
+                                className={`px-4 py-2 rounded-full border-[1px] 
+                            ${currentTheme === "light"
+                                        ? eventDetails.isPriceVariation === false
+                                            ? "text-white border-blue_100 bg-blue_100"
+                                            : "border-black/50 text-black/70 border-[1px]"
+                                        : eventDetails.isPriceVariation === false
+                                            ? "text-white border-blue_100 bg-blue_100"
+                                            : "border-white/60 text-white/60 border-[1px]"
+                                    }`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setEventDetails((prevDetails) => ({
+                                        ...prevDetails,
+                                        isPriceVariation: false
+                                    }))
+                                }}
+                            >
+                                No, Fees is same
+                            </button>
+                        </span>
+                    </span>
+                }
+                {
                     !eventDetails.isEventFree && <span className="flex flex-col gap-2 col-span-12">
-                        <label htmlFor="eventFee">Enter Event Fees</label>
+                        <label htmlFor="eventFee">{eventDetails.isPriceVariation ? "Enter normal event fees" : "Enter event fees"}</label>
                         <input
                             type="number"
                             name="eventFee"
@@ -596,6 +651,25 @@ const AddNewEvent = () => {
                             onChange={(e) => setEventDetails((prevDetails) => ({
                                 ...prevDetails,
                                 eventFee: e.target.value
+                            }))}
+                        />
+                    </span>
+                }
+                {
+                    !eventDetails.isEventFree && eventDetails.isPriceVariation && <span className="flex flex-col gap-2 col-span-12">
+                        <label htmlFor="eventFeeForClubMembers">Enter event fees for club members</label>
+                        <input
+                            type="number"
+                            name="eventFeeForClubMembers"
+                            className={`w-56 p-2 rounded-lg border-[1px] border-gray/50  outline-none ${currentTheme === "light"
+                                ? "text-black"
+                                : "bg-gray/60  placeholder-white/60 border-white"
+                                }`}
+                            placeholder="Ex: 399"
+                            value={eventDetails.eventFeeForClubMember}
+                            onChange={(e) => setEventDetails((prevDetails) => ({
+                                ...prevDetails,
+                                eventFeeForClubMember: e.target.value
                             }))}
                         />
                     </span>

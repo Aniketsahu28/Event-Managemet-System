@@ -39,10 +39,22 @@ const ticketSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        isPriceVariation: {
+            type: Boolean,
+            default: false,
+        },
         eventFee: {
             type: Number,
             default: 0
         },
+        eventFeeForClubMember: {
+            type: Number,
+            default: 0
+        },
+    },
+    iAmClubMember: {
+        type: Boolean,
+        default: false
     },
     paymentImage: {
         type: String,

@@ -22,12 +22,15 @@ import EditEventDetails from "../components/EditEventDetails";
 import toast from "react-hot-toast";
 import { MdOutlineFileDownload } from "react-icons/md";
 import jsonToCsvExport from "json-to-csv-export";
+import { MdVerified } from "react-icons/md";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
     const currentTheme = useRecoilValue(themeAtom);
     const { id } = useParams();
     const [event, setEvent] = useState();
+    const [loading, setLoading] = useState(false);
+    const [userIsClubMember, setUserIsClubMember] = useState(false);
     const [eventTickets, setEventTickets] = useState();
     const [searchedEventTickets, setSearchedEventTickets] = useState();
     const [searchTerm, setSearchTerm] = useState("");
@@ -162,7 +165,9 @@ const EventDetails = () => {
     };
 
     const takePaymentScreenshot = async (event) => {
+        setLoading(true);
         const url = await useHandleFileUpload(event);
+        setLoading(false);
         setPaymentUrl(url);
     };
 
@@ -176,6 +181,7 @@ const EventDetails = () => {
                     {
                         eventId: event._id,
                         paymentImage: paymentUrl,
+                        iAmClubMember: userIsClubMember,
                     },
                     {
                         headers: {
@@ -246,12 +252,34 @@ const EventDetails = () => {
             const currentDate = new Date();
             const difference =
                 (currentDate.getFullYear() - userDate.getFullYear()) * 12 +
-                currentDate.getMonth() - userDate.getMonth();
+                currentDate.getMonth() -
+                userDate.getMonth();
             ticket.userDetails.year = Math.ceil(difference / 12);
-            const { profilePicture, ...rest } = ticket.userDetails;
-            participantsList.push(rest);
+
+            //Push into the array
+            event?.isPriceVariation
+                ? participantsList.push({
+                    userId: ticket.userDetails.userId,
+                    username: ticket.userDetails.username,
+                    department: ticket.userDetails.department,
+                    year: ticket.userDetails.year,
+                    amoutPaid:
+                        ticket.eventDetails.isPriceVariation && ticket.iAmClubMember
+                            ? ticket.eventDetails.eventFeeForClubMember
+                            : ticket.eventDetails.eventFee,
+                    clubMember: ticket.iAmClubMember ? "Yes" : "No",
+                })
+                : participantsList.push({
+                    userId: ticket.userDetails.userId,
+                    username: ticket.userDetails.username,
+                    department: ticket.userDetails.department,
+                    year: ticket.userDetails.year
+                });
         });
-        jsonToCsvExport({ data: participantsList, filename: event.title + " Participants" })
+        jsonToCsvExport({
+            data: participantsList,
+            filename: event.title + " Participants",
+        });
     };
 
     return (
@@ -259,7 +287,7 @@ const EventDetails = () => {
             {popup === "paymentPopup" && (
                 <PopupScreen>
                     <div
-                        className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                        className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-24 ${currentTheme === "light"
                             ? "text-black bg-white"
                             : "text-white bg-gray"
                             }`}
@@ -271,32 +299,57 @@ const EventDetails = () => {
                                 onClick={() => setPopup(null)}
                             />
                         </span>
-                        <span className="flex flex-col gap-2 items-center">
+                        <span className="flex flex-col gap-4 items-center">
                             <img
                                 src={event.paymentQR}
                                 alt="Payment QR"
                                 className="h-48 w-48 bg-white custom_shadow rounded-lg"
                             />
                             <p className="text-lg">UPI id : {event.UPI_ID}</p>
-                            <label
-                                htmlFor="paymentQR"
-                                className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === "light"
-                                    ? "border-black/40"
-                                    : "border-white/60"
-                                    }`}
-                            >
-                                <input
-                                    id="paymentQR"
-                                    type="file"
-                                    className="hidden"
-                                    onChange={takePaymentScreenshot}
-                                />
-                                <p>Upload screenshot of payment</p>
-                                <IoCloudUploadOutline
-                                    className={`text-2xl ${currentTheme === "light" ? "text-black/80" : "text-white/80"
+                            {loading ? (
+                                "Processing wait..."
+                            ) : (
+                                <label
+                                    htmlFor="paymentQR"
+                                    className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === "light"
+                                        ? "border-black/40"
+                                        : "border-white/60"
                                         }`}
-                                />
-                            </label>
+                                >
+                                    <input
+                                        id="paymentQR"
+                                        type="file"
+                                        className="hidden"
+                                        onChange={takePaymentScreenshot}
+                                    />
+                                    <p>Upload screenshot of payment</p>
+                                    {paymentUrl.length === 0 ? (
+                                        <IoCloudUploadOutline
+                                            className={`text-2xl ${currentTheme === "light"
+                                                ? "text-black/80"
+                                                : "text-white/80"
+                                                }`}
+                                        />
+                                    ) : (
+                                        <MdVerified className={`text-2xl text-green`} />
+                                    )}
+                                </label>
+                            )}
+                            {event?.isPriceVariation && (
+                                <span className="flex gap-2 items-center justify-center">
+                                    <input
+                                        type="checkbox"
+                                        name="iamclubmember"
+                                        id="iamclubmember"
+                                        className="w-4 h-4"
+                                        checked={userIsClubMember}
+                                        onClick={() => {
+                                            setUserIsClubMember(!userIsClubMember);
+                                        }}
+                                    />
+                                    <p>I am Club Member</p>
+                                </span>
+                            )}
                         </span>
                         <button
                             className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
@@ -450,6 +503,18 @@ const EventDetails = () => {
                                     <span className="text-3xl font-semibold">
                                         {event?.eventFee}
                                     </span>
+                                    <span>
+                                        {event?.isPriceVariation ? "(For non-club members)" : ""}
+                                    </span>
+                                </p>
+                            )}
+                            {!event?.isEventFree && event?.isPriceVariation && (
+                                <p className="flex items-center gap-2">
+                                    <MdCurrencyRupee className="text-xl" />
+                                    <span className="text-3xl font-semibold">
+                                        {event?.eventFeeForClubMember}
+                                    </span>
+                                    <span>(For club members)</span>
                                 </p>
                             )}
                             {event?.acceptingParticipation &&

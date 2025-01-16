@@ -18,13 +18,9 @@ const EventTicket = ({ event, user }) => {
                         <p className='font-semibold'>Time</p>
                         <p className='text-black/80'>{event.time}</p>
                     </span>
-                    <span className='col-span-2'>
+                    <span className='col-span-4'>
                         <p className='font-semibold'>Venue</p>
                         <p className='text-black/80'>{event.venue}</p>
-                    </span>
-                    <span className='col-span-2'>
-                        <p className='font-semibold'>Event Fees</p>
-                        <p className='text-black/80'>{event.eventFee}</p>
                     </span>
                 </div>
             </div>

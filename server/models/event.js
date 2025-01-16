@@ -69,7 +69,15 @@ const eventSchema = new mongoose.Schema({
         default: true,
         require: true
     },
+    isPriceVariation: {
+        type: Boolean,
+        default: false,
+    },
     eventFee: {
+        type: Number,
+        default: 0
+    },
+    eventFeeForClubMember: {
         type: Number,
         default: 0
     },

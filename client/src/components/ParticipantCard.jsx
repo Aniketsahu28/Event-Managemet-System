@@ -77,6 +77,7 @@ const ParticipantCard = ({ ticket }) => {
                                 >
                                     Department : {ticket.userDetails.department}
                                 </p>
+                                {ticket.eventDetails.isPriceVariation && ticket.iAmClubMember && "Member of the club"}
                                 {ticket.paymentImage !== "" &&
                                     <Link to={ticket.paymentImage}
                                         target="_blank"
