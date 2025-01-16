@@ -29,7 +29,6 @@ const EventDetails = () => {
     const { id } = useParams();
     const [event, setEvent] = useState();
     const [eventTickets, setEventTickets] = useState();
-    const [participantsList, setParticipantsList] = useState([]);
     const [searchedEventTickets, setSearchedEventTickets] = useState();
     const [searchTerm, setSearchTerm] = useState("");
     const [paymentUrl, setPaymentUrl] = useState("");
@@ -240,6 +239,7 @@ const EventDetails = () => {
 
     const downloadParticipantsList = () => {
         const tickets = eventTickets;
+        let participantsList = [];
         tickets.forEach((ticket) => {
             const userJoiningYear = ticket.userDetails.userId.slice(2, 4);
             const userDate = new Date(`20${userJoiningYear}-06-01`);
@@ -249,7 +249,7 @@ const EventDetails = () => {
                 currentDate.getMonth() - userDate.getMonth();
             ticket.userDetails.year = Math.ceil(difference / 12);
             const { profilePicture, ...rest } = ticket.userDetails;
-            setParticipantsList(participantsList.push(rest));
+            participantsList.push(rest);
         });
         jsonToCsvExport({ data: participantsList, filename: event.title + " Participants" })
     };
