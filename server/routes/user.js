@@ -10,19 +10,12 @@ const { adminAuth } = require('../middlewares/adminAuth');
 userRouter.post('/login', async (req, res) => {
     const { userId, password } = req.body;
     try {
-        const user = await UserModel.findOne({ userId, password });
+        const user = await UserModel.findOne({ userId, password }).lean();
         if (user) {
             const secret = (user.userType === "student" || user.userType === "faculty") ? JWT_USER_SECRET : JWT_ADMIN_SECRET;
             const token = jwt.sign({ userId: user.userId }, secret);
-            res.json({
-                token, user: {
-                    userId: user.userId,
-                    userType: user.userType,
-                    username: user.username,
-                    department: user.department,
-                    profilePicture: user.profilePicture
-                }
-            });
+            delete user.password;
+            res.json({ token, user });
         } else {
             res.status(401).json({
                 message: "Invalid userId or password"
