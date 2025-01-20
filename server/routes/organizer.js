@@ -186,17 +186,19 @@ organizerRouter.patch('/editprofilePicture', organizerAuth, async (req, res) => 
     }
 })
 
-organizerRouter.patch('/editUsername', organizerAuth, async (req, res) => {
+organizerRouter.patch('/editUserInfo', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
-    const { username } = req.body;
+    const { username, email, phone } = req.body;
     try {
         const organizer = await OrganizerModel.findOne({ organizerId });
         organizer.organizerName = username;
+        organizer.email = email;
+        organizer.phone = phone;
 
         await OrganizerModel.updateOne({ organizerId }, organizer);
 
         res.status(200).json({
-            message: "Username updated"
+            message: "User info updated"
         })
 
     } catch (error) {

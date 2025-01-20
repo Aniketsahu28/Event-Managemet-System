@@ -192,6 +192,8 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
                         userDetails: {
                             userId: user.userId,
                             username: user.username,
+                            email: user.email,
+                            phone: user.phone,
                             department: user.department,
                             profilePicture: user.profilePicture
                         },

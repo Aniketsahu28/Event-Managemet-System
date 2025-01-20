@@ -13,29 +13,34 @@ import { FaRegPenToSquare } from "react-icons/fa6";
 import toast from 'react-hot-toast'
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const ProfileCard = ({ name, userId, department, image }) => {
+const ProfileCard = ({ name, userId, department, image, email, phone }) => {
     const [user, setUser] = useRecoilState(userAtom);
     const currentTheme = useRecoilValue(themeAtom);
     const [popup, setPopup] = useRecoilState(popupAtom);
-    const username = useRef(null);
+    const [userInfo, setUserInfo] = useState({
+        name: name,
+        email: email,
+        phone: phone
+    })
     const oldPassword = useRef(null);
     const newPassword = useRef(null);
     const reEnteredNewPassword = useRef(null);
     const [profileHover, setProfileHover] = useState(false);
 
-    const changeUsername = async (event) => {
+    const changeUserInfo = async (event) => {
         event.preventDefault();
-        const _username = username.current.value;
 
-        if (!_username) {
-            toast("Enter username");
+        if (!userInfo.name || !userInfo.email || !userInfo.phone) {
+            toast("Username cannot be empty");
         } else {
             try {
                 if (user.userInfo.userType === "organizer") {
                     const response = await axios.patch(
-                        `${BACKEND_URL}/api/organizer/editUsername`,
+                        `${BACKEND_URL}/api/organizer/editUserInfo`,
                         {
-                            username: _username,
+                            username: userInfo.name,
+                            email: userInfo.email,
+                            phone: userInfo.phone,
                         },
                         {
                             headers: {
@@ -52,16 +57,20 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             ...oldinfo,
                             userInfo: {
                                 ...oldinfo.userInfo,
-                                organizerName: _username,
+                                organizerName: userInfo.name,
+                                email: userInfo.email,
+                                phone: userInfo.phone,
                             },
                         }));
                         setPopup(null);
                     }
                 } else {
                     const response = await axios.patch(
-                        `${BACKEND_URL}/api/user/editUsername`,
+                        `${BACKEND_URL}/api/user/editUserInfo`,
                         {
-                            username: _username,
+                            username: userInfo.name,
+                            email: userInfo.email,
+                            phone: userInfo.phone,
                         },
                         {
                             headers: {
@@ -78,7 +87,9 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             ...oldinfo,
                             userInfo: {
                                 ...oldinfo.userInfo,
-                                username: _username,
+                                username: userInfo.name,
+                                email: userInfo.email,
+                                phone: userInfo.phone,
                             },
                         }));
                         setPopup(null);
@@ -199,7 +210,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
             {popup === "username" && (
                 <PopupScreen>
                     <form
-                        onSubmit={changeUsername}
+                        onSubmit={changeUserInfo}
                         className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
                             ? "text-black bg-white"
                             : "text-white bg-gray"
@@ -207,26 +218,72 @@ const ProfileCard = ({ name, userId, department, image }) => {
                     >
                         <span className="flex justify-between items-center">
                             <p className="text-2xl font-montserrat font-medium">
-                                Change Username
+                                Update Info
                             </p>
                             <RxCross2
                                 className="text-2xl cursor-pointer"
                                 onClick={() => setPopup(null)}
                             />
                         </span>
-                        <span className="flex flex-col gap-2">
-                            <label htmlFor="username">Username</label>
-                            <input
-                                type="text"
-                                id="username"
-                                className={`w-full p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
-                                    ? "bg-white/60  placeholder-black/40"
-                                    : "bg-gray/60 border-white text-white placeholder-white/60"
-                                    }`}
-                                placeholder="New username"
-                                ref={username}
-                            />
-                        </span>
+                        <div className="flex flex-col gap-4">
+                            <span className="flex flex-col gap-2">
+                                <label htmlFor="username">Username</label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    className={`w-full p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                        ? "bg-white/60  placeholder-black/40"
+                                        : "bg-gray/60 border-white text-white placeholder-white/60"
+                                        }`}
+                                    placeholder="New username"
+                                    value={userInfo.name}
+                                    onChange={(e) => {
+                                        setUserInfo((prev) => ({
+                                            ...prev,
+                                            name: e.target.value
+                                        }))
+                                    }}
+                                />
+                            </span>
+                            <span className="flex flex-col gap-2">
+                                <label htmlFor="email">Email</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    className={`w-full p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                        ? "bg-white/60  placeholder-black/40"
+                                        : "bg-gray/60 border-white text-white placeholder-white/60"
+                                        }`}
+                                    placeholder="Ex : johndoe@gmail.com"
+                                    value={userInfo.email}
+                                    onChange={(e) => {
+                                        setUserInfo((prev) => ({
+                                            ...prev,
+                                            email: e.target.value
+                                        }))
+                                    }}
+                                />
+                            </span>
+                            <span className="flex flex-col gap-2">
+                                <label htmlFor="phone">Phone</label>
+                                <input
+                                    type="number"
+                                    id="phone"
+                                    className={`w-full p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                        ? "bg-white/60  placeholder-black/40"
+                                        : "bg-gray/60 border-white text-white placeholder-white/60"
+                                        }`}
+                                    placeholder="Ex : 1234567890"
+                                    value={userInfo.phone}
+                                    onChange={(e) => {
+                                        setUserInfo((prev) => ({
+                                            ...prev,
+                                            phone: e.target.value
+                                        }))
+                                    }}
+                                />
+                            </span>
+                        </div>
                         <button
                             type="submit"
                             className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
@@ -305,7 +362,7 @@ const ProfileCard = ({ name, userId, department, image }) => {
                 </PopupScreen>
             )}
             <div
-                className={`flex flex-col sm:flex-row items-center sm:items-stretch justify-center gap-6 custom_shadow p-4 sm:p-6 rounded-lg w-fit ${currentTheme === "light"
+                className={`flex flex-col sm:flex-row items-center sm:items-stretch justify-center gap-6 custom_shadow p-4 sm:p-6 rounded-lg w-full sm:w-fit ${currentTheme === "light"
                     ? "text-black bg-white"
                     : "bg-gray text-white"
                     }`}
@@ -352,13 +409,19 @@ const ProfileCard = ({ name, userId, department, image }) => {
                             className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                 }`}
                         >
-                            User id : {userId}
+                            {userId} - {department}
                         </p>
                         <p
                             className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                 }`}
                         >
-                            Department : {department}
+                            Email : {email}
+                        </p>
+                        <p
+                            className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
+                                }`}
+                        >
+                            Phone : {phone}
                         </p>
                     </span>
                     <button

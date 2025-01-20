@@ -61,7 +61,7 @@ const ParticipantCard = ({ ticket }) => {
                                 alt="Profile"
                                 className="w-32 h-32 rounded-lg bg-black"
                             />
-                            <span className="flex flex-col lg:gap-2">
+                            <span className="flex flex-col">
                                 <h3 className="text-xl font-montserrat font-semibold">
                                     {ticket.userDetails.username}
                                 </h3>
@@ -69,19 +69,25 @@ const ParticipantCard = ({ ticket }) => {
                                     className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
                                         }`}
                                 >
-                                    User id : {ticket.userDetails.userId}
+                                    {ticket.userDetails.userId} - {ticket.userDetails.department}
                                 </p>
                                 <p
                                     className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
                                         }`}
                                 >
-                                    Department : {ticket.userDetails.department}
+                                    Email : {ticket.userDetails.email}
+                                </p>
+                                <p
+                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
+                                        }`}
+                                >
+                                    Phone : {ticket.userDetails.phone}
                                 </p>
                                 {ticket.eventDetails.isPriceVariation && ticket.iAmClubMember && "Member of the club"}
                                 {ticket.paymentImage !== "" &&
                                     <Link to={ticket.paymentImage}
                                         target="_blank"
-                                        className={`items-center mt-2 lg:mt-0 gap-3 flex cursor-pointer border-2 rounded-lg py-2 px-3 hover:scale-95 transition-all ${currentTheme === "light"
+                                        className={`items-center mt-2 gap-3 flex cursor-pointer border-2 rounded-lg py-2 px-3 hover:scale-95 transition-all ${currentTheme === "light"
                                             ? "border-black/40"
                                             : "border-white/60"
                                             }`}

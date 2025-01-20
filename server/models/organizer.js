@@ -15,6 +15,12 @@ const organizerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+    },
+    phone: {
+        type: Number,
+    },
     organizerProfile: {
         type: String,
         default: "https://res.cloudinary.com/dzkugyv7g/image/upload/v1703526486/UserImages/b6gahysyir4yywwjn086.webp"

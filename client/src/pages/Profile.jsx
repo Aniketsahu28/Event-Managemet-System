@@ -123,6 +123,8 @@ const Profile = () => {
                     userId={user?.userInfo.organizerId}
                     department={user?.userInfo.department}
                     image={user?.userInfo.organizerProfile}
+                    email={user?.userInfo.email}
+                    phone={user?.userInfo.phone}
                 />
             ) : user?.userInfo.userType === "student" ||
                 user?.userInfo.userType === "faculty" ? (
@@ -131,6 +133,8 @@ const Profile = () => {
                     userId={user?.userInfo.userId}
                     department={user?.userInfo.department}
                     image={user?.userInfo.profilePicture}
+                    email={user?.userInfo.email}
+                    phone={user?.userInfo.phone}
                 />
             ) : (
                 <h1 className="text-lg sm:text-xl lg:text-2xl font-montserrat font-semibold mx-auto">I am Admin</h1>

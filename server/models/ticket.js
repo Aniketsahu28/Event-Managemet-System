@@ -10,6 +10,12 @@ const ticketSchema = new mongoose.Schema({
             type: String,
             require: true
         },
+        email: {
+            type: String,
+        },
+        phone: {
+            type: Number,
+        },
         department: {
             type: String,
             require: true

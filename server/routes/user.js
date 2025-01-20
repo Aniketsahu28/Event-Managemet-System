@@ -136,17 +136,19 @@ userRouter.patch('/editprofilePicture', userAuth, async (req, res) => {
     }
 })
 
-userRouter.patch('/editUsername', userAuth, async (req, res) => {
+userRouter.patch('/editUserInfo', userAuth, async (req, res) => {
     const userId = req.userId;
-    const { username } = req.body;
+    const { username, email, phone } = req.body;
     try {
         const user = await UserModel.findOne({ userId });
         user.username = username;
+        user.email = email;
+        user.phone = phone;
 
         await UserModel.updateOne({ userId }, user);
 
         res.status(200).json({
-            message: "Username updated"
+            message: "User info updated"
         })
 
     } catch (error) {
