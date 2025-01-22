@@ -10,10 +10,9 @@ const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 organizerRouter.post('/login', async (req, res) => {
     const { organizerId, password } = req.body;
     try {
-        const user = await OrganizerModel.findOne({ organizerId, password }).lean();
+        const user = await OrganizerModel.findOne({ organizerId, password })
         if (user) {
             const token = jwt.sign({ organizerId: user.organizerId }, JWT_USER_SECRET);
-            delete user.password;
             res.json({ token, user });
         } else {
             res.status(401).json({
@@ -29,14 +28,8 @@ organizerRouter.post('/login', async (req, res) => {
 
 organizerRouter.get('/allorganizers', async (req, res) => {
     try {
-        const organizers = await OrganizerModel.find({}).lean()
-        const sanitizedOrganizers = organizers.map(organizer => {
-            delete organizer.password;
-            return organizer;
-        });
-        res.status(200).json({
-            organizers: sanitizedOrganizers
-        })
+        const organizers = await OrganizerModel.find({})
+        res.status(200).json({ organizers })
     } catch (error) {
         res.status(500).json({
             message: "Internal server error"
@@ -47,12 +40,9 @@ organizerRouter.get('/allorganizers', async (req, res) => {
 organizerRouter.get('/organizerdetails', async (req, res) => {
     const { organizerId } = req.query;
     try {
-        const organizer = await OrganizerModel.findOne({ _id: organizerId }).lean();
+        const organizer = await OrganizerModel.findOne({ _id: organizerId });
         if (organizer) {
-            delete organizer.password;
-            res.status(200).json({
-                organizer
-            })
+            res.status(200).json({ organizer })
         } else {
             res.status(404).json({
                 message: "Organizer not found"

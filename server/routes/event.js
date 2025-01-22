@@ -178,70 +178,65 @@ eventRouter.get('/organizerevents', async (req, res) => {
 })
 
 eventRouter.post('/bookticket', userAuth, async (req, res) => {
-    const userId = req.userId;
-    const { eventId, paymentImage, iAmClubMember } = req.body;
+    const { eventId, paymentImage, iAmClubMember, userDetails, teamName } = req.body;
+
     try {
-        const alreadyPresent = await TicketModel.findOne({ 'userDetails.userId': userId, 'eventDetails.eventId': eventId })
-        if (alreadyPresent) {
-            res.status(200).json({
-                message: "Ticket already booked"
-            })
-        }
-        else {
-            const user = await UserModel.findOne({ userId });
-            const event = await EventModel.findOne({ "_id": eventId });
-            if (event.seatsFilled < event.maxSeats) {
-                if (event.acceptingParticipation) {
-                    await TicketModel.create({
-                        userDetails: {
-                            userId: user.userId,
-                            username: user.username,
-                            email: user.email,
-                            phone: user.phone,
-                            department: user.department,
-                            profilePicture: user.profilePicture
-                        },
-                        eventDetails: {
-                            eventId: event._id,
-                            title: event.title,
-                            date: event.date,
-                            time: event.time,
-                            venue: event.venue,
-                            isPriceVariation: event.isPriceVariation,
-                            eventFee: event.eventFee,
-                            eventFeeForClubMember: event.eventFeeForClubMember,
-                        },
-                        iAmClubMember: iAmClubMember,
-                        paymentImage: paymentImage
-                    })
+        for (const user of userDetails) {
+            const alreadyPresent = await TicketModel.findOne({
+                'userDetails.userId': user.userId,
+                'eventDetails.eventId': eventId
+            });
 
-                    await EventModel.updateOne({ "_id": eventId },
-                        { $inc: { seatsFilled: 1 } }
-                    );
-
-                    res.status(201).json({
-                        message: "Ticket booked successfully"
-                    })
-                }
-                else {
-                    res.status(400).json({
-                        message: "Event is currently not taking participation"
-                    })
-                }
-            }
-            else {
-                res.status(400).json({
-                    message: "Event is full"
-                })
+            if (alreadyPresent) {
+                return res.status(200).json({
+                    message: "Ticket already booked"
+                });
             }
         }
 
+        const event = await EventModel.findOne({ "_id": eventId });
+        if (event.seatsFilled < event.maxSeats) {
+            if (event.acceptingParticipation) {
+                await TicketModel.create({
+                    userDetails,
+                    eventDetails: {
+                        eventId: event._id,
+                        title: event.title,
+                        date: event.date,
+                        time: event.time,
+                        venue: event.venue,
+                        isPriceVariation: event.isPriceVariation,
+                        eventFee: event.eventFee,
+                        eventFeeForClubMember: event.eventFeeForClubMember,
+                    },
+                    teamName,
+                    iAmClubMember,
+                    paymentImage
+                });
+
+                await EventModel.updateOne({ "_id": eventId }, { $inc: { seatsFilled: 1 } });
+
+                return res.status(201).json({
+                    message: "Ticket booked successfully"
+                });
+            } else {
+                return res.status(400).json({
+                    message: "Event is currently not taking participation"
+                });
+            }
+        } else {
+            return res.status(400).json({
+                message: "Event is full"
+            });
+        }
     } catch (error) {
-        res.status(500).json({
+        console.error(error);
+        return res.status(500).json({
             message: "Internal server error"
-        })
+        });
     }
-})
+});
+
 
 eventRouter.delete('/deleteticket', organizerAuth, async (req, res) => {
     const { ticketId } = req.body;

@@ -38,7 +38,7 @@ const ParticipantCard = ({ ticket }) => {
 
     return (
         <>
-            {popup === `eventParticipant${ticket.userDetails.userId}` && (
+            {popup === `eventParticipant${ticket.userDetails[0].userId}` && (
                 <PopupScreen>
                     <div
                         className={`w-80 sm:w-fit rounded-lg mx-auto p-4 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
@@ -57,31 +57,31 @@ const ParticipantCard = ({ ticket }) => {
                         </span>
                         <div className="flex flex-col gap-4 text-center items-center">
                             <img
-                                src={ticket.userDetails.profilePicture}
+                                src={ticket.userDetails[0].profilePicture}
                                 alt="Profile"
                                 className="w-32 h-32 rounded-lg bg-black"
                             />
                             <span className="flex flex-col">
                                 <h3 className="text-xl font-montserrat font-semibold">
-                                    {ticket.userDetails.username}
+                                    {ticket.userDetails[0].username}
                                 </h3>
                                 <p
                                     className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
                                         }`}
                                 >
-                                    {ticket.userDetails.userId} - {ticket.userDetails.department}
+                                    {ticket.userDetails[0].userId} - {ticket.userDetails[0].department}
                                 </p>
                                 <p
                                     className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
                                         }`}
                                 >
-                                    Email : {ticket.userDetails.email}
+                                    Email : {ticket.userDetails[0].email}
                                 </p>
                                 <p
                                     className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
                                         }`}
                                 >
-                                    Phone : {ticket.userDetails.phone}
+                                    Phone : {ticket.userDetails[0].phone}
                                 </p>
                                 {ticket.eventDetails.isPriceVariation && ticket.iAmClubMember && "Member of the club"}
                                 {ticket.paymentImage !== "" &&
@@ -116,20 +116,20 @@ const ParticipantCard = ({ ticket }) => {
             <div
                 className={`p-4 w-full sm:w-fit custom_shadow rounded-lg cursor-pointer flex items-center gap-4 font-lato ${currentTheme === "light" ? "bg-white" : "bg-gray"
                     }`}
-                onClick={() => setPopup(`eventParticipant${ticket.userDetails.userId}`)}
+                onClick={() => setPopup(`eventParticipant${ticket.userDetails[0].userId}`)}
             >
                 <img
-                    src={ticket.userDetails.profilePicture}
+                    src={ticket.userDetails[0].profilePicture}
                     alt="Profile"
                     className="w-12 h-12 bg-black rounded-full"
                 />
                 <span className="flex flex-col">
-                    <p className="text-lg">{ticket.userDetails.username}</p>
+                    <p className="text-lg">{ticket.userDetails[0].username}</p>
                     <p
                         className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
                             }`}
                     >
-                        {ticket.userDetails.department} - {ticket.userDetails.userId}
+                        {ticket.userDetails[0].department} - {ticket.userDetails[0].userId}
                     </p>
                 </span>
             </div>

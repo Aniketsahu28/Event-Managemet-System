@@ -30,7 +30,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
     const changeUserInfo = async (event) => {
         event.preventDefault();
 
-        if (!userInfo.name || !userInfo.email || !userInfo.phone) {
+        if (!userInfo.name) {
             toast("Username cannot be empty");
         } else {
             try {

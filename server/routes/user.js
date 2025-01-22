@@ -10,11 +10,10 @@ const { adminAuth } = require('../middlewares/adminAuth');
 userRouter.post('/login', async (req, res) => {
     const { userId, password } = req.body;
     try {
-        const user = await UserModel.findOne({ userId, password }).lean();
+        const user = await UserModel.findOne({ userId, password })
         if (user) {
             const secret = (user.userType === "student" || user.userType === "faculty") ? JWT_USER_SECRET : JWT_ADMIN_SECRET;
             const token = jwt.sign({ userId: user.userId }, secret);
-            delete user.password;
             res.json({ token, user });
         } else {
             res.status(401).json({
@@ -31,8 +30,7 @@ userRouter.post('/login', async (req, res) => {
 userRouter.get('/userinfo', userAuth, async (req, res) => {
     const userId = req.userId;
     try {
-        const user = await UserModel.findOne({ userId }).lean();
-        delete user.password;
+        const user = await UserModel.findOne({ userId })
         res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({
@@ -41,18 +39,11 @@ userRouter.get('/userinfo', userAuth, async (req, res) => {
     }
 })
 
-userRouter.get('/allstudents', adminAuth, async (req, res) => {
+userRouter.get('/allstudents', async (req, res) => {
     try {
-        const students = await UserModel.find({ "userType": "student" }).lean()
+        const students = await UserModel.find({ "userType": "student" })
         if (students.length > 0) {
-            const sanitizedStudents = students.map(student => {
-                // delete student.password;
-                return student;
-            });
-
-            res.status(200).json({
-                students: sanitizedStudents
-            });
+            res.status(200).json({ students });
         }
         else {
             res.status(404).json({
@@ -66,16 +57,9 @@ userRouter.get('/allstudents', adminAuth, async (req, res) => {
 
 userRouter.get('/allfaculty', async (req, res) => {
     try {
-        const faculties = await UserModel.find({ "userType": "faculty" }).lean()
+        const faculties = await UserModel.find({ "userType": "faculty" })
         if (faculties.length > 0) {
-            const sanitizedFaculties = faculties.map(faculty => {
-                delete faculty.password;
-                return faculty;
-            });
-
-            res.status(200).json({
-                faculties: sanitizedFaculties
-            });
+            res.status(200).json({ faculties });
         }
         else {
             res.status(404).json({

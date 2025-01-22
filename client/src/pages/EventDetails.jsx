@@ -40,6 +40,10 @@ const EventDetails = () => {
     const [popup, setPopup] = useRecoilState(popupAtom);
     const user = useRecoilValue(userAtom);
     const isUserAuthenticated = useRecoilValue(isAuthenticated);
+    const [allstudents, setAllStudents] = useState();
+    const [teammates, setTeammates] = useState([]);
+    const memberRef = useRef();
+    const [teamName, setTeamName] = useState("")
 
     useEffect(() => {
         fetchEvents();
@@ -132,20 +136,53 @@ const EventDetails = () => {
         return `${hours}:${minutes} ${period}`;
     }
 
+    const addTeamMates = async () => {
+        if (!isUserAuthenticated) {
+            toast("Please login to continue");
+            return;
+        }
+        else {
+            try {
+                const response = await axios.get(`${BACKEND_URL}/api/user/allstudents`)
+                setAllStudents(response.data.students)
+                setPopup("addTeammates")
+            } catch (error) {
+                toast.error("Something went wrong, please try again.")
+            }
+        }
+    }
+
     const getTicket = async () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
             return;
         }
-        if (!event?.isEventFree) {
+        else if (event?.maxTeamSize > 1 && teamName === "") {
+            toast.error("Please Enter your team name")
+        }
+        else if (!event?.isEventFree) {
             setPopup("paymentPopup");
         } else {
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
-                    {
-                        eventId: event._id,
-                    },
+                    event?.maxTeamSize > 1 ?
+                        {
+                            eventId: event._id,
+                            userDetails: teammates,
+                            teamName: teamName
+                        }
+                        : {
+                            eventId: event._id,
+                            userDetails: [{
+                                userId: user.userInfo.userId,
+                                username: user.userInfo.username,
+                                email: user.userInfo.email,
+                                phone: user.userInfo.phone,
+                                department: user.userInfo.department,
+                                profilePicture: user.userInfo.profilePicture
+                            }]
+                        },
                     {
                         headers: {
                             token: user.token,
@@ -179,11 +216,27 @@ const EventDetails = () => {
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
-                    {
-                        eventId: event._id,
-                        paymentImage: paymentUrl,
-                        iAmClubMember: userIsClubMember,
-                    },
+                    event?.maxTeamSize > 1 ?
+                        {
+                            eventId: event._id,
+                            paymentImage: paymentUrl,
+                            iAmClubMember: userIsClubMember,
+                            userDetails: teammates,
+                            teamName: teamName
+                        }
+                        : {
+                            eventId: event._id,
+                            paymentImage: paymentUrl,
+                            iAmClubMember: userIsClubMember,
+                            userDetails: [{
+                                userId: user.userInfo.userId,
+                                username: user.userInfo.username,
+                                email: user.userInfo.email,
+                                phone: user.userInfo.phone,
+                                department: user.userInfo.department,
+                                profilePicture: user.userInfo.profilePicture
+                            }]
+                        },
                     {
                         headers: {
                             token: user.token,
@@ -248,22 +301,22 @@ const EventDetails = () => {
         const tickets = eventTickets;
         let participantsList = [];
         tickets.forEach((ticket) => {
-            const userJoiningYear = ticket.userDetails.userId.slice(2, 4);
+            const userJoiningYear = ticket.userDetails[0].userId.slice(2, 4);
             const userDate = new Date(`20${userJoiningYear}-06-01`);
             const currentDate = new Date();
             const difference =
                 (currentDate.getFullYear() - userDate.getFullYear()) * 12 +
                 currentDate.getMonth() -
                 userDate.getMonth();
-            ticket.userDetails.year = Math.ceil(difference / 12);
+            ticket.userDetails[0].year = Math.ceil(difference / 12);
 
             //Push into the array
             event?.isPriceVariation
                 ? participantsList.push({
-                    userId: ticket.userDetails.userId,
-                    username: ticket.userDetails.username,
-                    department: ticket.userDetails.department,
-                    year: ticket.userDetails.year,
+                    userId: ticket.userDetails[0].userId,
+                    username: ticket.userDetails[0].username,
+                    department: ticket.userDetails[0].department,
+                    year: ticket.userDetails[0].year,
                     amoutPaid:
                         ticket.eventDetails.isPriceVariation && ticket.iAmClubMember
                             ? ticket.eventDetails.eventFeeForClubMember
@@ -271,10 +324,10 @@ const EventDetails = () => {
                     clubMember: ticket.iAmClubMember ? "Yes" : "No",
                 })
                 : participantsList.push({
-                    userId: ticket.userDetails.userId,
-                    username: ticket.userDetails.username,
-                    department: ticket.userDetails.department,
-                    year: ticket.userDetails.year
+                    userId: ticket.userDetails[0].userId,
+                    username: ticket.userDetails[0].username,
+                    department: ticket.userDetails[0].department,
+                    year: ticket.userDetails[0].year
                 });
         });
         jsonToCsvExport({
@@ -282,6 +335,31 @@ const EventDetails = () => {
             filename: event.title + " Participants",
         });
     };
+
+    const addMembers = () => {
+        const student = allstudents.find((student) => {
+            return student.userId === memberRef.current.value
+        })
+
+        if (teammates.length < event?.maxTeamSize) {
+            if (student) {
+                setTeammates((prevTeammates) => [...prevTeammates, student]);
+            }
+            else {
+                toast.error("Invalid user Id")
+            }
+        }
+        else {
+            toast.error("Team size limit reached")
+        }
+        memberRef.current.value = ""
+    }
+
+    const removeMember = (teammateUserId) => {
+        setTeammates((prevTeammates) =>
+            prevTeammates.filter((teammate) => teammate.userId !== teammateUserId)
+        );
+    }
 
     return (
         <>
@@ -344,7 +422,7 @@ const EventDetails = () => {
                                         id="iamclubmember"
                                         className="w-4 h-4"
                                         checked={userIsClubMember}
-                                        onClick={() => {
+                                        onChange={() => {
                                             setUserIsClubMember(!userIsClubMember);
                                         }}
                                     />
@@ -357,6 +435,88 @@ const EventDetails = () => {
                             onClick={handleBooking}
                         >
                             Book Ticket
+                        </button>
+                    </div>
+                </PopupScreen>
+            )}
+            {popup === "addTeammates" && (
+                <PopupScreen>
+                    <div
+                        className={`rounded-lg mx-auto p-4 max-h-[85vh] overflow-y-auto w-80 sm:w-[80%] lg:w-[70%] flex flex-col gap-8 font-lato mt-16 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
+                    >
+                        <span className="flex justify-between items-center gap-4">
+                            <p className="text-2xl font-montserrat font-medium">Create Team</p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <span className="flex flex-col gap-10 items-center">
+                            <input
+                                type="text"
+                                name="teamName"
+                                className={`w-full sm:w-[80%] lg:w-[50%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                    ? "bg-white/60  placeholder-black/60"
+                                    : "bg-gray/60 border-white text-white placeholder-white/60"
+                                    }`}
+                                placeholder="What's your team name ?"
+                                onChange={(e) => setTeamName(e.target.value)}
+                            />
+                            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-[80%] lg:w-[50%] justify-center">
+                                <input
+                                    type="text"
+                                    name="userId"
+                                    className={`p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
+                                        ? "bg-white/60  placeholder-black/60"
+                                        : "bg-gray/60 border-white text-white placeholder-white/60"
+                                        }`}
+                                    placeholder="Team member user Id"
+                                    ref={memberRef}
+                                />
+                                <button
+                                    className={`items-center justify-center px-4 py-2 rounded-lg text-white ${currentTheme === "light" ? "bg-gray" : "bg-black"
+                                        } `}
+                                    onClick={addMembers}
+                                >
+                                    Add Member
+                                </button>
+                            </div>
+                            <div className="w-full flex flex-wrap gap-4 justify-center items-center">
+                                {
+                                    teammates.map((teammate) => (
+                                        <div
+                                            className={`p-4 w-full sm:w-fit custom_shadow rounded-lg cursor-pointer flex items-center gap-4 font-lato hover:bg-red ${currentTheme === "light" ? "bg-white" : "bg-black"
+                                                }`}
+                                            key={teammate.userId}
+                                            onClick={() => removeMember(teammate.userId)}
+                                        >
+                                            <img
+                                                src={teammate.profilePicture}
+                                                alt="Profile"
+                                                className="w-12 h-12 bg-black rounded-full"
+                                            />
+                                            <span className="flex flex-col">
+                                                <p className="text-lg">{teammate.username}</p>
+                                                <p
+                                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
+                                                        }`}
+                                                >
+                                                    {teammate.department} - {teammate.userId}
+                                                </p>
+                                            </span>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        </span>
+                        <button
+                            className="w-fit mx-auto mb-4 flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                            onClick={getTicket}
+                        >
+                            {event?.isEventFree ? "Book Ticket" : "Proceed for payment"}
                         </button>
                     </div>
                 </PopupScreen>
@@ -529,9 +689,9 @@ const EventDetails = () => {
                                 canBookEvent(event?.date, event?.time) && (
                                     <button
                                         className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
-                                        onClick={getTicket}
+                                        onClick={event?.maxTeamSize > 1 ? addTeamMates : getTicket}
                                     >
-                                        Get Ticket
+                                        {!event?.isEventFree ? "Get Ticket" : "Book Ticket"}
                                     </button>
                                 )}
                         </div>
