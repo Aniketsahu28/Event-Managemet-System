@@ -45,6 +45,14 @@ const eventSchema = new mongoose.Schema({
     eventForDepts: [
         { type: String }
     ],
+    minTeamSize: {
+        type: Number,
+        default: 1
+    },
+    maxTeamSize: {
+        type: Number,
+        default: 1
+    },
     speakers: [
         { type: String }
     ],

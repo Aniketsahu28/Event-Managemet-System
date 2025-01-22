@@ -36,6 +36,8 @@ const AddNewEvent = () => {
         time: "",
         venue: "",
         eventForDepts: [],
+        minTeamSize: 1,
+        maxTeamSize: 1,
         speakers: [],
         isLimitedSeats: false,
         maxSeats: 100000,
@@ -175,6 +177,8 @@ const AddNewEvent = () => {
                     time: eventDetails.time,
                     venue: eventDetails.venue,
                     eventForDepts: eventDetails.eventForDepts,
+                    minTeamSize: eventDetails.minTeamSize,
+                    maxTeamSize: eventDetails.maxTeamSize,
                     speakers: eventDetails.speakers,
                     isLimitedSeats: eventDetails.isLimitedSeats,
                     maxSeats: eventDetails.maxSeats,
@@ -206,6 +210,8 @@ const AddNewEvent = () => {
                     time: "",
                     venue: "",
                     eventForDepts: [],
+                    minTeamSize: 1,
+                    maxTeamSize: 1,
                     speakers: [],
                     isLimitedSeats: false,
                     maxSeats: 0,
@@ -406,6 +412,48 @@ const AddNewEvent = () => {
                         ))}
                     </div>
                 </span>
+                <div className="grid grid-cols-8 gap-6 col-span-12">
+                    <div className="lg:col-span-2 col-span-4 flex flex-col gap-2">
+                        <label htmlFor="date">Min Team Size <span className="text-red">*</span></label>
+                        <input
+                            type="number"
+                            name="minTeamSize"
+                            id="minTeamSize"
+                            className={`p-2 rounded-lg border-[1px] outline-none ${currentTheme === "light"
+                                ? "border-gray/50 text-black "
+                                : "bg-gray border-white text-white/60"
+                                }`}
+                            required
+                            value={eventDetails.minTeamSize}
+                            onChange={(e) => {
+                                setEventDetails((prevDetails) => ({
+                                    ...prevDetails,
+                                    minTeamSize: e.target.value,
+                                }));
+                            }}
+                        />
+                    </div>
+                    <div className="lg:col-span-2 col-span-4 flex flex-col gap-2">
+                        <label htmlFor="maxTeamSize">Max Team Size <span className="text-red">*</span></label>
+                        <input
+                            type="number"
+                            name="maxTeamSize"
+                            id="maxTeamSize"
+                            className={`p-2 rounded-lg border-[1px] outline-none ${currentTheme === "light"
+                                ? "border-gray/50 text-black "
+                                : "bg-gray border-white text-white/60"
+                                }`}
+                            required
+                            value={eventDetails.maxTeamSize}
+                            onChange={(e) => {
+                                setEventDetails((prevDetails) => ({
+                                    ...prevDetails,
+                                    maxTeamSize: e.target.value,
+                                }));
+                            }}
+                        />
+                    </div>
+                </div>
                 <span className="flex flex-col gap-2 col-span-8">
                     <label htmlFor="Speakers">Speakers</label>
                     <span className="flex flex-col sm:flex-row gap-4">

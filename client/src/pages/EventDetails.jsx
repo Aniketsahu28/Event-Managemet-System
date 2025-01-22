@@ -23,6 +23,7 @@ import toast from "react-hot-toast";
 import { MdOutlineFileDownload } from "react-icons/md";
 import jsonToCsvExport from "json-to-csv-export";
 import { MdVerified } from "react-icons/md";
+import { FaChair } from "react-icons/fa6";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
@@ -489,12 +490,18 @@ const EventDetails = () => {
                             </span>
                             {event?.isLimitedSeats && (
                                 <span className="flex gap-3 items-center">
-                                    <GoPeople className="text-xl" />
+                                    <FaChair className="text-xl" />
                                     <p>
                                         {event?.seatsFilled} / {event?.maxSeats}
                                     </p>
                                 </span>
                             )}
+                            <span className="flex gap-3 items-center">
+                                <GoPeople className="text-xl" />
+                                <p>
+                                    {event?.maxTeamSize > 1 ? `Team (${event?.minTeamSize} - ${event?.maxTeamSize})` : `Single ${event?.minTeamSize}`}
+                                </p>
+                            </span>
                         </div>
                         <div className="flex flex-col gap-4 mt-10">
                             {!event?.isEventFree && (

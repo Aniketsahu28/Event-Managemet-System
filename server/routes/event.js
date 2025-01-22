@@ -9,7 +9,7 @@ const { TicketModel } = require('../models/ticket')
 
 eventRouter.post('/addevent', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
-    const { title, description, banner, date, time, venue, eventForDepts, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
+    const { title, description, banner, date, time, venue, eventForDepts, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
         const organizer = await OrganizerModel.findOne({ organizerId });
@@ -26,6 +26,8 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
             time,
             venue,
             eventForDepts,
+            minTeamSize,
+            maxTeamSize,
             speakers,
             isLimitedSeats,
             maxSeats,
@@ -84,7 +86,7 @@ eventRouter.patch('/toggleparticipation', organizerAuth, async (req, res) => {
 })
 
 eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
-    const { eventId, title, description, banner, date, time, venue, eventForDepts, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
+    const { eventId, title, description, banner, date, time, venue, eventForDepts, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
         await EventModel.updateOne({ "_id": eventId }, {
@@ -95,6 +97,8 @@ eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
             time,
             venue,
             eventForDepts,
+            minTeamSize,
+            maxTeamSize,
             speakers,
             isLimitedSeats,
             maxSeats,
