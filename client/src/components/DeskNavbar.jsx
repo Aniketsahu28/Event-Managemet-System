@@ -17,6 +17,7 @@ const DeskNavbar = () => {
 
     const logoutUser = () => {
         setUser(null);
+        setProfilePopUp(false)
     };
 
     return (

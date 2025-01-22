@@ -47,7 +47,7 @@ organizerRouter.get('/allorganizers', async (req, res) => {
 organizerRouter.get('/organizerdetails', async (req, res) => {
     const { organizerId } = req.query;
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId }).lean();
+        const organizer = await OrganizerModel.findOne({ _id: organizerId }).lean();
         if (organizer) {
             delete organizer.password;
             res.status(200).json({
