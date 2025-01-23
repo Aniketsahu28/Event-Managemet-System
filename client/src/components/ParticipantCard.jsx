@@ -8,9 +8,10 @@ import { LuExternalLink } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
+import toast from "react-hot-toast";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const ParticipantCard = ({ userDetails, maxTeamSize, iAmClubMember, isPriceVariation, paymentImage }) => {
+const ParticipantCard = ({ ticketId, userDetails, maxTeamSize, iAmClubMember, isPriceVariation, paymentImage }) => {
     const user = useRecoilValue(userAtom)
     const currentTheme = useRecoilValue(themeAtom);
     const [popup, setPopup] = useRecoilState(popupAtom);
@@ -20,18 +21,20 @@ const ParticipantCard = ({ userDetails, maxTeamSize, iAmClubMember, isPriceVaria
             const response = await axios.delete(`${BACKEND_URL}/api/event/deleteticket`,
                 {
                     data: {
-                        ticketId: ticket._id
+                        ticketId: ticketId
                     },
                     headers: {
                         "token": user.token
                     }
                 }
             );
-            alert(response.data.message)
+            toast.success(response.data.message, {
+                duration: 3000,
+            });
             setPopup(null)
         }
         catch (error) {
-            alert(error.response.data.message);
+            toast.error(error.response?.data.message || error);
             setPopup(null)
         }
     }

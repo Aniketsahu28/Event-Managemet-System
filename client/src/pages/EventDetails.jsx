@@ -759,6 +759,7 @@ const EventDetails = () => {
                                             ) : (
                                                 <ParticipantCard
                                                     key={index}
+                                                    ticketId={ticket._id}
                                                     userDetails={ticket.userDetails[0]}
                                                     maxTeamSize={event?.maxTeamSize}
                                                     iAmClubMember={ticket.iAmClubMember}
@@ -784,6 +785,7 @@ const EventDetails = () => {
                                             ) : (
                                                 <ParticipantCard
                                                     key={index}
+                                                    ticketId={ticket._id}
                                                     userDetails={ticket.userDetails[0]}
                                                     maxTeamSize={event?.maxTeamSize}
                                                     iAmClubMember={ticket.iAmClubMember}
