@@ -24,6 +24,7 @@ import { MdOutlineFileDownload } from "react-icons/md";
 import jsonToCsvExport from "json-to-csv-export";
 import { MdVerified } from "react-icons/md";
 import { FaChair } from "react-icons/fa6";
+import TeamCard from "../components/TeamCard";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
@@ -43,7 +44,7 @@ const EventDetails = () => {
     const [allstudents, setAllStudents] = useState();
     const [teammates, setTeammates] = useState([]);
     const memberRef = useRef();
-    const [teamName, setTeamName] = useState("")
+    const [teamName, setTeamName] = useState("");
 
     useEffect(() => {
         fetchEvents();
@@ -140,48 +141,47 @@ const EventDetails = () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
             return;
-        }
-        else {
+        } else {
             try {
-                const response = await axios.get(`${BACKEND_URL}/api/user/allstudents`)
-                setAllStudents(response.data.students)
-                setPopup("addTeammates")
+                const response = await axios.get(`${BACKEND_URL}/api/user/allstudents`);
+                setAllStudents(response.data.students);
+                setPopup("addTeammates");
             } catch (error) {
-                toast.error("Something went wrong, please try again.")
+                toast.error("Something went wrong, please try again.");
             }
         }
-    }
+    };
 
     const getTicket = async () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
             return;
-        }
-        else if (event?.maxTeamSize > 1 && teamName === "") {
-            toast.error("Please Enter your team name")
-        }
-        else if (!event?.isEventFree) {
+        } else if (event?.maxTeamSize > 1 && teamName === "") {
+            toast.error("Please Enter your team name");
+        } else if (!event?.isEventFree) {
             setPopup("paymentPopup");
         } else {
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
-                    event?.maxTeamSize > 1 ?
-                        {
+                    event?.maxTeamSize > 1
+                        ? {
                             eventId: event._id,
                             userDetails: teammates,
-                            teamName: teamName
+                            teamName: teamName,
                         }
                         : {
                             eventId: event._id,
-                            userDetails: [{
-                                userId: user.userInfo.userId,
-                                username: user.userInfo.username,
-                                email: user.userInfo.email,
-                                phone: user.userInfo.phone,
-                                department: user.userInfo.department,
-                                profilePicture: user.userInfo.profilePicture
-                            }]
+                            userDetails: [
+                                {
+                                    userId: user.userInfo.userId,
+                                    username: user.userInfo.username,
+                                    email: user.userInfo.email,
+                                    phone: user.userInfo.phone,
+                                    department: user.userInfo.department,
+                                    profilePicture: user.userInfo.profilePicture,
+                                },
+                            ],
                         },
                     {
                         headers: {
@@ -193,8 +193,10 @@ const EventDetails = () => {
                     toast.success(response.data.message, {
                         duration: 3000,
                     });
+                    setPopup(null);
                 } else {
                     toast(response.data.message);
+                    setPopup(null);
                 }
             } catch (error) {
                 toast.error(error.response?.data.message || error);
@@ -216,26 +218,28 @@ const EventDetails = () => {
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
-                    event?.maxTeamSize > 1 ?
-                        {
+                    event?.maxTeamSize > 1
+                        ? {
                             eventId: event._id,
                             paymentImage: paymentUrl,
                             iAmClubMember: userIsClubMember,
                             userDetails: teammates,
-                            teamName: teamName
+                            teamName: teamName,
                         }
                         : {
                             eventId: event._id,
                             paymentImage: paymentUrl,
                             iAmClubMember: userIsClubMember,
-                            userDetails: [{
-                                userId: user.userInfo.userId,
-                                username: user.userInfo.username,
-                                email: user.userInfo.email,
-                                phone: user.userInfo.phone,
-                                department: user.userInfo.department,
-                                profilePicture: user.userInfo.profilePicture
-                            }]
+                            userDetails: [
+                                {
+                                    userId: user.userInfo.userId,
+                                    username: user.userInfo.username,
+                                    email: user.userInfo.email,
+                                    phone: user.userInfo.phone,
+                                    department: user.userInfo.department,
+                                    profilePicture: user.userInfo.profilePicture,
+                                },
+                            ],
                         },
                     {
                         headers: {
@@ -260,7 +264,9 @@ const EventDetails = () => {
     const handleSearchParticipant = (e) => {
         setSearchTerm(e.target.value);
         const searchResult = eventTickets.filter((ticket) => {
-            return ticket.userDetails.userId.includes(e.target.value);
+            return event?.maxTeamSize > 1
+                ? ticket.teamName.toLowerCase().includes(e.target.value.toLowerCase())
+                : ticket.userDetails.userId.includes(e.target.value);
         });
         setSearchedEventTickets(searchResult);
     };
@@ -301,34 +307,40 @@ const EventDetails = () => {
         const tickets = eventTickets;
         let participantsList = [];
         tickets.forEach((ticket) => {
-            const userJoiningYear = ticket.userDetails[0].userId.slice(2, 4);
-            const userDate = new Date(`20${userJoiningYear}-06-01`);
             const currentDate = new Date();
-            const difference =
-                (currentDate.getFullYear() - userDate.getFullYear()) * 12 +
-                currentDate.getMonth() -
-                userDate.getMonth();
-            ticket.userDetails[0].year = Math.ceil(difference / 12);
 
-            //Push into the array
-            event?.isPriceVariation
-                ? participantsList.push({
-                    userId: ticket.userDetails[0].userId,
-                    username: ticket.userDetails[0].username,
-                    department: ticket.userDetails[0].department,
-                    year: ticket.userDetails[0].year,
-                    amoutPaid:
-                        ticket.eventDetails.isPriceVariation && ticket.iAmClubMember
-                            ? ticket.eventDetails.eventFeeForClubMember
-                            : ticket.eventDetails.eventFee,
-                    clubMember: ticket.iAmClubMember ? "Yes" : "No",
-                })
-                : participantsList.push({
-                    userId: ticket.userDetails[0].userId,
-                    username: ticket.userDetails[0].username,
-                    department: ticket.userDetails[0].department,
-                    year: ticket.userDetails[0].year
-                });
+            ticket.userDetails.forEach((userDetail) => {
+                const userJoiningYear = userDetail.userId.slice(2, 4);
+                const userDate = new Date(`20${userJoiningYear}-06-01`);
+                const difference =
+                    (currentDate.getFullYear() - userDate.getFullYear()) * 12 +
+                    currentDate.getMonth() -
+                    userDate.getMonth();
+                userDetail.year = Math.ceil(difference / 12);
+
+                //Push into the array
+                event?.isPriceVariation
+                    ? participantsList.push({
+                        teamName: event?.maxTeamSize > 1 && ticket.teamName,
+                        userId: userDetail.userId,
+                        username: userDetail.username,
+                        department: userDetail.department,
+                        year: userDetail.year,
+                        amoutPaid:
+                            ticket.eventDetails.isPriceVariation && ticket.iAmClubMember
+                                ? ticket.eventDetails.eventFeeForClubMember
+                                : ticket.eventDetails.eventFee,
+                        clubMember: ticket.iAmClubMember ? "Yes" : "No",
+                    })
+                    : participantsList.push({
+                        teamName: event?.maxTeamSize > 1 && ticket.teamName,
+                        userId: userDetail.userId,
+                        username: userDetail.username,
+                        department: userDetail.department,
+                        year: userDetail.year,
+                    });
+            })
+
         });
         jsonToCsvExport({
             data: participantsList,
@@ -338,28 +350,26 @@ const EventDetails = () => {
 
     const addMembers = () => {
         const student = allstudents.find((student) => {
-            return student.userId === memberRef.current.value
-        })
+            return student.userId === memberRef.current.value;
+        });
 
         if (teammates.length < event?.maxTeamSize) {
             if (student) {
                 setTeammates((prevTeammates) => [...prevTeammates, student]);
+            } else {
+                toast.error("Invalid user Id");
             }
-            else {
-                toast.error("Invalid user Id")
-            }
+        } else {
+            toast.error("Team size limit reached");
         }
-        else {
-            toast.error("Team size limit reached")
-        }
-        memberRef.current.value = ""
-    }
+        memberRef.current.value = "";
+    };
 
     const removeMember = (teammateUserId) => {
         setTeammates((prevTeammates) =>
             prevTeammates.filter((teammate) => teammate.userId !== teammateUserId)
         );
-    }
+    };
 
     return (
         <>
@@ -448,7 +458,9 @@ const EventDetails = () => {
                             }`}
                     >
                         <span className="flex justify-between items-center gap-4">
-                            <p className="text-2xl font-montserrat font-medium">Create Team</p>
+                            <p className="text-2xl font-montserrat font-medium">
+                                Create Team
+                            </p>
                             <RxCross2
                                 className="text-2xl cursor-pointer"
                                 onClick={() => setPopup(null)}
@@ -485,31 +497,31 @@ const EventDetails = () => {
                                 </button>
                             </div>
                             <div className="w-full flex flex-wrap gap-4 justify-center items-center">
-                                {
-                                    teammates.map((teammate) => (
-                                        <div
-                                            className={`p-4 w-full sm:w-fit custom_shadow rounded-lg cursor-pointer flex items-center gap-4 font-lato hover:bg-red ${currentTheme === "light" ? "bg-white" : "bg-black"
-                                                }`}
-                                            key={teammate.userId}
-                                            onClick={() => removeMember(teammate.userId)}
-                                        >
-                                            <img
-                                                src={teammate.profilePicture}
-                                                alt="Profile"
-                                                className="w-12 h-12 bg-black rounded-full"
-                                            />
-                                            <span className="flex flex-col">
-                                                <p className="text-lg">{teammate.username}</p>
-                                                <p
-                                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/70"
-                                                        }`}
-                                                >
-                                                    {teammate.department} - {teammate.userId}
-                                                </p>
-                                            </span>
-                                        </div>
-                                    ))
-                                }
+                                {teammates.map((teammate) => (
+                                    <div
+                                        className={`p-4 w-full sm:w-fit custom_shadow rounded-lg cursor-pointer flex items-center gap-4 font-lato hover:bg-red ${currentTheme === "light" ? "bg-white" : "bg-black"
+                                            }`}
+                                        key={teammate.userId}
+                                        onClick={() => removeMember(teammate.userId)}
+                                    >
+                                        <img
+                                            src={teammate.profilePicture}
+                                            alt="Profile"
+                                            className="w-12 h-12 bg-black rounded-full"
+                                        />
+                                        <span className="flex flex-col">
+                                            <p className="text-lg">{teammate.username}</p>
+                                            <p
+                                                className={`${currentTheme === "light"
+                                                    ? "text-black/60"
+                                                    : "text-white/70"
+                                                    }`}
+                                            >
+                                                {teammate.department} - {teammate.userId}
+                                            </p>
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
                         </span>
                         <button
@@ -659,7 +671,9 @@ const EventDetails = () => {
                             <span className="flex gap-3 items-center">
                                 <GoPeople className="text-xl" />
                                 <p>
-                                    {event?.maxTeamSize > 1 ? `Team (${event?.minTeamSize} - ${event?.maxTeamSize})` : `Single ${event?.minTeamSize}`}
+                                    {event?.maxTeamSize > 1
+                                        ? `Team (${event?.minTeamSize} - ${event?.maxTeamSize})`
+                                        : `Single ${event?.minTeamSize}`}
                                 </p>
                             </span>
                         </div>
@@ -691,7 +705,7 @@ const EventDetails = () => {
                                         className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-blue_100"
                                         onClick={event?.maxTeamSize > 1 ? addTeamMates : getTicket}
                                     >
-                                        {!event?.isEventFree ? "Get Ticket" : "Book Ticket"}
+                                        Book Ticket
                                     </button>
                                 )}
                         </div>
@@ -705,7 +719,7 @@ const EventDetails = () => {
                         <div className="w-full flex flex-col gap-6 lg:gap-10">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
                                 <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                                    Participants{" "}
+                                    {event?.maxTeamSize > 1 ? "Teams" : "Participants"}{" "}
                                     {event.isLimitedSeats &&
                                         `(${event.seatsFilled} / ${event.maxSeats})`}
                                 </h2>
@@ -716,20 +730,70 @@ const EventDetails = () => {
                                         ? "bg-white/60  placeholder-black/60"
                                         : "bg-gray/60 border-white text-white placeholder-white/60"
                                         }`}
-                                    placeholder="Search participant by id"
+                                    placeholder={`${event?.maxTeamSize > 1
+                                        ? "Search by team name"
+                                        : "Search participant by id"
+                                        }`}
                                     value={searchTerm}
                                     onChange={handleSearchParticipant}
                                 />
                             </div>
-                            <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between sm:justify-start">
+                            <div
+                                className={`flex flex-col ${event?.maxTeamSize > 1 ? "sm:flex-col" : "sm:flex-row"
+                                    } gap-4 lg:gap-6 flex-wrap w-full sm:w-fit items-center sm:items-start justify-between sm:justify-start`}
+                            >
                                 {eventTickets?.length > 0
                                     ? searchTerm === ""
-                                        ? eventTickets.map((ticket, index) => (
-                                            <ParticipantCard key={index} ticket={ticket} />
-                                        ))
-                                        : searchedEventTickets.map((ticket, index) => (
-                                            <ParticipantCard key={index} ticket={ticket} />
-                                        ))
+                                        ? eventTickets.map((ticket, index) =>
+                                            event?.maxTeamSize > 1 ? (
+                                                <TeamCard
+                                                    key={index}
+                                                    ticket={ticket}
+                                                    maxTeamSize={event?.maxTeamSize}
+                                                    iAmClubMember={ticket.iAmClubMember}
+                                                    isPriceVariation={
+                                                        ticket.eventDetails.isPriceVariation
+                                                    }
+                                                    paymentImage={ticket.paymentImage}
+                                                />
+                                            ) : (
+                                                <ParticipantCard
+                                                    key={index}
+                                                    userDetails={ticket.userDetails[0]}
+                                                    maxTeamSize={event?.maxTeamSize}
+                                                    iAmClubMember={ticket.iAmClubMember}
+                                                    isPriceVariation={
+                                                        ticket.eventDetails.isPriceVariation
+                                                    }
+                                                    paymentImage={ticket.paymentImage}
+                                                />
+                                            )
+                                        )
+                                        : searchedEventTickets.map((ticket, index) =>
+                                            event?.maxTeamSize > 1 ? (
+                                                <TeamCard
+                                                    key={index}
+                                                    ticket={ticket}
+                                                    maxTeamSize={event?.maxTeamSize}
+                                                    iAmClubMember={ticket.iAmClubMember}
+                                                    isPriceVariation={
+                                                        ticket.eventDetails.isPriceVariation
+                                                    }
+                                                    paymentImage={ticket.paymentImage}
+                                                />
+                                            ) : (
+                                                <ParticipantCard
+                                                    key={index}
+                                                    userDetails={ticket.userDetails[0]}
+                                                    maxTeamSize={event?.maxTeamSize}
+                                                    iAmClubMember={ticket.iAmClubMember}
+                                                    isPriceVariation={
+                                                        ticket.eventDetails.isPriceVariation
+                                                    }
+                                                    paymentImage={ticket.paymentImage}
+                                                />
+                                            )
+                                        )
                                     : "No tickets found"}
                             </div>
                             <span className="flex flex-col sm:flex-row gap-4 mx-auto mt-6">

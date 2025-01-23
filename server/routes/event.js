@@ -189,7 +189,7 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
 
             if (alreadyPresent) {
                 return res.status(200).json({
-                    message: "Ticket already booked"
+                    message: `Ticket already booked for ${user.username}`
                 });
             }
         }
