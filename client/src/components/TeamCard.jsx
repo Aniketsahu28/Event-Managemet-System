@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import PopupScreen from "./PopupScreen";
@@ -11,14 +11,19 @@ import { userAtom } from "../store/userAtom";
 import ParticipantCard from "./ParticipantCard";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const TeamCard = ({ ticket, maxTeamSize, iAmClubMember, isPriceVariation, paymentImage }) => {
     const user = useRecoilValue(userAtom);
     const currentTheme = useRecoilValue(themeAtom);
     const [popup, setPopup] = useRecoilState(popupAtom);
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const removeTeam = async () => {
+        setLoadingMessage("Remove team, please wait...")
+        setLoading(true)
         try {
             const response = await axios.delete(
                 `${BACKEND_URL}/api/event/deleteticket`,
@@ -37,6 +42,7 @@ const TeamCard = ({ ticket, maxTeamSize, iAmClubMember, isPriceVariation, paymen
             toast.error(error.response?.data.message || error);
             setPopup(null);
         }
+        setLoading(false)
     };
 
     return (
@@ -68,6 +74,7 @@ const TeamCard = ({ ticket, maxTeamSize, iAmClubMember, isPriceVariation, paymen
                     </div>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div className={`p-4 rounded-lg flex flex-col sm:flex-row sm:flex-wrap w-full sm:w-fit gap-4 border-[1px] ${currentTheme === 'light' ? "border-black" : "border-white"}`}>
                 <h2 className="p-4 rounded-lg flex items-center justify-center font-medium text-xl bg-gray text-white">
                     {ticket.teamName}

@@ -8,6 +8,7 @@ import { userAtom } from "../store/userAtom";
 import toast from "react-hot-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { v4 as uuidv4 } from 'uuid';
+import Loader from "../components/Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AddNewApproval = () => {
@@ -16,6 +17,8 @@ const AddNewApproval = () => {
     const titleRef = useRef(null);
     const descriptionRef = useRef(null);
     const [faculties, setFaculties] = useState();
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
     const [approvalDetails, setApprovalDetails] = useState({
         title: "",
         description: "",
@@ -37,6 +40,8 @@ const AddNewApproval = () => {
     }, []);
 
     const fetchAllFaculties = async () => {
+        setLoadingMessage("Loading requirements, please wait...")
+        setLoading(true)
         try {
             const response = await axios.get(`${BACKEND_URL}/api/user/allfaculty`);
             if (response.status === 200) {
@@ -45,6 +50,7 @@ const AddNewApproval = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const handleApproverTitleChange = (e) => {
@@ -145,6 +151,8 @@ const AddNewApproval = () => {
             }
         })
 
+        setLoadingMessage("Adding approval...")
+        setLoading(true)
         try {
             const response = await axios.post(`${BACKEND_URL}/api/approval/addapproval`,
                 {
@@ -184,6 +192,7 @@ const AddNewApproval = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     return (
@@ -191,6 +200,7 @@ const AddNewApproval = () => {
             className={`mx-4 sm:mx-16 py-10 sm:py-16 flex flex-col gap-10 items-center ${currentTheme === "light" ? "text-black" : "text-white"
                 }`}
         >
+            {loading && <Loader message={loadingMessage} />}
             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
                 Add New Approval
             </h2>

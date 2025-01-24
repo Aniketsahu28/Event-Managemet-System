@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DOMPurify from "dompurify";
 import { SlCalender } from "react-icons/sl";
 import { LuClock } from "react-icons/lu";
@@ -13,6 +13,7 @@ import { RxCross2 } from "react-icons/rx";
 import { popupAtom } from "../store/popupAtom";
 import { themeAtom } from "../store/themeAtom";
 import toast from 'react-hot-toast'
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventCard = ({
@@ -30,6 +31,8 @@ const EventCard = ({
     const user = useRecoilValue(userAtom);
     const isUserAuthenticated = useRecoilValue(isAuthenticated)
     const [popup, setPopup] = useRecoilState(popupAtom)
+    const [loading, setLoading] = useState(false)
+    const [loadingMessage, setLoadingMessage] = useState("")
     const sanitizedDescription = DOMPurify.sanitize(description);
     const trimmedDescription =
         sanitizedDescription.length > 40
@@ -43,6 +46,8 @@ const EventCard = ({
 
     const deleteEvent = async (e) => {
         e.preventDefault();
+        setLoadingMessage("Deleting event...")
+        setLoading(true)
         try {
             const response = await axios.delete(
                 `${BACKEND_URL}/api/event/deleteevent`,
@@ -63,6 +68,7 @@ const EventCard = ({
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     return (
@@ -94,6 +100,7 @@ const EventCard = ({
                     </div>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <Link
                 to={`/events/${id}`}
                 className="hover:scale-95 transition-all w-[320px] sm:w-[330px] custom_shadow rounded-lg p-3 flex flex-col gap-2 bg-blue_200 relative"

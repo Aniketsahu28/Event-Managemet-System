@@ -10,6 +10,7 @@ import { popupAtom } from "../store/popupAtom";
 import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
 import AdminPanelOrganizerCard from "./AdminPanelOrganizerCard";
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AdminOrganizerOperations = () => {
@@ -22,6 +23,8 @@ const AdminOrganizerOperations = () => {
     const searchOrganizerName = useRef();
     const addOrganizerIdRef = useRef();
     const addOrganizerNameRef = useRef();
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
     const [addOrganizerDropdowns, setAddOrganizerDropdowns] = useState({
         organizerDepartment: "",
         organizerFacultyId: "",
@@ -34,6 +37,8 @@ const AdminOrganizerOperations = () => {
     }, []);
 
     const fetchAllOrganizers = async () => {
+        setLoadingMessage("Loading information, please wait...")
+        setLoading(true)
         try {
             const response = await axios.get(
                 `${BACKEND_URL}/api/organizer/allorganizers`,
@@ -49,9 +54,12 @@ const AdminOrganizerOperations = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const fetchAllFaculties = async () => {
+        setLoadingMessage("Loading information, please wait...")
+        setLoading(true)
         try {
             const response = await axios.get(`${BACKEND_URL}/api/user/allfaculty`);
             if (response.status === 200) {
@@ -60,6 +68,7 @@ const AdminOrganizerOperations = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const AdminSearchOrganizer = () => {
@@ -82,6 +91,8 @@ const AdminOrganizerOperations = () => {
         ) {
             toast.error("Please select dropdowns");
         } else {
+            setLoadingMessage("Adding organizer, please wait...")
+            setLoading(true)
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/organizer/createorganizer`,
@@ -107,6 +118,7 @@ const AdminOrganizerOperations = () => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
+            setLoading(false)
         }
     };
 
@@ -253,6 +265,7 @@ const AdminOrganizerOperations = () => {
                     </form>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div className="flex flex-col gap-8 sm:gap-6 lg:gap-8">
                 <div className="flex flex-col sm:flex-row gap-4">
                     <input

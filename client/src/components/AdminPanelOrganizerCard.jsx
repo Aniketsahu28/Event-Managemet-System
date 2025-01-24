@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -8,14 +8,19 @@ import { RxCross2 } from "react-icons/rx";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AdminPanelOrganizerCard = ({ organizer }) => {
     const currentTheme = useRecoilValue(themeAtom);
     const user = useRecoilValue(userAtom);
     const [popup, setPopup] = useRecoilState(popupAtom);
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const removeOrganizer = async () => {
+        setLoadingMessage("Removing organizer, please wait...")
+        setLoading(true)
         try {
             const response = await axios.delete(
                 `${BACKEND_URL}/api/organizer/deleteorganizer`,
@@ -36,6 +41,7 @@ const AdminPanelOrganizerCard = ({ organizer }) => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     return (
@@ -87,6 +93,7 @@ const AdminPanelOrganizerCard = ({ organizer }) => {
                     </div>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div
                 className={`col-span-12 lg:col-span-6 flex flex-col sm:flex-row gap-2 justify-between custom_shadow p-3 rounded-lg ${currentTheme === "light" ? "bg-white" : "bg-black"
                     }`}

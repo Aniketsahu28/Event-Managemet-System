@@ -11,6 +11,7 @@ import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import OrganizerApprovalCard from "../components/OrganizerApprovalCard";
+import Loader from "../components/Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Profile = () => {
@@ -25,6 +26,7 @@ const Profile = () => {
     const searchedEvent = useRef(null);
     const searchedApproval = useRef(null);
     const searchedTicket = useRef(null);
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (user.userInfo.userType === "organizer") {
@@ -36,6 +38,7 @@ const Profile = () => {
     }, []);
 
     const fetchUserTickets = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`${BACKEND_URL}/api/event/usertickets`, {
                 headers: {
@@ -49,6 +52,7 @@ const Profile = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false);
     };
 
     const searchTickets = () => {
@@ -79,6 +83,7 @@ const Profile = () => {
     };
 
     const fetchOrganizerEvents = async () => {
+        setLoading(true)
         try {
             const response = await axios.get(
                 `${BACKEND_URL}/api/event/organizerevents`,
@@ -93,9 +98,11 @@ const Profile = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const fetchOrganizerApprovals = async () => {
+        setLoading(true)
         try {
             const response = await axios.get(
                 `${BACKEND_URL}/api/approval/organizerapprovals`,
@@ -109,6 +116,7 @@ const Profile = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
 
@@ -117,6 +125,7 @@ const Profile = () => {
             className={`items-center sm:items-start mx-4 sm:mx-16 py-10 sm:py-20 flex flex-col gap-20 ${currentTheme === "light" ? "text-black" : "text-white"
                 }`}
         >
+            {loading && <Loader message={"Loading your information, please wait..."} />}
             {user?.userInfo.userType === "organizer" ? (
                 <ProfileCard
                     name={user?.userInfo.organizerName}

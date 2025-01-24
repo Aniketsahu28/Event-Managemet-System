@@ -5,6 +5,7 @@ import { userAtom } from "../store/userAtom";
 import axios from "axios";
 import toast from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
@@ -14,6 +15,8 @@ const Login = () => {
     const [userId, setUserId] = useState("");
     const [password, setPassword] = useState("");
     const setUser = useSetRecoilState(userAtom);
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (e, setter) => {
         setter(e.target.value);
@@ -35,6 +38,8 @@ const Login = () => {
     }
 
     const handleUserLogin = async () => {
+        setLoadingMessage("Logging you in...")
+        setLoading(true)
         try {
             const response = await axios.post(
                 `${BACKEND_URL}/api/user/login`,
@@ -63,9 +68,12 @@ const Login = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const handleOrganizerLogin = async () => {
+        setLoadingMessage("Logging you in...")
+        setLoading(true)
         try {
             const response = await axios.post(
                 `${BACKEND_URL}/api/organizer/login`,
@@ -94,6 +102,7 @@ const Login = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     return (
@@ -102,6 +111,7 @@ const Login = () => {
             className={`w-full px-4 rounded-lg custom_shadow mt-20 flex flex-col gap-10 items-center justify-center py-4 sm:w-[60%] mx-auto lg:w-[40%] ${currentTheme === "light" ? "bg-white" : "bg-gray text-white"
                 }`}
         >
+            {loading && <Loader message={loadingMessage} />}
             <h1 className="font-montserrat text-2xl font-semibold">LOGIN</h1>
             <div className="flex flex-col w-full gap-6 font-lato">
                 <span className="flex flex-col gap-2">

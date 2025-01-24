@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { themeAtom } from '../store/themeAtom'
 import { popupAtom } from '../store/popupAtom'
@@ -9,6 +9,7 @@ import DOMPurify from "dompurify";
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { userAtom } from '../store/userAtom';
+import Loader from './Loader';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const FacultyApprovalCard = ({ approval }) => {
@@ -17,8 +18,12 @@ const FacultyApprovalCard = ({ approval }) => {
     const validateDescription = useRef()
     const sanitizedDescription = DOMPurify.sanitize(approval?.document);
     const user = useRecoilValue(userAtom)
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const validateApproval = async (status) => {
+        setLoadingMessage("Processing, please wait...")
+        setLoading(true)
         try {
             const response = await axios.post(`${BACKEND_URL}/api/approval/validateapproval`,
                 {
@@ -40,6 +45,7 @@ const FacultyApprovalCard = ({ approval }) => {
         catch (error) {
             toast.error(error.response?.data.message || error)
         }
+        setLoading(false)
     }
 
     return (
@@ -191,6 +197,7 @@ const FacultyApprovalCard = ({ approval }) => {
                     </div>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div className="flex flex-col gap-2 p-4 bg-blue_300 text-white rounded-lg sm:col-span-6 lg:col-span-4">
                 <h2 className="text-lg font-montserrat font-medium">
                     {approval.title}

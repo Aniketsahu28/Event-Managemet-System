@@ -11,6 +11,7 @@ import { popupAtom } from "../store/popupAtom";
 import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
 import UserCard from "./UserCard";
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AdminStudentOperation = () => {
@@ -25,12 +26,16 @@ const AdminStudentOperation = () => {
     const removeStudentFromRollnoRef = useRef();
     const removeStudentToRollnoRef = useRef();
     const [addStudentDepartment, setAddStudentDepartment] = useState("");
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         fetchAllStudents();
     }, []);
 
     const fetchAllStudents = async () => {
+        setLoadingMessage("Loading information, please wait....")
+        setLoading(true)
         try {
             const response = await axios.get(`${BACKEND_URL}/api/user/allstudents`, {
                 headers: {
@@ -43,6 +48,7 @@ const AdminStudentOperation = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const AdminSearchRollno = () => {
@@ -58,6 +64,8 @@ const AdminStudentOperation = () => {
         if (addStudentDepartment === "") {
             toast.error("Please select department");
         } else {
+            setLoadingMessage("Adding students, please wait...")
+            setLoading(true)
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/user/createstudent`,
@@ -83,11 +91,14 @@ const AdminStudentOperation = () => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
+            setLoading(false)
         }
     };
 
     const handleRemoveStudents = async (e) => {
         e.preventDefault();
+        setLoadingMessage("Removing students, please wait...")
+        setLoading(true)
         try {
             const response = await axios.delete(
                 `${BACKEND_URL}/api/user/deletestudent`,
@@ -111,6 +122,7 @@ const AdminStudentOperation = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     return (
@@ -251,6 +263,7 @@ const AdminStudentOperation = () => {
                     </form>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div className="flex flex-col gap-8 sm:gap-6 lg:gap-8">
                 <div className="flex flex-col sm:flex-row gap-4">
                     <input

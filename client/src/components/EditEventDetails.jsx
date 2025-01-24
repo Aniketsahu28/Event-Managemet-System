@@ -10,6 +10,7 @@ import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { userAtom } from "../store/userAtom";
 import axios from "axios";
 import toast from 'react-hot-toast'
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EditEventDetails = ({ event, setEvent }) => {
@@ -22,6 +23,8 @@ const EditEventDetails = ({ event, setEvent }) => {
     const [bannerHover, setBannerHover] = useState(false);
     const [payment, setPayment] = useState(false);
     const [isCustom, setIsCustom] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
     const [eventDetails, setEventDetails] = useState({
         title: event.title,
         description: event.description,
@@ -68,7 +71,10 @@ const EditEventDetails = ({ event, setEvent }) => {
     };
 
     const addBannerToEventDetails = async (event) => {
+        setLoadingMessage("Uploading banner, please wait....")
+        setLoading(true)
         const url = await useHandleFileUpload(event);
+        setLoading(false)
         if (url) {
             setEventDetails((prevDetails) => ({
                 ...prevDetails,
@@ -152,7 +158,10 @@ const EditEventDetails = ({ event, setEvent }) => {
     }
 
     const addPaymentQRToEventDetails = async (event) => {
+        setLoadingMessage("Uploading QR code, please wait....")
+        setLoading(true)
         const url = await useHandleFileUpload(event);
+        setLoading(false)
         if (url) {
             setEventDetails((prevDetails) => ({
                 ...prevDetails,
@@ -170,6 +179,8 @@ const EditEventDetails = ({ event, setEvent }) => {
 
     const handleSaveChanges = async (e) => {
         e.preventDefault();
+        setLoadingMessage("Saving Changes...")
+        setLoading(true)
         try {
             const response = await axios.patch(
                 `${BACKEND_URL}/api/event/editevent`,
@@ -238,6 +249,7 @@ const EditEventDetails = ({ event, setEvent }) => {
         catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     }
 
     return (
@@ -247,6 +259,7 @@ const EditEventDetails = ({ event, setEvent }) => {
                 : "text-white bg-gray"
                 }`}
         >
+            {loading && <Loader message={loadingMessage} />}
             <span className="flex justify-between items-center">
                 <p className="text-2xl font-montserrat font-medium">Edit Event Details</p>
                 <RxCross2

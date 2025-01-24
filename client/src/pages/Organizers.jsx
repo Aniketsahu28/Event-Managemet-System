@@ -12,6 +12,7 @@ import {
 } from "pure-react-carousel";
 import { IoIosArrowUp } from "react-icons/io";
 import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Organizers = () => {
@@ -23,6 +24,7 @@ const Organizers = () => {
         setTechnicalProfessionalSocietyChapter,
     ] = useState([]);
     const [others, setOthers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchEvents();
@@ -61,6 +63,7 @@ const Organizers = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false);
     };
 
     const [windowStatus, setWindowStatus] = useState(
@@ -85,7 +88,9 @@ const Organizers = () => {
     }
     window.onresize = checkWindowSize;
 
-    return (
+    return loading ? (
+        <Loader message={"Loading Organizers, please wait..."} />
+    ) : (
         <div
             className={`mx-4 sm:mx-16 py-10 sm:py-16 flex flex-col gap-20 justify-center ${currentTheme === "light" ? "text-black" : "text-white"
                 }`}

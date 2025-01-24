@@ -25,13 +25,13 @@ import jsonToCsvExport from "json-to-csv-export";
 import { MdVerified } from "react-icons/md";
 import { FaChair } from "react-icons/fa6";
 import TeamCard from "../components/TeamCard";
+import Loader from "../components/Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventDetails = () => {
     const currentTheme = useRecoilValue(themeAtom);
     const { id } = useParams();
     const [event, setEvent] = useState();
-    const [loading, setLoading] = useState(false);
     const [userIsClubMember, setUserIsClubMember] = useState(false);
     const [eventTickets, setEventTickets] = useState();
     const [searchedEventTickets, setSearchedEventTickets] = useState();
@@ -45,6 +45,8 @@ const EventDetails = () => {
     const [teammates, setTeammates] = useState([]);
     const memberRef = useRef();
     const [teamName, setTeamName] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState("")
 
     useEffect(() => {
         fetchEvents();
@@ -68,6 +70,8 @@ const EventDetails = () => {
     }
 
     const fetchEvents = async () => {
+        setLoadingMessage("Loading event details...")
+        setLoading(true)
         try {
             const response = await axios.get(
                 `${BACKEND_URL}/api/event/eventdetails`,
@@ -82,9 +86,12 @@ const EventDetails = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const fetchEventTickets = async () => {
+        setLoadingMessage("Loading event details....")
+        setLoading(true)
         try {
             const response = await axios.get(
                 `${BACKEND_URL}/api/event/eventtickets`,
@@ -101,6 +108,7 @@ const EventDetails = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const formatDateToWords = (dateString) => {
@@ -142,6 +150,8 @@ const EventDetails = () => {
             toast("Please login to continue");
             return;
         } else {
+            setLoadingMessage("Loading requirements...")
+            setLoading(true)
             try {
                 const response = await axios.get(`${BACKEND_URL}/api/user/allstudents`);
                 setAllStudents(response.data.students);
@@ -149,6 +159,7 @@ const EventDetails = () => {
             } catch (error) {
                 toast.error("Something went wrong, please try again.");
             }
+            setLoading(false)
         }
     };
 
@@ -161,6 +172,8 @@ const EventDetails = () => {
         } else if (!event?.isEventFree) {
             setPopup("paymentPopup");
         } else {
+            setLoadingMessage("Booking event, please wait...")
+            setLoading(true)
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
@@ -201,11 +214,13 @@ const EventDetails = () => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
+            setLoading(false)
         }
     };
 
     const takePaymentScreenshot = async (event) => {
-        setLoading(true);
+        setLoadingMessage("Uploding payment screenshot...")
+        setLoading(true)
         const url = await useHandleFileUpload(event);
         setLoading(false);
         setPaymentUrl(url);
@@ -215,6 +230,8 @@ const EventDetails = () => {
         if (paymentUrl === "") {
             toast("Payment required to proceed");
         } else {
+            setLoadingMessage("Booking event, please wait....")
+            setLoading(true)
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
@@ -258,6 +275,7 @@ const EventDetails = () => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
+            setLoading(false);
         }
     };
 
@@ -273,6 +291,8 @@ const EventDetails = () => {
 
     const toggleParticipation = async (e) => {
         e.preventDefault();
+        setLoadingMessage("Processing, please wait....")
+        setLoading(true)
         try {
             const response = await axios.patch(
                 `${BACKEND_URL}/api/event/toggleparticipation`,
@@ -301,6 +321,7 @@ const EventDetails = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false);
     };
 
     const downloadParticipantsList = () => {
@@ -395,35 +416,31 @@ const EventDetails = () => {
                                 className="h-48 w-48 bg-white custom_shadow rounded-lg"
                             />
                             <p className="text-lg">UPI id : {event.UPI_ID}</p>
-                            {loading ? (
-                                "Processing wait..."
-                            ) : (
-                                <label
-                                    htmlFor="paymentQR"
-                                    className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === "light"
-                                        ? "border-black/40"
-                                        : "border-white/60"
-                                        }`}
-                                >
-                                    <input
-                                        id="paymentQR"
-                                        type="file"
-                                        className="hidden"
-                                        onChange={takePaymentScreenshot}
+                            <label
+                                htmlFor="paymentQR"
+                                className={`items-center gap-4 flex cursor-pointer border-2 rounded-lg p-2 hover:scale-95 transition-all ${currentTheme === "light"
+                                    ? "border-black/40"
+                                    : "border-white/60"
+                                    }`}
+                            >
+                                <input
+                                    id="paymentQR"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={takePaymentScreenshot}
+                                />
+                                <p>Upload screenshot of payment</p>
+                                {paymentUrl.length === 0 ? (
+                                    <IoCloudUploadOutline
+                                        className={`text-2xl ${currentTheme === "light"
+                                            ? "text-black/80"
+                                            : "text-white/80"
+                                            }`}
                                     />
-                                    <p>Upload screenshot of payment</p>
-                                    {paymentUrl.length === 0 ? (
-                                        <IoCloudUploadOutline
-                                            className={`text-2xl ${currentTheme === "light"
-                                                ? "text-black/80"
-                                                : "text-white/80"
-                                                }`}
-                                        />
-                                    ) : (
-                                        <MdVerified className={`text-2xl text-green`} />
-                                    )}
-                                </label>
-                            )}
+                                ) : (
+                                    <MdVerified className={`text-2xl text-green`} />
+                                )}
+                            </label>
                             {event?.isPriceVariation && (
                                 <span className="flex gap-2 items-center justify-center">
                                     <input
@@ -524,6 +541,7 @@ const EventDetails = () => {
                                 ))}
                             </div>
                         </span>
+                        <p className="text-center -mb-2">Note : Add all team members including yourself.</p>
                         <button
                             className="w-fit mx-auto mb-4 flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
                             onClick={getTicket}
@@ -538,6 +556,7 @@ const EventDetails = () => {
                     <EditEventDetails event={event} setEvent={setEvent} />
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div
                 className={`mx-4 sm:mx-16 py-4 sm:py-10 flex flex-col font-lato gap-16 justify-center ${currentTheme === "light" ? "text-black" : "text-white"
                     }`}

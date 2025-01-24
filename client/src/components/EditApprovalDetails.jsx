@@ -10,6 +10,7 @@ import JoditEditor from "jodit-react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import toast from "react-hot-toast";
 import axios from 'axios';
+import Loader from './Loader';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EditApprovalDetails = ({ approval }) => {
@@ -26,12 +27,16 @@ const EditApprovalDetails = ({ approval }) => {
             id: uuidv4(),
         })),
     });
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         fetchAllFaculties();
     }, []);
 
     const fetchAllFaculties = async () => {
+        setLoadingMessage("Processing wait...")
+        setLoading(true)
         try {
             const response = await axios.get(`${BACKEND_URL}/api/user/allfaculty`);
             if (response.status === 200) {
@@ -40,6 +45,7 @@ const EditApprovalDetails = ({ approval }) => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const handleApproverTitleChange = (e) => {
@@ -126,7 +132,7 @@ const EditApprovalDetails = ({ approval }) => {
             };
         });
     };
-    console.log(approval)
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         approvalDetails.approvers.forEach((approver) => {
@@ -139,6 +145,8 @@ const EditApprovalDetails = ({ approval }) => {
             }
         })
 
+        setLoadingMessage("Saving changes....")
+        setLoading(true)
         try {
             const response = await axios.patch(`${BACKEND_URL}/api/approval/editapproval`,
                 {
@@ -163,6 +171,7 @@ const EditApprovalDetails = ({ approval }) => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     }
 
     return (
@@ -177,6 +186,7 @@ const EditApprovalDetails = ({ approval }) => {
                     onClick={() => setPopup(null)}
                 />
             </span>
+            {loading && <Loader message={loadingMessage} />}
             <form
                 className={`font-lato flex flex-col lg:grid lg:grid-cols-12 gap-8 ${currentTheme === "light" ? "bg-white" : "bg-gray"
                     }`}

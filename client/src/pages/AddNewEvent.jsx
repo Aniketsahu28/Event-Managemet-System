@@ -9,6 +9,7 @@ import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { userAtom } from "../store/userAtom";
 import toast from 'react-hot-toast'
+import Loader from "../components/Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AddNewEvent = () => {
@@ -19,6 +20,8 @@ const AddNewEvent = () => {
     const speakerRef = useRef(null);
     const prizeRef = useRef(null);
     const UPI_IDRef = useRef(null);
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
     const departments = [
         "All Departments",
         "Computer",
@@ -82,7 +85,10 @@ const AddNewEvent = () => {
     };
 
     const addBannerToEventDetails = async (event) => {
+        setLoadingMessage("Uploading banner...")
+        setLoading(true)
         const url = await useHandleFileUpload(event);
+        setLoading(false)
         if (url) {
             setEventDetails((prevDetails) => ({
                 ...prevDetails,
@@ -149,7 +155,10 @@ const AddNewEvent = () => {
     }
 
     const addPaymentQRToEventDetails = async (event) => {
+        setLoadingMessage("Uploading QR code...")
+        setLoading(true)
         const url = await useHandleFileUpload(event);
+        setLoading(false)
         if (url) {
             setEventDetails((prevDetails) => ({
                 ...prevDetails,
@@ -167,6 +176,8 @@ const AddNewEvent = () => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+        setLoadingMessage("Adding event, please wait...")
+        setLoading(true)
         try {
             const response = await axios.post(`${BACKEND_URL}/api/event/addevent`,
                 {
@@ -228,6 +239,7 @@ const AddNewEvent = () => {
         catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     return (
@@ -235,6 +247,7 @@ const AddNewEvent = () => {
             className={`mx-4 sm:mx-16 py-10 sm:py-16 flex flex-col gap-10 items-center ${currentTheme === "light" ? "text-black" : "text-white"
                 }`}
         >
+            {loading && <Loader message={loadingMessage} />}
             <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
                 Add New Event
             </h2>

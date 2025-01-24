@@ -10,6 +10,7 @@ import { popupAtom } from "../store/popupAtom";
 import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
 import UserCard from "./UserCard";
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AdminFacultyOperations = () => {
@@ -21,12 +22,16 @@ const AdminFacultyOperations = () => {
     const searchFacultyId = useRef();
     const addFacultyRollnoRef = useRef();
     const [addFacultyDepartment, setAddFacultyDepartment] = useState("");
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         fetchAllFaculties();
     }, []);
 
     const fetchAllFaculties = async () => {
+        setLoadingMessage("Loading information, please wait...")
+        setLoading(true)
         try {
             const response = await axios.get(`${BACKEND_URL}/api/user/allfaculty`);
             if (response.status === 200) {
@@ -35,6 +40,7 @@ const AdminFacultyOperations = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     const AdminSearchFacultyId = () => {
@@ -50,6 +56,8 @@ const AdminFacultyOperations = () => {
         if (addFacultyDepartment === "") {
             toast.error("Please select department");
         } else {
+            setLoadingMessage("Adding faculties, please wait...")
+            setLoading(true)
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/user/createfaculty`,
@@ -74,6 +82,7 @@ const AdminFacultyOperations = () => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
+            setLoading(false)
         }
     };
 
@@ -143,6 +152,7 @@ const AdminFacultyOperations = () => {
                     </form>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div className="flex flex-col gap-8 sm:gap-6 lg:gap-8">
                 <div className="flex flex-col sm:flex-row gap-4">
                     <input

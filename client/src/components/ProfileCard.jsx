@@ -11,6 +11,7 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import toast from 'react-hot-toast'
+import Loader from "./Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const ProfileCard = ({ name, userId, department, image, email, phone }) => {
@@ -26,6 +27,8 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
     const newPassword = useRef(null);
     const reEnteredNewPassword = useRef(null);
     const [profileHover, setProfileHover] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const changeUserInfo = async (event) => {
         event.preventDefault();
@@ -33,6 +36,8 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
         if (!userInfo.name) {
             toast("Username cannot be empty");
         } else {
+            setLoadingMessage("Saving changes...")
+            setLoading(true)
             try {
                 if (user.userInfo.userType === "organizer") {
                     const response = await axios.patch(
@@ -98,6 +103,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
+            setLoading(false)
         }
     };
 
@@ -112,6 +118,8 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
         } else if (_newPassword !== _reEnteredNewPassword) {
             toast.error("New Password and Re-entered password must be same.");
         } else {
+            setLoadingMessage("Saving changes...")
+            setLoading(true)
             try {
                 const response = await axios.patch(
                     user.userInfo.userType === "organizer"
@@ -139,11 +147,14 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
+            setLoading(false)
         }
     };
 
     const takeProfilePicture = async (event) => {
         const url = await useHandleFileUpload(event);
+        setLoadingMessage("Saving changes...")
+        setLoading(true)
         try {
             if (user.userInfo.userType === "organizer") {
                 const response = await axios.patch(
@@ -203,6 +214,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
+        setLoading(false)
     };
 
     return (
@@ -361,6 +373,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                     </form>
                 </PopupScreen>
             )}
+            {loading && <Loader message={loadingMessage} />}
             <div
                 className={`flex flex-col sm:flex-row items-center sm:items-stretch justify-center gap-6 custom_shadow p-4 sm:p-6 rounded-lg w-full sm:w-fit ${currentTheme === "light"
                     ? "text-black bg-white"

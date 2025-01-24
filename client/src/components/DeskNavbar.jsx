@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LuSun } from "react-icons/lu";
 import { IoMoonOutline } from "react-icons/io5";
-import { PiUserCircleLight } from "react-icons/pi";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "../store/themeAtom";
 import { userAtom, isAuthenticated } from "../store/userAtom";
