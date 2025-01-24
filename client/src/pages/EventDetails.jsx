@@ -174,7 +174,7 @@ const EventDetails = () => {
             return;
         } else if (event?.maxTeamSize > 1 && teamName === "") {
             toast.error("Please Enter your team name");
-        } else if (!isUserPresentInTeam()) {
+        } else if (event?.maxTeamSize > 1 && !isUserPresentInTeam()) {
             toast.error("You didn't add youself in team");
         } else if (!event?.isEventFree) {
             setPopup("paymentPopup");
