@@ -177,11 +177,13 @@ eventRouter.get('/organizerevents', async (req, res) => {
     }
 })
 
-eventRouter.post('/bookticket', userAuth, async (req, res) => {
-    const { eventId, paymentImage, iAmClubMember, userDetails, teamName } = req.body;
+eventRouter.get('/isUserTicketBookedAlready', userAuth, async (req, res) => {
+    const { eventId, userDetails } = req.query;
 
     try {
-        for (const user of userDetails) {
+        const parsedUserDetails = JSON.parse(userDetails);
+
+        for (const user of parsedUserDetails) {
             const alreadyPresent = await TicketModel.findOne({
                 'userDetails.userId': user.userId,
                 'eventDetails.eventId': eventId
@@ -189,11 +191,24 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
 
             if (alreadyPresent) {
                 return res.status(200).json({
+                    found: true,
                     message: `Ticket already booked for ${user.username}`
                 });
             }
         }
+        res.status(200).json({
+            found: false
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+});
 
+eventRouter.post('/bookticket', userAuth, async (req, res) => {
+    const { eventId, paymentImage, iAmClubMember, userDetails, teamName } = req.body;
+    try {
         const event = await EventModel.findOne({ "_id": eventId });
         if (event.seatsFilled < event.maxSeats) {
             if (event.acceptingParticipation) {
@@ -230,13 +245,11 @@ eventRouter.post('/bookticket', userAuth, async (req, res) => {
             });
         }
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({
+        res.status(500).json({
             message: "Internal server error"
         });
     }
 });
-
 
 eventRouter.delete('/deleteticket', organizerAuth, async (req, res) => {
     const { ticketId } = req.body;
