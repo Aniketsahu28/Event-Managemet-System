@@ -40,8 +40,6 @@ const AddNewApproval = () => {
     }, []);
 
     const fetchAllFaculties = async () => {
-        setLoadingMessage("Loading requirements, please wait...")
-        setLoading(true)
         try {
             const response = await axios.get(`${BACKEND_URL}/api/user/allfaculty`);
             if (response.status === 200) {
@@ -50,7 +48,6 @@ const AddNewApproval = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
-        setLoading(false)
     };
 
     const handleApproverTitleChange = (e) => {

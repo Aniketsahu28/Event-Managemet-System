@@ -46,7 +46,7 @@ const EventDetails = () => {
     const memberRef = useRef();
     const [teamName, setTeamName] = useState("");
     const [loading, setLoading] = useState(false);
-    const [loadingMessage, setLoadingMessage] = useState("")
+    const [loadingMessage, setLoadingMessage] = useState("");
 
     useEffect(() => {
         fetchEvents();
@@ -70,8 +70,8 @@ const EventDetails = () => {
     }
 
     const fetchEvents = async () => {
-        setLoadingMessage("Loading event details...")
-        setLoading(true)
+        setLoadingMessage("Loading event details...");
+        setLoading(true);
         try {
             const response = await axios.get(
                 `${BACKEND_URL}/api/event/eventdetails`,
@@ -86,12 +86,12 @@ const EventDetails = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
-        setLoading(false)
+        setLoading(false);
     };
 
     const fetchEventTickets = async () => {
-        setLoadingMessage("Loading event details....")
-        setLoading(true)
+        setLoadingMessage("Loading event details....");
+        setLoading(true);
         try {
             const response = await axios.get(
                 `${BACKEND_URL}/api/event/eventtickets`,
@@ -108,7 +108,7 @@ const EventDetails = () => {
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
-        setLoading(false)
+        setLoading(false);
     };
 
     const formatDateToWords = (dateString) => {
@@ -150,8 +150,6 @@ const EventDetails = () => {
             toast("Please login to continue");
             return;
         } else {
-            setLoadingMessage("Loading requirements...")
-            setLoading(true)
             try {
                 const response = await axios.get(`${BACKEND_URL}/api/user/allstudents`);
                 setAllStudents(response.data.students);
@@ -159,8 +157,15 @@ const EventDetails = () => {
             } catch (error) {
                 toast.error("Something went wrong, please try again.");
             }
-            setLoading(false)
         }
+    };
+
+    const isUserPresentInTeam = () => {
+        const userPresent = teammates.find(
+            (teammate) => teammate.userId === user.userInfo.userId
+        );
+        console.log(userPresent ? true : false)
+        return userPresent ? true : false;
     };
 
     const getTicket = async () => {
@@ -169,11 +174,13 @@ const EventDetails = () => {
             return;
         } else if (event?.maxTeamSize > 1 && teamName === "") {
             toast.error("Please Enter your team name");
+        } else if (!isUserPresentInTeam()) {
+            toast.error("You didn't add youself in team");
         } else if (!event?.isEventFree) {
             setPopup("paymentPopup");
         } else {
-            setLoadingMessage("Booking event, please wait...")
-            setLoading(true)
+            setLoadingMessage("Booking event, please wait...");
+            setLoading(true);
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
@@ -214,13 +221,13 @@ const EventDetails = () => {
             } catch (error) {
                 toast.error(error.response?.data.message || error);
             }
-            setLoading(false)
+            setLoading(false);
         }
     };
 
     const takePaymentScreenshot = async (event) => {
-        setLoadingMessage("Uploding payment screenshot...")
-        setLoading(true)
+        setLoadingMessage("Uploding payment screenshot...");
+        setLoading(true);
         const url = await useHandleFileUpload(event);
         setLoading(false);
         setPaymentUrl(url);
@@ -230,8 +237,8 @@ const EventDetails = () => {
         if (paymentUrl === "") {
             toast("Payment required to proceed");
         } else {
-            setLoadingMessage("Booking event, please wait....")
-            setLoading(true)
+            setLoadingMessage("Booking event, please wait....");
+            setLoading(true);
             try {
                 const response = await axios.post(
                     `${BACKEND_URL}/api/event/bookticket`,
@@ -291,8 +298,8 @@ const EventDetails = () => {
 
     const toggleParticipation = async (e) => {
         e.preventDefault();
-        setLoadingMessage("Processing, please wait....")
-        setLoading(true)
+        setLoadingMessage("Processing, please wait....");
+        setLoading(true);
         try {
             const response = await axios.patch(
                 `${BACKEND_URL}/api/event/toggleparticipation`,
@@ -360,8 +367,7 @@ const EventDetails = () => {
                         department: userDetail.department,
                         year: userDetail.year,
                     });
-            })
-
+            });
         });
         jsonToCsvExport({
             data: participantsList,
@@ -376,7 +382,14 @@ const EventDetails = () => {
 
         if (teammates.length < event?.maxTeamSize) {
             if (student) {
-                setTeammates((prevTeammates) => [...prevTeammates, student]);
+                const alreadyPresent = teammates.find(
+                    (teammate) => teammate.userId === student.userId
+                );
+                if (alreadyPresent) {
+                    toast.error("Member already added in your team");
+                } else {
+                    setTeammates((prevTeammates) => [...prevTeammates, student]);
+                }
             } else {
                 toast.error("Invalid user Id");
             }
@@ -541,10 +554,22 @@ const EventDetails = () => {
                                 ))}
                             </div>
                         </span>
-                        <p className="text-center -mb-2">Note : Add all team members including yourself.</p>
+                        <p className="text-center -mb-2">
+                            Note : Add all team members including yourself.
+                        </p>
                         <button
-                            className="w-fit mx-auto mb-4 flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                            className={`w-fit mx-auto mb-4 flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green ${teammates.length >= event?.minTeamSize &&
+                                teammates.length <= event?.maxTeamSize
+                                ? "opacity-100"
+                                : "opacity-75"
+                                }`}
                             onClick={getTicket}
+                            disabled={
+                                !(
+                                    teammates.length >= event?.minTeamSize &&
+                                    teammates.length <= event?.maxTeamSize
+                                )
+                            }
                         >
                             {event?.isEventFree ? "Book Ticket" : "Proceed for payment"}
                         </button>
