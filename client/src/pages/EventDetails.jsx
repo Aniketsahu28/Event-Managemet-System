@@ -168,6 +168,50 @@ const EventDetails = () => {
         return userPresent ? true : false;
     };
 
+    const isUserTicketAlreadyBooked = async () => {
+        setLoadingMessage("Processing, please wait...");
+        setLoading(true);
+
+        try {
+            const userDetails = event?.maxTeamSize > 1
+                ? JSON.stringify(teammates)
+                : JSON.stringify([
+                    {
+                        userId: user.userInfo.userId,
+                        username: user.userInfo.username,
+                    },
+                ]);
+
+            const response = await axios.get(
+                `${BACKEND_URL}/api/event/isUserTicketBookedAlready`,
+                {
+                    params: {
+                        eventId: event._id,
+                        userDetails: userDetails,
+                    },
+                    headers: {
+                        token: user.token,
+                    },
+                }
+            );
+
+            if (response.data.found === true) {
+                toast.error(response.data.message);
+                setPopup(null);
+                setLoading(false);
+                return true;
+            } else {
+                setLoading(false);
+                return false;
+            }
+        } catch (error) {
+            toast.error(error.response?.data.message || error.message);
+        }
+
+        setLoading(false);
+    };
+
+
     const getTicket = async () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
@@ -176,7 +220,11 @@ const EventDetails = () => {
             toast.error("Please Enter your team name");
         } else if (event?.maxTeamSize > 1 && !isUserPresentInTeam()) {
             toast.error("You didn't add youself in team");
-        } else if (!event?.isEventFree) {
+        }
+        else if (await isUserTicketAlreadyBooked()) {
+            return;
+        }
+        else if (!event?.isEventFree) {
             setPopup("paymentPopup");
         } else {
             setLoadingMessage("Booking event, please wait...");
