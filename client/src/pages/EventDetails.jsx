@@ -151,9 +151,9 @@ const EventDetails = () => {
             return;
         } else {
             try {
+                setPopup("addTeammates");
                 const response = await axios.get(`${BACKEND_URL}/api/user/allstudents`);
                 setAllStudents(response.data.students);
-                setPopup("addTeammates");
             } catch (error) {
                 toast.error("Something went wrong, please try again.");
             }

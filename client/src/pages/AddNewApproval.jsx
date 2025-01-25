@@ -30,6 +30,7 @@ const AddNewApproval = () => {
                     userId: "",
                     userType: "",
                     username: "",
+                    email: ""
                 },
             },
         ],
@@ -80,6 +81,7 @@ const AddNewApproval = () => {
                             userId: faculty[0].userId,
                             userType: faculty[0].userType,
                             username: faculty[0].username,
+                            email: faculty[0].email,
                         },
                     }
                     : approver
@@ -114,6 +116,7 @@ const AddNewApproval = () => {
                         userId: "",
                         userType: "",
                         username: "",
+                        email: ""
                     },
                 },
             ],
@@ -181,6 +184,7 @@ const AddNewApproval = () => {
                             userId: "",
                             userType: "",
                             username: "",
+                            email: ""
                         },
                     },
                 ],

@@ -135,7 +135,7 @@ const FacultyApprovalCard = ({ approval }) => {
                                 <MdVerified className="text-2xl" />
                             </button>
                             <button
-                                className="px-4 py-2 text-black rounded-md mt-4"
+                                className={`px-4 py-2 rounded-md mt-4 ${currentTheme === 'light' ? "text-black" : "text-white"}`}
                                 onClick={() => setPopup(null)}
                             >
                                 <span>Cancel</span>
@@ -188,7 +188,7 @@ const FacultyApprovalCard = ({ approval }) => {
                                 />
                             </button>
                             <button
-                                className="px-4 py-2 text-black rounded-md mt-4"
+                                className={`px-4 py-2 rounded-md mt-4 ${currentTheme === 'light' ? "text-black" : "text-white"}`}
                                 onClick={() => setPopup(null)}
                             >
                                 <span>Cancel</span>

@@ -26,7 +26,7 @@ const Profile = () => {
     const searchedEvent = useRef(null);
     const searchedApproval = useRef(null);
     const searchedTicket = useRef(null);
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (user.userInfo.userType === "organizer") {

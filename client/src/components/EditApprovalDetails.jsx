@@ -78,6 +78,7 @@ const EditApprovalDetails = ({ approval }) => {
                             userId: faculty[0].userId,
                             userType: faculty[0].userType,
                             username: faculty[0].username,
+                            email: faculty[0].email,
                         },
                     }
                     : approver
@@ -112,6 +113,7 @@ const EditApprovalDetails = ({ approval }) => {
                         userId: "",
                         userType: "",
                         username: "",
+                        email: ""
                     },
                 },
             ],
