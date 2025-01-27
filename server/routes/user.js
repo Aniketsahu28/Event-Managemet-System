@@ -10,7 +10,7 @@ const { adminAuth } = require('../middlewares/adminAuth');
 userRouter.post('/login', async (req, res) => {
     const { userId, password } = req.body;
     try {
-        const user = await UserModel.findOne({ userId, password })
+        const user = await UserModel.findOne({ userId, password }, { password: 0 })
         if (user) {
             const secret = (user.userType === "student" || user.userType === "faculty") ? JWT_USER_SECRET : JWT_ADMIN_SECRET;
             const token = jwt.sign({ userId: user.userId }, secret);
@@ -30,7 +30,7 @@ userRouter.post('/login', async (req, res) => {
 userRouter.get('/userinfo', userAuth, async (req, res) => {
     const userId = req.userId;
     try {
-        const user = await UserModel.findOne({ userId })
+        const user = await UserModel.findOne({ userId }, { password: 0 })
         res.status(200).json({ user });
     } catch (error) {
         res.status(500).json({
@@ -41,7 +41,7 @@ userRouter.get('/userinfo', userAuth, async (req, res) => {
 
 userRouter.get('/allstudents', async (req, res) => {
     try {
-        const students = await UserModel.find({ "userType": "student" })
+        const students = await UserModel.find({ "userType": "student" }, { password: 0 })
         if (students.length > 0) {
             res.status(200).json({ students });
         }
@@ -57,7 +57,7 @@ userRouter.get('/allstudents', async (req, res) => {
 
 userRouter.get('/allfaculty', async (req, res) => {
     try {
-        const faculties = await UserModel.find({ "userType": "faculty" })
+        const faculties = await UserModel.find({ "userType": "faculty" }, { password: 0 })
         if (faculties.length > 0) {
             res.status(200).json({ faculties });
         }
@@ -97,7 +97,7 @@ userRouter.patch('/editprofilePicture', userAuth, async (req, res) => {
     const userId = req.userId;
     const { profilePicture } = req.body;
     try {
-        const user = await UserModel.findOne({ userId });
+        const user = await UserModel.findOne({ userId }, { password: 0 });
         user.profilePicture = profilePicture;
 
         await UserModel.updateOne({ userId }, user);
@@ -117,7 +117,7 @@ userRouter.patch('/editUserInfo', userAuth, async (req, res) => {
     const userId = req.userId;
     const { username, email, phone } = req.body;
     try {
-        const user = await UserModel.findOne({ userId });
+        const user = await UserModel.findOne({ userId }, { password: 0 });
         user.username = username;
         user.email = email;
         user.phone = phone;
@@ -154,7 +154,7 @@ userRouter.post('/createstudent', adminAuth, async (req, res) => {
     try {
         const newUsers = [];
         for (let rollno = fromRollno; rollno <= toRollno; rollno++) {
-            const student = await UserModel.findOne({ userId: rollno.toString() });
+            const student = await UserModel.findOne({ userId: rollno.toString() }, { password: 0 });
             if (!student) {
                 newUsers.push({
                     userId: rollno.toString(),
@@ -187,7 +187,7 @@ userRouter.post('/createstudent', adminAuth, async (req, res) => {
 userRouter.post('/createfaculty', adminAuth, async (req, res) => {
     const { userId, department } = req.body;
     try {
-        const faculty = await UserModel.findOne({ userId });
+        const faculty = await UserModel.findOne({ userId }, { password: 0 });
         if (faculty) {
             res.status(409).json({
                 message: "User already exists"
@@ -241,7 +241,7 @@ userRouter.delete('/deletestudent', adminAuth, async (req, res) => {
 userRouter.delete('/deletefaculty', adminAuth, async (req, res) => {
     const { userId } = req.body;
     try {
-        const faculty = await UserModel.findOne({ userId })
+        const faculty = await UserModel.findOne({ userId }, { password: 0 })
         if (faculty) {
             await UserModel.deleteOne({ userId })
             res.status(200).json({

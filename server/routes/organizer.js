@@ -10,7 +10,7 @@ const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 organizerRouter.post('/login', async (req, res) => {
     const { organizerId, password } = req.body;
     try {
-        const user = await OrganizerModel.findOne({ organizerId, password })
+        const user = await OrganizerModel.findOne({ organizerId, password }, { password: 0 })
         if (user) {
             const token = jwt.sign({ organizerId: user.organizerId }, JWT_USER_SECRET);
             res.json({ token, user });
@@ -28,7 +28,7 @@ organizerRouter.post('/login', async (req, res) => {
 
 organizerRouter.get('/allorganizers', async (req, res) => {
     try {
-        const organizers = await OrganizerModel.find({})
+        const organizers = await OrganizerModel.find({}, { password: 0 })
         res.status(200).json({ organizers })
     } catch (error) {
         res.status(500).json({
@@ -40,7 +40,7 @@ organizerRouter.get('/allorganizers', async (req, res) => {
 organizerRouter.get('/organizerdetails', async (req, res) => {
     const { organizerId } = req.query;
     try {
-        const organizer = await OrganizerModel.findOne({ _id: organizerId });
+        const organizer = await OrganizerModel.findOne({ _id: organizerId }, { password: 0 });
         if (organizer) {
             res.status(200).json({ organizer })
         } else {
@@ -58,7 +58,7 @@ organizerRouter.get('/organizerdetails', async (req, res) => {
 organizerRouter.post('/createorganizer', adminAuth, async (req, res) => {
     const { organizerId, organizerName, department, facultyId, organizerType } = req.body;
     try {
-        const faculty = await UserModel.findOne({ userId: facultyId })
+        const faculty = await UserModel.findOne({ userId: facultyId }, { password: 0 })
         await OrganizerModel.create({
             organizerId: organizerId,
             password: organizerId,
@@ -86,7 +86,7 @@ organizerRouter.post('/createorganizer', adminAuth, async (req, res) => {
 organizerRouter.delete('/deleteorganizer', adminAuth, async (req, res) => {
     const { organizerId } = req.body;
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId: organizerId });
+        const organizer = await OrganizerModel.findOne({ organizerId: organizerId }, { password: 0 });
         if (organizer) {
             await OrganizerModel.deleteOne({ organizerId: organizerId })
             res.status(200).json({
@@ -109,9 +109,9 @@ organizerRouter.patch('/editorganizerdetails', organizerAuth, async (req, res) =
     const organizerId = req.organizerId;
     const { organizerName, organizerProfile, facultyId } = req.body;
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId });
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
         if (organizer) {
-            const faculty = await UserModel.findOne({ userId: facultyId })
+            const faculty = await UserModel.findOne({ userId: facultyId }, { password: 0 })
             organizer.organizerName = organizerName;
             organizer.organizerProfile = organizerProfile;
             organizer.facultyDetails.userId = faculty.userId;
@@ -160,7 +160,7 @@ organizerRouter.patch('/editprofilePicture', organizerAuth, async (req, res) => 
     const organizerId = req.organizerId;
     const { profilePicture } = req.body;
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId });
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
         organizer.organizerProfile = profilePicture;
 
         await OrganizerModel.updateOne({ organizerId }, organizer);
@@ -180,7 +180,7 @@ organizerRouter.patch('/editUserInfo', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
     const { username, email, phone } = req.body;
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId });
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
         organizer.organizerName = username;
         organizer.email = email;
         organizer.phone = phone;

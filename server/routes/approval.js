@@ -47,7 +47,7 @@ approvalRouter.post("/addapproval", organizerAuth, async (req, res) => {
     const date = new Date();
 
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId });
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
         await ApprovalModel.create({
             title,
             document,

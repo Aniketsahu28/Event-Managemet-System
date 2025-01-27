@@ -12,7 +12,7 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
     const { title, description, banner, date, time, venue, eventForDepts, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
-        const organizer = await OrganizerModel.findOne({ organizerId });
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
         await EventModel.create({
             organizerDetails: {
                 organizerId: organizer.organizerId,
