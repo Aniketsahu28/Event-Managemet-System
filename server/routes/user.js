@@ -6,6 +6,7 @@ const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 const { UserModel } = require('../models/user');
 const { userAuth } = require('../middlewares/userAuth');
 const { adminAuth } = require('../middlewares/adminAuth');
+const { sendForgetPasswordEmail } = require('../utils/email');
 
 userRouter.post('/login', async (req, res) => {
     const { userId, password } = req.body;
@@ -135,13 +136,21 @@ userRouter.patch('/editUserInfo', userAuth, async (req, res) => {
     }
 })
 
-userRouter.get('/forgetpassword', userAuth, async (req, res) => {
-    const userId = req.userId;
+userRouter.get('/forgetpassword', async (req, res) => {
+    const { userId } = req.query;
     try {
         const user = await UserModel.findOne({ userId });
-        res.status(200).json({
-            password: user.password
-        })
+        if (user) {
+            await sendForgetPasswordEmail(user.email, user.password)
+            res.status(200).json({
+                message: "Password sent on your email"
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "User with this Id does not exist"
+            })
+        }
     } catch (error) {
         res.status(500).json({
             message: "Internal server error"

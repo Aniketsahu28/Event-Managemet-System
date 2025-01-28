@@ -4,7 +4,7 @@ const { organizerAuth } = require("../middlewares/organizerAuth");
 const { userAuth } = require("../middlewares/userAuth");
 const { ApprovalModel } = require("../models/approval");
 const { OrganizerModel } = require("../models/organizer");
-const sendEmail = require("../utils/email");
+const { sendApprovalEmail } = require("../utils/email");
 
 const month = [
     "January",
@@ -68,7 +68,7 @@ approvalRouter.post("/addapproval", organizerAuth, async (req, res) => {
             })),
         });
 
-        await sendEmail(
+        await sendApprovalEmail(
             approvers[0].approverDetails.email,
             title,
             organizer.organizerName
@@ -162,7 +162,7 @@ approvalRouter.patch("/editapproval", organizerAuth, async (req, res) => {
                 }
             );
 
-            await sendEmail(
+            await sendApprovalEmail(
                 approvers[0].approverDetails.email,
                 title,
                 approvalDoc.organizerDetails.organizerName
@@ -209,7 +209,7 @@ approvalRouter.post("/validateapproval", userAuth, async (req, res) => {
                 );
 
                 if (currentApproverIndex < (approvalDoc.approvers.length - 1)) {
-                    await sendEmail(
+                    await sendApprovalEmail(
                         approvalDoc.approvers[approvalDoc.currentApprover + 1].approverDetails
                             .email,
                         approvalDoc.title,
