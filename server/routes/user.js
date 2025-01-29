@@ -141,10 +141,17 @@ userRouter.get('/forgetpassword', async (req, res) => {
     try {
         const user = await UserModel.findOne({ userId });
         if (user) {
-            await sendForgetPasswordEmail(user.email, user.password)
-            res.status(200).json({
-                message: "Password sent on your email"
-            })
+            if (user.email !== "") {
+                await sendForgetPasswordEmail(user.email, user.password)
+                res.status(200).json({
+                    message: "Password sent on your email"
+                })
+            }
+            else {
+                res.status(400).json({
+                    message: "You haven't added your email. Contact technical support."
+                })
+            }
         }
         else {
             res.status(404).json({
