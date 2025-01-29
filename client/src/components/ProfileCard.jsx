@@ -422,7 +422,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                             className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                 }`}
                         >
-                            {userId} - {department}
+                            {userId}{department !== 'Outsider' && ` - ${department}`}
                         </p>
                         <p
                             className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"

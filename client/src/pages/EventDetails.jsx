@@ -149,6 +149,9 @@ const EventDetails = () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
             return;
+        } else if (!user.userInfo.email) {
+            toast.error("Please first add your contact information in profile");
+            return;
         } else {
             try {
                 setPopup("addTeammates");
@@ -164,7 +167,7 @@ const EventDetails = () => {
         const userPresent = teammates.find(
             (teammate) => teammate.userId === user.userInfo.userId
         );
-        console.log(userPresent ? true : false)
+        console.log(userPresent ? true : false);
         return userPresent ? true : false;
     };
 
@@ -173,14 +176,15 @@ const EventDetails = () => {
         setLoading(true);
 
         try {
-            const userDetails = event?.maxTeamSize > 1
-                ? JSON.stringify(teammates)
-                : JSON.stringify([
-                    {
-                        userId: user.userInfo.userId,
-                        username: user.userInfo.username,
-                    },
-                ]);
+            const userDetails =
+                event?.maxTeamSize > 1
+                    ? JSON.stringify(teammates)
+                    : JSON.stringify([
+                        {
+                            userId: user.userInfo.userId,
+                            username: user.userInfo.username,
+                        },
+                    ]);
 
             const response = await axios.get(
                 `${BACKEND_URL}/api/event/isUserTicketBookedAlready`,
@@ -211,20 +215,20 @@ const EventDetails = () => {
         setLoading(false);
     };
 
-
     const getTicket = async () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
+            return;
+        } else if (!user.userInfo.email) {
+            toast.error("Please first add your contact information in profile");
             return;
         } else if (event?.maxTeamSize > 1 && teamName === "") {
             toast.error("Please Enter your team name");
         } else if (event?.maxTeamSize > 1 && !isUserPresentInTeam()) {
             toast.error("You didn't add youself in team");
-        }
-        else if (await isUserTicketAlreadyBooked()) {
+        } else if (await isUserTicketAlreadyBooked()) {
             return;
-        }
-        else if (!event?.isEventFree) {
+        } else if (!event?.isEventFree) {
             setPopup("paymentPopup");
         } else {
             setLoadingMessage("Booking event, please wait...");
@@ -386,13 +390,18 @@ const EventDetails = () => {
             const currentDate = new Date();
 
             ticket.userDetails.forEach((userDetail) => {
-                const userJoiningYear = userDetail.userId.slice(2, 4);
-                const userDate = new Date(`20${userJoiningYear}-06-01`);
-                const difference =
-                    (currentDate.getFullYear() - userDate.getFullYear()) * 12 +
-                    currentDate.getMonth() -
-                    userDate.getMonth();
-                userDetail.year = Math.ceil(difference / 12);
+                if (userDetail.department === 'Outsider') {
+                    userDetail.year = "Outsider"
+                }
+                else {
+                    const userJoiningYear = userDetail.userId.slice(2, 4);
+                    const userDate = new Date(`20${userJoiningYear}-06-01`);
+                    const difference =
+                        (currentDate.getFullYear() - userDate.getFullYear()) * 12 +
+                        currentDate.getMonth() -
+                        userDate.getMonth();
+                    userDetail.year = Math.ceil(difference / 12);
+                }
 
                 //Push into the array
                 event?.isPriceVariation

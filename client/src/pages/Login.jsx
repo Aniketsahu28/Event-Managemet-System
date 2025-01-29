@@ -4,7 +4,7 @@ import { themeAtom } from "../store/themeAtom";
 import { userAtom } from "../store/userAtom";
 import axios from "axios";
 import toast from 'react-hot-toast'
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import { popupAtom } from "../store/popupAtom";
 import PopupScreen from "../components/PopupScreen";
@@ -130,6 +130,10 @@ const Login = () => {
                 toast.success(response.data.message)
                 setPopup(null)
             }
+            else if (response.status === 400) {
+                toast.error(response.data.message)
+                setPopup(null)
+            }
         }
         catch (error) {
             toast.error(error.response?.data.message || error)
@@ -160,7 +164,7 @@ const Login = () => {
                         <span className="flex flex-col gap-2">
                             <label htmlFor="username">UserId</label>
                             <input
-                                type="number"
+                                type="text"
                                 id="userId"
                                 className={`w-full p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
                                     ? "bg-white/60  placeholder-black/40"
@@ -182,7 +186,7 @@ const Login = () => {
         )}
             <form
                 onSubmit={handleLogin}
-                className={`w-full px-4 rounded-lg custom_shadow mt-20 flex flex-col gap-10 items-center justify-center py-4 sm:w-[60%] mx-auto lg:w-[40%] ${currentTheme === "light" ? "bg-white" : "bg-gray text-white"
+                className={`mx-4 px-4 rounded-lg custom_shadow mt-20 flex flex-col gap-10 items-center justify-center py-4 sm:w-[60%] sm:mx-auto lg:w-[40%] ${currentTheme === "light" ? "bg-white" : "bg-gray text-white"
                     }`}
             >
                 {loading && <Loader message={loadingMessage} />}
@@ -251,6 +255,7 @@ const Login = () => {
                 >
                     Login
                 </button>
+                <p className={`-mt-6 ${currentTheme === 'light' ? "text-black/60" : "text-white/60"}`}>Not from FCRIT? <Link to="/signup" className={`hover:underline underline-offset-4 ${currentTheme === 'light' ? "text-black" : "text-white"}`}>Create account</Link></p>
             </form>
         </>
     );

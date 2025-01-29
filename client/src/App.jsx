@@ -19,6 +19,7 @@ import { Toaster } from 'react-hot-toast'
 import AdminPanel from './pages/AdminPanel';
 import AddNewApproval from './pages/AddNewApproval';
 import Approvals from './pages/Approvals';
+import Signup from './pages/Signup';
 
 function App() {
   const currentTheme = useRecoilValue(themeAtom);
@@ -32,6 +33,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Events />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/organizers" element={<Organizers />} />

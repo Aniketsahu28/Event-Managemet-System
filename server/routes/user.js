@@ -141,7 +141,7 @@ userRouter.get('/forgetpassword', async (req, res) => {
     try {
         const user = await UserModel.findOne({ userId });
         if (user) {
-            if (user.email !== "") {
+            if (user.email) {
                 await sendForgetPasswordEmail(user.email, user.password)
                 res.status(200).json({
                     message: "Password sent on your email"
@@ -194,6 +194,35 @@ userRouter.post('/createstudent', adminAuth, async (req, res) => {
         }
 
     } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+userRouter.post('/signup', async (req, res) => {
+    const { userId, username, password } = req.body;
+    try {
+        const user = await UserModel.findOne({ userId })
+        if (!user) {
+            await UserModel.create({
+                userId: userId,
+                userType: "student",
+                username: username,
+                password: password,
+                department: "Outsider",
+            });
+            res.status(201).json({
+                message: "Signup successful"
+            })
+        }
+        else {
+            res.status(200).json({
+                message: "User with this userId already exists"
+            })
+        }
+    } catch (error) {
+        console.log(error)
         res.status(500).json({
             message: "Internal server error"
         })
