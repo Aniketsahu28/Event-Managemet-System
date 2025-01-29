@@ -75,7 +75,7 @@ const Signup = () => {
     return (
         <form
             onSubmit={handleSignup}
-            className={`mx-4 px-4 rounded-lg custom_shadow mt-20 flex flex-col gap-10 items-center justify-center py-4 sm:w-[60%] sm:mx-auto lg:w-[40%] ${currentTheme === "light" ? "bg-white" : "bg-gray text-white"
+            className={`mx-4 px-4 rounded-lg custom_shadow mt-16 sm:mt-20 flex flex-col gap-10 items-center justify-center py-4 sm:w-[60%] sm:mx-auto lg:w-[40%] ${currentTheme === "light" ? "bg-white" : "bg-gray text-white"
                 }`}
         >
             {loading && <Loader message={loadingMessage} />}

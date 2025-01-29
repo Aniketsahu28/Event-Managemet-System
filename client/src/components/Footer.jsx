@@ -86,11 +86,11 @@ const Footer = () => {
                             Maharashtra, India, PIN - 400703.
                         </p>
                     </span>
-                    <span className="text-white/60 text-2xl sm:text-3xl flex gap-4 ml-6">
+                    {/* <span className="text-white/60 text-2xl sm:text-3xl flex gap-4 ml-6">
                         <IoMailOutline />
                         <MdOutlinePhoneInTalk />
                         <FaInstagram />
-                    </span>
+                    </span> */}
                 </div>
             </div>
             <div className="bg-black text-white/60 font-lato flex flex-col lg:flex-row items-center gap-2 lg:gap-0 py-4 lg:justify-between px-4 sm:px-16">
