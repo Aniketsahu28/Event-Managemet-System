@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const ObjectId = mongoose.Schema.ObjectId;
 
 const eventSchema = new mongoose.Schema({
     organizerDetails: {
@@ -14,6 +13,12 @@ const eventSchema = new mongoose.Schema({
             type: String,
             require: true
         },
+        email: {
+            type: String,
+        },
+        phone: {
+            type: String
+        }
     },
     acceptingParticipation: {
         type: Boolean,

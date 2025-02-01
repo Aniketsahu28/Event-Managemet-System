@@ -17,7 +17,9 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
             organizerDetails: {
                 organizerId: organizer.organizerId,
                 organizerName: organizer.organizerName,
-                department: organizer.department
+                department: organizer.department,
+                email: organizer.email,
+                phone: organizer.phone
             },
             title,
             description,
@@ -86,10 +88,19 @@ eventRouter.patch('/toggleparticipation', organizerAuth, async (req, res) => {
 })
 
 eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
+    const organizerId = req.organizerId;
     const { eventId, title, description, banner, date, time, venue, eventForDepts, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
         await EventModel.updateOne({ "_id": eventId }, {
+            organizerDetails: {
+                organizerId: organizer.organizerId,
+                organizerName: organizer.organizerName,
+                department: organizer.department,
+                email: organizer.email,
+                phone: organizer.phone
+            },
             title,
             description,
             banner,

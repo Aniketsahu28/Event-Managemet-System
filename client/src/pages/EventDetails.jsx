@@ -343,7 +343,7 @@ const EventDetails = () => {
         const searchResult = eventTickets.filter((ticket) => {
             return event?.maxTeamSize > 1
                 ? ticket.teamName.toLowerCase().includes(e.target.value.toLowerCase())
-                : ticket.userDetails.userId.includes(e.target.value);
+                : ticket.userDetails[0].userId.includes(e.target.value);
         });
         setSearchedEventTickets(searchResult);
     };
@@ -741,6 +741,23 @@ const EventDetails = () => {
                                 </span>
                             </span>
                         )}
+
+                        {/* Contact info */}
+                        {(event?.organizerDetails?.email || event?.organizerDetails?.phone) && <p className={`flex gap-2 ${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                            }`}>
+                            <span className={`font-lato font-semibold ${currentTheme === "light" ? "text-black" : "text-white"}`}>
+                                For any queries, contact :
+                            </span>
+                            <p
+                                className={`${currentTheme === "light"
+                                    ? "border-black/50"
+                                    : "border-white/60"
+                                    }`}
+                            >
+                                {event?.organizerDetails?.email}, {" +91 "}
+                                {event?.organizerDetails?.phone}
+                            </p>
+                        </p>}
                     </div>
 
                     {/* Event Details Right side (Booking card) */}
