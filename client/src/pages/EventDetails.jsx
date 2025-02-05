@@ -219,6 +219,17 @@ const EventDetails = () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
             return;
+        } else if ((user.userInfo.department !== 'Outsider' && !event?.eventForDepts.includes(user.userInfo.department) && !event?.eventForDepts.includes("All Departments")) || (user.userInfo.department === 'Outsider' && !event.outsideStudentsAllowed)) {
+            let depts = "";
+            event.eventForDepts.forEach((dept) => {
+                depts += dept + ", ";
+            })
+            if (user.userInfo.department === 'Outsider') {
+                toast("Event is only for FCRIT students")
+            }
+            else {
+                toast(`Event is for ${depts}`)
+            }
         } else if (!user.userInfo.email) {
             toast.error("Please first add your contact information in profile");
             return;
@@ -690,6 +701,17 @@ const EventDetails = () => {
                                     ))}
                                 </span>
                             </span>
+                            {event?.outsideStudentsAllowed && <p
+                                className={`${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                                    }`}
+                            >
+                                <span
+                                    className={`font-lato font-semibold ${currentTheme === "light" ? "text-black" : "text-white"
+                                        }`}
+                                >
+                                    (Outsiders allowed)
+                                </span>
+                            </p>}
                         </span>
                         <span className="flex flex-col gap-2">
                             <h2 className="text-lg sm:text-xl font-semibold">About Event</h2>
@@ -743,7 +765,7 @@ const EventDetails = () => {
                         )}
 
                         {/* Contact info */}
-                        {(event?.organizerDetails?.email || event?.organizerDetails?.phone) && <p className={`flex gap-2 ${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                        {(event?.organizerDetails?.email || event?.organizerDetails?.phone) && <div className={`flex gap-2 ${currentTheme === "light" ? "text-black/60" : "text-white/60"
                             }`}>
                             <span className={`font-lato font-semibold ${currentTheme === "light" ? "text-black" : "text-white"}`}>
                                 For any queries, contact :
@@ -757,7 +779,7 @@ const EventDetails = () => {
                                 {event?.organizerDetails?.email}, {" +91 "}
                                 {event?.organizerDetails?.phone}
                             </p>
-                        </p>}
+                        </div>}
                     </div>
 
                     {/* Event Details Right side (Booking card) */}
@@ -790,7 +812,7 @@ const EventDetails = () => {
                                 <GoPeople className="text-xl" />
                                 <p>
                                     {event?.maxTeamSize > 1
-                                        ? `Team (${event?.minTeamSize} - ${event?.maxTeamSize})`
+                                        ? `Team size (${event?.minTeamSize} - ${event?.maxTeamSize})`
                                         : `Single ${event?.minTeamSize}`}
                                 </p>
                             </span>

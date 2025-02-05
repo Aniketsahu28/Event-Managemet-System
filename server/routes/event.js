@@ -4,12 +4,11 @@ const { organizerAuth } = require('../middlewares/organizerAuth')
 const { userAuth } = require('../middlewares/userAuth')
 const { OrganizerModel } = require('../models/organizer')
 const { EventModel } = require('../models/event')
-const { UserModel } = require('../models/user')
 const { TicketModel } = require('../models/ticket')
 
 eventRouter.post('/addevent', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
-    const { title, description, banner, date, time, venue, eventForDepts, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
+    const { title, description, banner, date, time, venue, eventForDepts, outsideStudentsAllowed, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
         const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
@@ -28,6 +27,7 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
             time,
             venue,
             eventForDepts,
+            outsideStudentsAllowed,
             minTeamSize,
             maxTeamSize,
             speakers,
@@ -89,7 +89,7 @@ eventRouter.patch('/toggleparticipation', organizerAuth, async (req, res) => {
 
 eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
-    const { eventId, title, description, banner, date, time, venue, eventForDepts, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
+    const { eventId, title, description, banner, date, time, venue, eventForDepts, outsideStudentsAllowed, minTeamSize, maxTeamSize, speakers, isLimitedSeats, maxSeats, prizes, isEventFree, isPriceVariation, eventFee, eventFeeForClubMember, paymentQR, UPI_ID } = req.body;
 
     try {
         const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
@@ -108,6 +108,7 @@ eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
             time,
             venue,
             eventForDepts,
+            outsideStudentsAllowed,
             minTeamSize,
             maxTeamSize,
             speakers,

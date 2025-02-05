@@ -219,7 +219,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
 
     return (
         <>
-            {popup === "username" && (
+            {popup === "updateinfo" && (
                 <PopupScreen>
                     <form
                         onSubmit={changeUserInfo}
@@ -402,22 +402,20 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                         </label>
                     )}
                 </div>
-                <div className="flex flex-col justify-between gap-4 sm:gap-0 items-center sm:items-start">
+                <div className="flex flex-col justify-between gap-4 sm:gap-0 items-center sm:items-start relative sm:pr-10">
+                    <FaRegPenToSquare
+                        className={`absolute -right-10 sm:right-0 top-1 text-xl ${currentTheme === "light"
+                            ? "text-black/60 hover:text-black"
+                            : "text-white/60 hover:text-white"
+                            }`}
+                        onClick={() => {
+                            setPopup("updateinfo");
+                        }}
+                    />
                     <span className="flex flex-col items-center sm:items-start">
-                        <h2 className="flex gap-4 items-center justify-between">
-                            <p className="font-montserrat font-medium text-xl sm:text-2xl">
-                                {name}
-                            </p>{" "}
-                            <FaRegPenToSquare
-                                className={`text-xl ${currentTheme === "light"
-                                    ? "text-black/60 hover:text-black"
-                                    : "text-white/60 hover:text-white"
-                                    }`}
-                                onClick={() => {
-                                    setPopup("username");
-                                }}
-                            />
-                        </h2>
+                        <h2 className="font-montserrat font-medium text-xl sm:text-2xl">
+                            {name}
+                        </h2>{" "}
                         <p
                             className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                 }`}

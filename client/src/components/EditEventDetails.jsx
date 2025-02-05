@@ -33,6 +33,7 @@ const EditEventDetails = ({ event, setEvent }) => {
         time: event.time,
         venue: event.venue,
         eventForDepts: event.eventForDepts,
+        outsideStudentsAllowed: event.outsideStudentsAllowed,
         minTeamSize: event.minTeamSize,
         maxTeamSize: event.maxTeamSize,
         speakers: event.speakers,
@@ -193,6 +194,7 @@ const EditEventDetails = ({ event, setEvent }) => {
                     time: eventDetails.time,
                     venue: eventDetails.venue,
                     eventForDepts: eventDetails.eventForDepts,
+                    outsideStudentsAllowed: eventDetails.outsideStudentsAllowed,
                     minTeamSize: eventDetails.minTeamSize,
                     maxTeamSize: eventDetails.maxTeamSize,
                     speakers: eventDetails.speakers,
@@ -231,6 +233,7 @@ const EditEventDetails = ({ event, setEvent }) => {
                     time: eventDetails.time,
                     venue: eventDetails.venue,
                     eventForDepts: eventDetails.eventForDepts,
+                    outsideStudentsAllowed: eventDetails.outsideStudentsAllowed,
                     minTeamSize: eventDetails.minTeamSize,
                     maxTeamSize: eventDetails.maxTeamSize,
                     speakers: eventDetails.speakers,
@@ -443,6 +446,55 @@ const EditEventDetails = ({ event, setEvent }) => {
                             </button>
                         ))}
                     </div>
+                </span>
+                <span className="flex flex-col gap-2 col-span-12">
+                    <label htmlFor="eventForDepts">
+                        Students outside FCRIT are allowed for this event ?
+                    </label>
+                    <span className="flex flex-col sm:flex-row gap-4">
+                        <button
+                            name="outsiderAllowed"
+                            className={`px-4 py-2 rounded-full border-[1px] 
+                            ${currentTheme === "light"
+                                    ? eventDetails.outsideStudentsAllowed === true
+                                        ? "text-white border-blue_100 bg-blue_100"
+                                        : "border-black/50 text-black/70 border-[1px]"
+                                    : eventDetails.outsideStudentsAllowed === true
+                                        ? "text-white border-blue_100 bg-blue_100"
+                                        : "border-white/60 text-white/60 border-[1px]"
+                                }`}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setEventDetails((prevDetails) => ({
+                                    ...prevDetails,
+                                    outsideStudentsAllowed: true
+                                }))
+                            }}
+                        >
+                            Yes, allowed
+                        </button>
+                        <button
+                            name="outsiderAllowed"
+                            className={`px-4 py-2 rounded-full border-[1px] 
+                            ${currentTheme === "light"
+                                    ? eventDetails.outsideStudentsAllowed === false
+                                        ? "text-white border-blue_100 bg-blue_100"
+                                        : "border-black/50 text-black/70 border-[1px]"
+                                    : eventDetails.outsideStudentsAllowed === false
+                                        ? "text-white border-blue_100 bg-blue_100"
+                                        : "border-white/60 text-white/60 border-[1px]"
+                                }`}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setEventDetails((prevDetails) => ({
+                                    ...prevDetails,
+                                    outsideStudentsAllowed: false
+                                }))
+                            }}
+                        >
+                            Not allowed
+                        </button>
+                    </span>
                 </span>
                 <div className="grid grid-cols-8 gap-6 col-span-12">
                     <div className="lg:col-span-2 col-span-4 flex flex-col gap-2">

@@ -245,7 +245,7 @@ const Login = () => {
                                 setPopup('forgetPassword')
                             }}
                         >
-                            Forget Password
+                            Forgot Password ?
                         </button>
                     </span>
                 </div>

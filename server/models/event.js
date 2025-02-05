@@ -50,6 +50,10 @@ const eventSchema = new mongoose.Schema({
     eventForDepts: [
         { type: String }
     ],
+    outsideStudentsAllowed: {
+        type: Boolean,
+        default: false
+    },
     minTeamSize: {
         type: Number,
         default: 1
