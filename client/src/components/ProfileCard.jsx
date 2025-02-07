@@ -12,6 +12,7 @@ import { useHandleFileUpload } from "../hooks/useHandleFileUpload";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import toast from 'react-hot-toast'
 import Loader from "./Loader";
+import OTPInputBox from "./OTPInputBox";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const ProfileCard = ({ name, userId, department, image, email, phone }) => {
@@ -28,9 +29,10 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
     const reEnteredNewPassword = useRef(null);
     const [profileHover, setProfileHover] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState("")
+    const [otp, setOtp] = useState(["", "", "", ""]);
     const [loading, setLoading] = useState(false)
 
-    const changeUserInfo = async (event) => {
+    const changeUsername = async (event) => {
         event.preventDefault();
 
         if (!userInfo.name) {
@@ -41,11 +43,9 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
             try {
                 if (user.userInfo.userType === "organizer") {
                     const response = await axios.patch(
-                        `${BACKEND_URL}/api/organizer/editUserInfo`,
+                        `${BACKEND_URL}/api/organizer/editUsername`,
                         {
                             username: userInfo.name,
-                            email: userInfo.email,
-                            phone: userInfo.phone,
                         },
                         {
                             headers: {
@@ -63,19 +63,15 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                             userInfo: {
                                 ...oldinfo.userInfo,
                                 organizerName: userInfo.name,
-                                email: userInfo.email,
-                                phone: userInfo.phone,
                             },
                         }));
                         setPopup(null);
                     }
                 } else {
                     const response = await axios.patch(
-                        `${BACKEND_URL}/api/user/editUserInfo`,
+                        `${BACKEND_URL}/api/user/editUsername`,
                         {
                             username: userInfo.name,
-                            email: userInfo.email,
-                            phone: userInfo.phone,
                         },
                         {
                             headers: {
@@ -93,8 +89,6 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                             userInfo: {
                                 ...oldinfo.userInfo,
                                 username: userInfo.name,
-                                email: userInfo.email,
-                                phone: userInfo.phone,
                             },
                         }));
                         setPopup(null);
@@ -217,12 +211,86 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
         setLoading(false)
     };
 
+    const verifyEmail = async (e) => {
+        e.preventDefault();
+        setPopup('emailVerification')
+    }
+
+    const updatePhoneNo = async (event) => {
+        event.preventDefault();
+
+        if (!userInfo.phone) {
+            toast("Phone number cannot be empty");
+        } else {
+            setLoadingMessage("Saving changes...")
+            setLoading(true)
+            try {
+                if (user.userInfo.userType === "organizer") {
+                    const response = await axios.patch(
+                        `${BACKEND_URL}/api/organizer/editPhone`,
+                        {
+                            phone: userInfo.phone,
+                        },
+                        {
+                            headers: {
+                                token: user.token,
+                            },
+                        }
+                    );
+
+                    if (response.status === 200) {
+                        toast.success(response.data.message, {
+                            duration: 3000
+                        });
+                        setUser((oldinfo) => ({
+                            ...oldinfo,
+                            userInfo: {
+                                ...oldinfo.userInfo,
+                                phone: userInfo.phone,
+                            },
+                        }));
+                        setPopup(null);
+                    }
+                } else {
+                    const response = await axios.patch(
+                        `${BACKEND_URL}/api/user/editPhone`,
+                        {
+                            phone: userInfo.phone,
+                        },
+                        {
+                            headers: {
+                                token: user.token,
+                            },
+                        }
+                    );
+
+                    if (response.status === 200) {
+                        toast.success(response.data.message, {
+                            duration: 3000
+                        });
+                        setUser((oldinfo) => ({
+                            ...oldinfo,
+                            userInfo: {
+                                ...oldinfo.userInfo,
+                                phone: userInfo.phone,
+                            },
+                        }));
+                        setPopup(null);
+                    }
+                }
+            } catch (error) {
+                toast.error(error.response?.data.message || error);
+            }
+            setLoading(false)
+        }
+    }
+
     return (
         <>
-            {popup === "updateinfo" && (
+            {popup === "username" && (
                 <PopupScreen>
                     <form
-                        onSubmit={changeUserInfo}
+                        onSubmit={changeUsername}
                         className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
                             ? "text-black bg-white"
                             : "text-white bg-gray"
@@ -230,7 +298,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                     >
                         <span className="flex justify-between items-center">
                             <p className="text-2xl font-montserrat font-medium">
-                                Update Info
+                                Update username
                             </p>
                             <RxCross2
                                 className="text-2xl cursor-pointer"
@@ -247,7 +315,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                                         ? "bg-white/60  placeholder-black/40"
                                         : "bg-gray/60 border-white text-white placeholder-white/60"
                                         }`}
-                                    placeholder="New username"
+                                    placeholder="Username"
                                     value={userInfo.name}
                                     onChange={(e) => {
                                         setUserInfo((prev) => ({
@@ -257,6 +325,35 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                                     }}
                                 />
                             </span>
+                        </div>
+                        <button
+                            type="submit"
+                            className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                        >
+                            Save Changes
+                        </button>
+                    </form>
+                </PopupScreen>
+            )}
+            {popup === "email" && (
+                <PopupScreen>
+                    <form
+                        onSubmit={verifyEmail}
+                        className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
+                    >
+                        <span className="flex justify-between items-center">
+                            <p className="text-2xl font-montserrat font-medium">
+                                Update Email
+                            </p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <div className="flex flex-col gap-4">
                             <span className="flex flex-col gap-2">
                                 <label htmlFor="email">Email</label>
                                 <input
@@ -266,7 +363,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                                         ? "bg-white/60  placeholder-black/40"
                                         : "bg-gray/60 border-white text-white placeholder-white/60"
                                         }`}
-                                    placeholder="Ex : johndoe@gmail.com"
+                                    placeholder="johndoe@gmail.com"
                                     value={userInfo.email}
                                     onChange={(e) => {
                                         setUserInfo((prev) => ({
@@ -276,6 +373,35 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                                     }}
                                 />
                             </span>
+                        </div>
+                        <button
+                            type="submit"
+                            className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                        >
+                            Verify Email
+                        </button>
+                    </form>
+                </PopupScreen>
+            )}
+            {popup === "phone" && (
+                <PopupScreen>
+                    <form
+                        onSubmit={updatePhoneNo}
+                        className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
+                    >
+                        <span className="flex justify-between items-center">
+                            <p className="text-2xl font-montserrat font-medium">
+                                Update phone no.
+                            </p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <div className="flex flex-col gap-4">
                             <span className="flex flex-col gap-2">
                                 <label htmlFor="phone">Phone</label>
                                 <input
@@ -285,7 +411,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                                         ? "bg-white/60  placeholder-black/40"
                                         : "bg-gray/60 border-white text-white placeholder-white/60"
                                         }`}
-                                    placeholder="Ex : 1234567890"
+                                    placeholder="1234567890"
                                     value={userInfo.phone}
                                     onChange={(e) => {
                                         setUserInfo((prev) => ({
@@ -373,6 +499,36 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                     </form>
                 </PopupScreen>
             )}
+            {popup === "emailVerification" && (
+                <PopupScreen>
+                    <form
+                        // onSubmit={changePassword}
+                        className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
+                    >
+                        <span className="flex justify-between items-center">
+                            <p className="text-2xl font-montserrat font-medium">
+                                Verify OTP
+                            </p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <div className="flex flex-col gap-4 items-center justify-center">
+                            <OTPInputBox otp={otp} setOtp={setOtp} />
+                        </div>
+                        <button
+                            type="submit"
+                            className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
+                        >
+                            Verify
+                        </button>
+                    </form>
+                </PopupScreen>
+            )}
             {loading && <Loader message={loadingMessage} />}
             <div
                 className={`flex flex-col sm:flex-row items-center sm:items-stretch justify-center gap-6 custom_shadow p-4 sm:p-6 rounded-lg w-full sm:w-fit ${currentTheme === "light"
@@ -402,37 +558,55 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                         </label>
                     )}
                 </div>
-                <div className="flex flex-col justify-between gap-4 sm:gap-0 items-center sm:items-start relative sm:pr-10">
-                    <FaRegPenToSquare
-                        className={`absolute -right-10 sm:right-0 top-1 text-xl ${currentTheme === "light"
-                            ? "text-black/60 hover:text-black"
-                            : "text-white/60 hover:text-white"
-                            }`}
-                        onClick={() => {
-                            setPopup("updateinfo");
-                        }}
-                    />
+                <div className="flex flex-col justify-between gap-4 sm:gap-0 items-center sm:items-start">
                     <span className="flex flex-col items-center sm:items-start">
-                        <h2 className="font-montserrat font-medium text-xl sm:text-2xl">
-                            {name}
-                        </h2>{" "}
+                        <h2 className="flex justify-between items-center w-full gap-4 font-montserrat font-medium text-xl sm:text-2xl">
+                            <span>{name}</span>
+                            <FaRegPenToSquare
+                                className={`text-lg ${currentTheme === "light"
+                                    ? "text-black/60 hover:text-black"
+                                    : "text-white/60 hover:text-white"
+                                    }`}
+                                onClick={() => {
+                                    setPopup("username");
+                                }}
+                            />
+                        </h2>
                         <p
-                            className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
+                            className={`w-full ${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                 }`}
                         >
                             {userId}{department !== 'Outsider' && ` - ${department}`}
                         </p>
                         <p
-                            className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
+                            className={`flex justify-between items-center gap-4 w-full ${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                 }`}
                         >
-                            Email : {email}
+                            <span> Email : {email}</span>
+                            <FaRegPenToSquare
+                                className={`text-lg ${currentTheme === "light"
+                                    ? "text-black/60 hover:text-black"
+                                    : "text-white/60 hover:text-white"
+                                    }`}
+                                onClick={() => {
+                                    setPopup("email");
+                                }}
+                            />
                         </p>
                         <p
-                            className={`${currentTheme === "light" ? "text-black/80" : "text-white/80"
+                            className={`flex justify-between items-center gap-4 w-full ${currentTheme === "light" ? "text-black/80" : "text-white/80"
                                 }`}
                         >
-                            Phone : {phone}
+                            <span> Phone : {phone}</span>
+                            <FaRegPenToSquare
+                                className={`text-lg ${currentTheme === "light"
+                                    ? "text-black/60 hover:text-black"
+                                    : "text-white/60 hover:text-white"
+                                    }`}
+                                onClick={() => {
+                                    setPopup("phone");
+                                }}
+                            />
                         </p>
                     </span>
                     <button
