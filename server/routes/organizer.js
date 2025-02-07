@@ -176,19 +176,17 @@ organizerRouter.patch('/editprofilePicture', organizerAuth, async (req, res) => 
     }
 })
 
-organizerRouter.patch('/editUserInfo', organizerAuth, async (req, res) => {
+organizerRouter.patch('/editUsername', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
-    const { username, email, phone } = req.body;
+    const { username } = req.body;
     try {
         const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
         organizer.organizerName = username;
-        organizer.email = email;
-        organizer.phone = phone;
 
         await OrganizerModel.updateOne({ organizerId }, organizer);
 
         res.status(200).json({
-            message: "User info updated"
+            message: "Username updated"
         })
 
     } catch (error) {
@@ -197,6 +195,27 @@ organizerRouter.patch('/editUserInfo', organizerAuth, async (req, res) => {
         })
     }
 })
+
+organizerRouter.patch('/editPhone', organizerAuth, async (req, res) => {
+    const organizerId = req.organizerId;
+    const { phone } = req.body;
+    try {
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
+        organizer.phone = phone;
+
+        await OrganizerModel.updateOne({ organizerId }, organizer);
+
+        res.status(200).json({
+            message: "Phone number updated"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
 
 module.exports = {
     organizerRouter

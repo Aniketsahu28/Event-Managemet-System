@@ -114,19 +114,37 @@ userRouter.patch('/editprofilePicture', userAuth, async (req, res) => {
     }
 })
 
-userRouter.patch('/editUserInfo', userAuth, async (req, res) => {
+userRouter.patch('/editUsername', userAuth, async (req, res) => {
     const userId = req.userId;
-    const { username, email, phone } = req.body;
+    const { username } = req.body;
     try {
         const user = await UserModel.findOne({ userId }, { password: 0 });
         user.username = username;
-        user.email = email;
+
+        await UserModel.updateOne({ userId }, user);
+
+        res.status(200).json({
+            message: "Username updated"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+userRouter.patch('/editPhone', userAuth, async (req, res) => {
+    const userId = req.userId;
+    const { phone } = req.body;
+    try {
+        const user = await UserModel.findOne({ userId }, { password: 0 });
         user.phone = phone;
 
         await UserModel.updateOne({ userId }, user);
 
         res.status(200).json({
-            message: "User info updated"
+            message: "Phone number updated"
         })
 
     } catch (error) {
