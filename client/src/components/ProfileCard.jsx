@@ -211,9 +211,134 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
         setLoading(false)
     };
 
-    const verifyEmail = async (e) => {
+    const updateOrganierEmail = async (e) => {
         e.preventDefault();
-        setPopup('emailVerification')
+
+        if (!userInfo.email) {
+            toast("Email cannot be empty");
+        }
+        else {
+            setLoadingMessage("Saving changes...")
+            setLoading(true)
+            try {
+                const response = await axios.patch(`${BACKEND_URL}/api/organizer/updateEmail`,
+                    {
+                        email: userInfo.email
+                    },
+                    {
+                        headers: {
+                            token: user.token,
+                        },
+                    }
+                );
+                toast.success(response.data.message, {
+                    duration: 3000
+                })
+                setUser((oldinfo) => ({
+                    ...oldinfo,
+                    userInfo: {
+                        ...oldinfo.userInfo,
+                        email: userInfo.email,
+                    },
+                }));
+                setPopup(null);
+            } catch (error) {
+                toast.error(error.response?.data.message || error);
+            }
+            setLoading(false)
+        }
+    }
+
+    const generateOTP = async (e) => {
+        e.preventDefault();
+        if (!userInfo.email) {
+            toast("Email cannot be empty");
+        }
+        else {
+            setLoadingMessage("Generating OTP, please wait...")
+            setLoading(true)
+            try {
+                const response = await axios.post(`${BACKEND_URL}/api/otp/generateOTP`,
+                    {
+                        username: userInfo.name,
+                        email: userInfo.email
+                    },
+                    {
+                        headers: {
+                            token: user.token
+                        }
+                    }
+                )
+                toast.success(response.data.message, {
+                    duration: 3000
+                });
+                setPopup('verifyOTP')
+
+            }
+            catch (error) {
+                toast.error(error.response?.data.message || error);
+            }
+            setLoading(false)
+        }
+    }
+
+    const resendOTP = async (e) => {
+        e.preventDefault();
+        setLoadingMessage("Generating OTP, please wait...")
+        setLoading(true)
+        try {
+            const response = await axios.patch(`${BACKEND_URL}/api/otp/resendOTP`,
+                {
+                    username: userInfo.name,
+                },
+                {
+                    headers: {
+                        token: user.token
+                    }
+                }
+            )
+            toast.success(response.data.message, {
+                duration: 3000
+            });
+        }
+        catch (error) {
+            toast.error(error.response?.data.message || error);
+        }
+        setLoading(false)
+    }
+
+    const verifyOTP = async (e) => {
+        e.preventDefault();
+        setLoadingMessage("Verifying OTP, please wait...")
+        setLoading(true)
+        try {
+            const response = await axios.patch(`${BACKEND_URL}/api/otp/verifyOTP`,
+                {
+                    userEnteredOTP: otp
+                },
+                {
+                    headers: {
+                        token: user.token
+                    }
+                }
+            )
+            toast.success(response.data.message, {
+                duration: 3000
+            });
+            setUser((oldinfo) => ({
+                ...oldinfo,
+                userInfo: {
+                    ...oldinfo.userInfo,
+                    email: response.data.email,
+                    isVerified: true
+                },
+            }));
+            setPopup(null)
+        }
+        catch (error) {
+            toast.error(error.response?.data.message || error);
+        }
+        setLoading(false)
     }
 
     const updatePhoneNo = async (event) => {
@@ -338,7 +463,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
             {popup === "email" && (
                 <PopupScreen>
                     <form
-                        onSubmit={verifyEmail}
+                        onSubmit={user.userInfo.userType === "organizer" ? updateOrganierEmail : generateOTP}
                         className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
                             ? "text-black bg-white"
                             : "text-white bg-gray"
@@ -378,7 +503,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                             type="submit"
                             className="flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
                         >
-                            Verify Email
+                            {user.userInfo.userType === "organizer" ? "Save Changes" : "Request OTP"}
                         </button>
                     </form>
                 </PopupScreen>
@@ -499,10 +624,10 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                     </form>
                 </PopupScreen>
             )}
-            {popup === "emailVerification" && (
+            {popup === "verifyOTP" && (
                 <PopupScreen>
                     <form
-                        // onSubmit={changePassword}
+                        onSubmit={verifyOTP}
                         className={`rounded-lg mx-auto p-4 w-80 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
                             ? "text-black bg-white"
                             : "text-white bg-gray"
@@ -517,8 +642,9 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                                 onClick={() => setPopup(null)}
                             />
                         </span>
-                        <div className="flex flex-col gap-4 items-center justify-center">
+                        <div className="flex flex-col gap-6 items-center justify-center">
                             <OTPInputBox otp={otp} setOtp={setOtp} />
+                            <button type="button" className="hover:underline hover:underline-offset-4" onClick={resendOTP}>Re-send OTP</button>
                         </div>
                         <button
                             type="submit"

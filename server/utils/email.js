@@ -42,7 +42,29 @@ const sendForgetPasswordEmail = async (receiverEmail, password) => {
     await transporter.sendMail(mailOptions);
 };
 
+const sendOTPEmail = async (receiverEmail, username, OTP) => {
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        port: 465,
+        secure: true,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+        },
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_USER,
+        to: receiverEmail,
+        subject: `Your OTP for Email Verification`,
+        html: `<p>Dear ${username}, <br/>Your One Time Password (OTP) for email verification is: <b>${OTP}</b><br/>Please do not share it with anyone.<br/><br/>If you did not request this verification, please ignore this email.<br/><br/>Best regards,<br/>Agnel events, FCRIT</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+};
+
 module.exports = {
     sendApprovalEmail,
-    sendForgetPasswordEmail
+    sendForgetPasswordEmail,
+    sendOTPEmail
 };

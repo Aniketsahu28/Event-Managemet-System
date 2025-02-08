@@ -216,6 +216,26 @@ organizerRouter.patch('/editPhone', organizerAuth, async (req, res) => {
     }
 })
 
+organizerRouter.patch('/updateEmail', organizerAuth, async (req, res) => {
+    const organizerId = req.organizerId;
+    const { email } = req.body;
+    try {
+        const organizer = await OrganizerModel.findOne({ organizerId }, { password: 0 });
+        organizer.email = email;
+
+        await OrganizerModel.updateOne({ organizerId }, organizer);
+
+        res.status(200).json({
+            message: "Email updated successfully"
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
 
 module.exports = {
     organizerRouter

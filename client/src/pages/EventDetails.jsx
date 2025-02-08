@@ -219,19 +219,28 @@ const EventDetails = () => {
         if (!isUserAuthenticated) {
             toast("Please login to continue");
             return;
-        } else if ((user.userInfo.department !== 'Outsider' && !event?.eventForDepts.includes(user.userInfo.department) && !event?.eventForDepts.includes("All Departments")) || (user.userInfo.department === 'Outsider' && !event.outsideStudentsAllowed)) {
+        } else if (
+            (user.userInfo.department !== "Outsider" &&
+                !event?.eventForDepts.includes(user.userInfo.department) &&
+                !event?.eventForDepts.includes("All Departments")) ||
+            (user.userInfo.department === "Outsider" && !event.outsideStudentsAllowed)
+        ) {
             let depts = "";
             event.eventForDepts.forEach((dept) => {
                 depts += dept + ", ";
-            })
-            if (user.userInfo.department === 'Outsider') {
-                toast("Event is only for FCRIT students")
+            });
+            if (user.userInfo.department === "Outsider") {
+                toast("Event is only for FCRIT students");
+            } else {
+                toast(`Event is for ${depts}`);
+            }
+        } else if (!user.userInfo.isVerified || !user.userInfo.phone) {
+            if (!user.userInfo.isVerified) {
+                toast.error("Email is not verified, Add email in profile")
             }
             else {
-                toast(`Event is for ${depts}`)
+                toast.error("Add your contact number in profile");
             }
-        } else if (!user.userInfo.email) {
-            toast.error("Please first add your contact information in profile");
             return;
         } else if (event?.maxTeamSize > 1 && teamName === "") {
             toast.error("Please Enter your team name");
@@ -401,10 +410,9 @@ const EventDetails = () => {
             const currentDate = new Date();
 
             ticket.userDetails.forEach((userDetail) => {
-                if (userDetail.department === 'Outsider') {
-                    userDetail.year = "Outsider"
-                }
-                else {
+                if (userDetail.department === "Outsider") {
+                    userDetail.year = "Outsider";
+                } else {
                     const userJoiningYear = userDetail.userId.slice(2, 4);
                     const userDate = new Date(`20${userJoiningYear}-06-01`);
                     const difference =
@@ -701,17 +709,19 @@ const EventDetails = () => {
                                     ))}
                                 </span>
                             </span>
-                            {event?.outsideStudentsAllowed && <p
-                                className={`${currentTheme === "light" ? "text-black/60" : "text-white/60"
-                                    }`}
-                            >
-                                <span
-                                    className={`font-lato font-semibold ${currentTheme === "light" ? "text-black" : "text-white"
+                            {event?.outsideStudentsAllowed && (
+                                <p
+                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/60"
                                         }`}
                                 >
-                                    (Outsiders allowed)
-                                </span>
-                            </p>}
+                                    <span
+                                        className={`font-lato font-semibold ${currentTheme === "light" ? "text-black" : "text-white"
+                                            }`}
+                                    >
+                                        (Outsiders allowed)
+                                    </span>
+                                </p>
+                            )}
                         </span>
                         <span className="flex flex-col gap-2">
                             <h2 className="text-lg sm:text-xl font-semibold">About Event</h2>
@@ -765,21 +775,29 @@ const EventDetails = () => {
                         )}
 
                         {/* Contact info */}
-                        {(event?.organizerDetails?.email || event?.organizerDetails?.phone) && <div className={`flex gap-2 ${currentTheme === "light" ? "text-black/60" : "text-white/60"
-                            }`}>
-                            <span className={`font-lato font-semibold ${currentTheme === "light" ? "text-black" : "text-white"}`}>
-                                For any queries, contact :
-                            </span>
-                            <p
-                                className={`${currentTheme === "light"
-                                    ? "border-black/50"
-                                    : "border-white/60"
-                                    }`}
-                            >
-                                {event?.organizerDetails?.email}, {" +91 "}
-                                {event?.organizerDetails?.phone}
-                            </p>
-                        </div>}
+                        {(event?.organizerDetails?.email ||
+                            event?.organizerDetails?.phone) && (
+                                <div
+                                    className={`flex gap-2 ${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                                        }`}
+                                >
+                                    <span
+                                        className={`font-lato font-semibold ${currentTheme === "light" ? "text-black" : "text-white"
+                                            }`}
+                                    >
+                                        For any queries, contact :
+                                    </span>
+                                    <p
+                                        className={`${currentTheme === "light"
+                                            ? "border-black/50"
+                                            : "border-white/60"
+                                            }`}
+                                    >
+                                        {event?.organizerDetails?.email}, {" +91 "}
+                                        {event?.organizerDetails?.phone}
+                                    </p>
+                                </div>
+                            )}
                     </div>
 
                     {/* Event Details Right side (Booking card) */}

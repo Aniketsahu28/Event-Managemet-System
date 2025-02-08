@@ -5,6 +5,7 @@ const { userRouter } = require('./routes/user')
 const { organizerRouter } = require('./routes/organizer')
 const { approvalRouter } = require('./routes/approval')
 const { eventRouter } = require('./routes/event')
+const { otpRouter } = require('./routes/otp')
 const cors = require('cors')
 
 const app = express();
@@ -18,6 +19,7 @@ app.use('/api/user', userRouter)
 app.use('/api/organizer', organizerRouter)
 app.use('/api/approval', approvalRouter)
 app.use('/api/event', eventRouter)
+app.use('/api/otp', otpRouter)
 
 const main = async () => {
     await mongoose.connect(MONGO_URI);
