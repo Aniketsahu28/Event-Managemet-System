@@ -47,6 +47,7 @@ const EventDetails = () => {
     const [teamName, setTeamName] = useState("");
     const [loading, setLoading] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState("");
+    const validateDescription = useRef();
 
     useEffect(() => {
         fetchEvents();
@@ -481,6 +482,31 @@ const EventDetails = () => {
         );
     };
 
+    const validateEvent = async (status) => {
+        setLoadingMessage("Processing, please wait...")
+        setLoading(true)
+        try {
+            const response = await axios.patch(`${BACKEND_URL}/api/event/verifyEvent`,
+                {
+                    eventId: event._id,
+                    facultyStatus: status,
+                    facultyReview: validateDescription.current.value
+                },
+                {
+                    headers: {
+                        token: user.token
+                    }
+                }
+            )
+            toast.success(response.data.message)
+            setPopup(null)
+        }
+        catch (error) {
+            toast.error(error.response?.data.message || error)
+        }
+        setLoading(false)
+    }
+
     return (
         <>
             {popup === "paymentPopup" && (
@@ -655,6 +681,110 @@ const EventDetails = () => {
             {popup === "editeventdetails" && (
                 <PopupScreen>
                     <EditEventDetails event={event} setEvent={setEvent} />
+                </PopupScreen>
+            )}
+            {popup === `approve-${event?._id}` && (
+                <PopupScreen>
+                    <div
+                        className={`rounded-lg mx-auto p-4 w-80 sm:w-96 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
+                    >
+                        <span className="flex justify-between items-center">
+                            <p className="text-2xl font-montserrat font-medium">
+                                Approve Event
+                            </p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <span className='flex flex-col gap-2'>
+                            <p>
+                                Are you sure you want to approve this event  ?
+                            </p>
+                            <textarea
+                                name="verifyEvent"
+                                id="validate"
+                                className={`w-full p-2 rounded-lg border-[1px] outline-none ${currentTheme === "light"
+                                    ? "border-gray/50 text-black placeholder-black/60"
+                                    : "bg-gray border-white text-white placeholder-white/60"
+                                    }`}
+                                placeholder="Reviews..."
+                                cols={2}
+                                ref={validateDescription}
+                            />
+                        </span>
+                        <div className='flex gap-2 items-center'>
+                            <button
+                                className="px-4 py-2 text-black rounded-md bg-green mt-4 flex gap-2 items-center justify-center"
+                                onClick={() => validateEvent("accepted")}
+                            >
+                                <span>Approve Approval</span>
+                                <MdVerified className="text-2xl" />
+                            </button>
+                            <button
+                                className={`px-4 py-2 rounded-md mt-4 ${currentTheme === 'light' ? "text-black" : "text-white"}`}
+                                onClick={() => setPopup(null)}
+                            >
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </div>
+                </PopupScreen>
+            )}
+            {popup === `reject-${event?._id}` && (
+                <PopupScreen>
+                    <div
+                        className={`rounded-lg mx-auto p-4 w-80 sm:w-96 flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
+                    >
+                        <span className="flex justify-between items-center">
+                            <p className="text-2xl font-montserrat font-medium">
+                                Reject Event
+                            </p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <span className='flex flex-col gap-2'>
+                            <p>
+                                You are rejecting this approval. Please provide a reason.
+                            </p>
+                            <textarea
+                                name="verifyEvent"
+                                id="validate"
+                                className={`w-full p-2 rounded-lg border-[1px] outline-none ${currentTheme === "light"
+                                    ? "border-gray/50 text-black placeholder-black/60"
+                                    : "bg-gray border-white text-white placeholder-white/60"
+                                    }`}
+                                placeholder="Anything in you mind ?"
+                                cols={2}
+                                ref={validateDescription}
+                            />
+                        </span>
+                        <div className='flex gap-2'>
+                            <button
+                                className="px-4 py-2 text-white rounded-md bg-red mt-4 flex gap-2 items-center justify-center"
+                                onClick={() => validateEvent("rejected")}
+                            >
+                                <span>Reject Approval</span>
+                                <RxCross2
+                                    className="text-2xl"
+                                />
+                            </button>
+                            <button
+                                className={`px-4 py-2 rounded-md mt-4 ${currentTheme === 'light' ? "text-black" : "text-white"}`}
+                                onClick={() => setPopup(null)}
+                            >
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </div>
                 </PopupScreen>
             )}
             {loading && <Loader message={loadingMessage} />}
@@ -989,6 +1119,30 @@ const EventDetails = () => {
                                 </button>
                             </span>
                         </div>
+                    )}
+
+                {/* Events verification section, shown only to faculties */}
+                {isUserAuthenticated &&
+                    user.userInfo.userType === "faculty" &&
+                    event?.organizerDetails.facultyId === user.userInfo.userId && (
+                        event.status === 'pending' ? <div className='flex gap-4 mx-auto'>
+                            <button
+                                className="px-4 py-2 text-black rounded-md bg-green mt-4 flex gap-2 items-center justify-center"
+                                onClick={() => setPopup(`approve-${event?._id}`)}
+                            >
+                                <span>Approve</span>
+                                <MdVerified className="text-2xl" />
+                            </button>
+                            <button
+                                className="px-4 py-2 text-white rounded-md bg-red mt-4 flex gap-2 items-center justify-center"
+                                onClick={() => setPopup(`reject-${event?._id}`)}
+                            >
+                                <span>Reject</span>
+                                <RxCross2
+                                    className="text-2xl"
+                                />
+                            </button>
+                        </div> : <p className="text-center font-semibold text-2xl">Event {event?.status}</p>
                     )}
             </div>
         </>

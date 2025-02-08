@@ -4,7 +4,9 @@ const { organizerAuth } = require('../middlewares/organizerAuth')
 const { userAuth } = require('../middlewares/userAuth')
 const { OrganizerModel } = require('../models/organizer')
 const { EventModel } = require('../models/event')
-const { TicketModel } = require('../models/ticket')
+const { TicketModel } = require('../models/ticket');
+const { UserModel } = require('../models/user');
+const { sendEventApprovalEmail } = require('../utils/email');
 
 eventRouter.post('/addevent', organizerAuth, async (req, res) => {
     const organizerId = req.organizerId;
@@ -15,6 +17,7 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
         await EventModel.create({
             organizerDetails: {
                 organizerId: organizer.organizerId,
+                facultyId: organizer.facultyDetails.userId,
                 organizerName: organizer.organizerName,
                 department: organizer.department,
                 email: organizer.email,
@@ -41,9 +44,11 @@ eventRouter.post('/addevent', organizerAuth, async (req, res) => {
             paymentQR,
             UPI_ID
         })
+        const facultyEmail = await UserModel.findOne({ userId: organizer.facultyDetails.userId }, { email: 1 })
+        await sendEventApprovalEmail(facultyEmail, title, organizer.organizerName)
 
         res.status(200).json({
-            message: "Event Added Successfully",
+            message: "Event added successfully, verification request sent to faculty coordinator",
         })
 
     } catch (error) {
@@ -96,6 +101,7 @@ eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
         await EventModel.updateOne({ "_id": eventId }, {
             organizerDetails: {
                 organizerId: organizer.organizerId,
+                facultyId: organizer.facultyDetails.userId,
                 organizerName: organizer.organizerName,
                 department: organizer.department,
                 email: organizer.email,
@@ -120,11 +126,14 @@ eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
             eventFee,
             eventFeeForClubMember,
             paymentQR,
-            UPI_ID
+            UPI_ID,
+            status: "pending"
         })
+        const facultyEmail = await UserModel.findOne({ userId: organizer.facultyDetails.userId }, { email: 1 })
+        await sendEventApprovalEmail(facultyEmail, title, organizer.organizerName)
 
         res.status(200).json({
-            message: "Event edited Successfully",
+            message: "Event edited Successfully, verification request sent to faculty coordinator",
         })
 
     } catch (error) {
@@ -136,7 +145,7 @@ eventRouter.patch('/editevent', organizerAuth, async (req, res) => {
 
 eventRouter.get('/allevents', async (req, res) => {
     try {
-        const events = await EventModel.find({})
+        const events = await EventModel.find({ status: "accepted" }, { 'organizerDetails.facultyReview': 0 })
         if (events.length > 0) {
             res.status(200).json({ events });
         }
@@ -155,7 +164,7 @@ eventRouter.get('/allevents', async (req, res) => {
 eventRouter.get('/eventdetails', async (req, res) => {
     const { eventId } = req.query;
     try {
-        const eventDetails = await EventModel.findOne({ "_id": eventId });
+        const eventDetails = await EventModel.findOne({ "_id": eventId }, { 'organizerDetails.facultyReview': 0 });
         res.status(200).json({
             eventDetails
         })
@@ -323,6 +332,59 @@ eventRouter.get('/eventtickets', organizerAuth, async (req, res) => {
         else {
             res.status(404).json({
                 message: "No tickets found"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+eventRouter.get('/facultyEvents', userAuth, async (req, res) => {
+    const userId = req.userId;
+
+    try {
+        const events = await EventModel.find({ "organizerDetails.facultyId": userId, status: "pending" }, { 'organizerDetails.facultyReview': 0 });
+        if (events.length > 0) {
+            res.status(200).json({
+                events
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "No events to verify"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+eventRouter.patch('/verifyEvent', userAuth, async (req, res) => {
+    const userId = req.userId;
+    const { eventId, facultyStatus, facultyReview } = req.body;
+
+    try {
+        const event = await EventModel.findOne({ "_id": eventId });
+        if (event.organizerDetails.facultyId === userId) {
+            if (facultyStatus === "accepted") {
+                await EventModel.updateOne({ "_id": eventId }, { $set: { status: "accepted", 'organizerDetails.facultyReview': facultyReview } })
+            }
+            else {
+                await EventModel.updateOne({ "_id": eventId }, { $set: { status: "rejected", 'organizerDetails.facultyReview': facultyReview } })
+            }
+            res.status(200).json({
+                message: "Event verified successfully",
+            })
+        }
+        else {
+            res.status(403).json({
+                message: "You are not authorized to verify this event"
             })
         }
 

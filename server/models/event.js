@@ -5,6 +5,9 @@ const eventSchema = new mongoose.Schema({
         organizerId: {
             type: String,
         },
+        facultyId: {
+            type: String,
+        },
         organizerName: {
             type: String,
             require: true
@@ -18,6 +21,10 @@ const eventSchema = new mongoose.Schema({
         },
         phone: {
             type: String
+        },
+        facultyReview: {
+            type: String,
+            default: ""
         }
     },
     acceptingParticipation: {
@@ -105,6 +112,10 @@ const eventSchema = new mongoose.Schema({
     UPI_ID: {
         type: String,
         default: ''
+    },
+    status: {
+        type: String,
+        default: "pending"
     }
 }, { timestamps: true })
 

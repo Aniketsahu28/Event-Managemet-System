@@ -2,9 +2,6 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { IoIosArrowUp } from "react-icons/io";
 import { GrLocation } from "react-icons/gr";
-import { IoMailOutline } from "react-icons/io5";
-import { MdOutlinePhoneInTalk } from "react-icons/md";
-import { FaInstagram } from "react-icons/fa";
 import { useRecoilValue } from "recoil";
 import { userAtom, isAuthenticated } from "../store/userAtom";
 
@@ -50,15 +47,6 @@ const Footer = () => {
                         </Link>
                         {isAuthenticated && user?.userInfo?.userType === "organizer" && (
                             <Link
-                                to="/addApproval"
-                                className={`hover:text-white flex gap-1 items-center hover:gap-2 transition-all w-fit ${location.pathname === "/addevent" ? "text-white" : "text-white/60"}`}
-                            >
-                                <IoIosArrowUp className="rotate-90" />
-                                <span>Ask For Approval</span>
-                            </Link>
-                        )}
-                        {isAuthenticated && user?.userInfo?.userType === "organizer" && (
-                            <Link
                                 to="/addEvent"
                                 className={`hover:text-white flex gap-1 items-center hover:gap-2 transition-all w-fit ${location.pathname === "/addapproval" ? "text-white" : "text-white/60"}`}
                             >
@@ -86,11 +74,6 @@ const Footer = () => {
                             Maharashtra, India, PIN - 400703.
                         </p>
                     </span>
-                    {/* <span className="text-white/60 text-2xl sm:text-3xl flex gap-4 ml-6">
-                        <IoMailOutline />
-                        <MdOutlinePhoneInTalk />
-                        <FaInstagram />
-                    </span> */}
                 </div>
             </div>
             <div className="bg-black text-white/60 font-lato flex flex-col lg:flex-row items-center gap-2 lg:gap-0 py-4 lg:justify-between px-4 sm:px-16">

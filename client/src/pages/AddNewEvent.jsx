@@ -213,7 +213,7 @@ const AddNewEvent = () => {
 
             if (response.status === 200) {
                 toast.success(response.data.message, {
-                    duration: 3000
+                    duration: 4000
                 });
                 setEventDetails({
                     title: "",

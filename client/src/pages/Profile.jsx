@@ -10,7 +10,6 @@ import axios from "axios";
 import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import OrganizerApprovalCard from "../components/OrganizerApprovalCard";
 import Loader from "../components/Loader";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -18,20 +17,16 @@ const Profile = () => {
     const currentTheme = useRecoilValue(themeAtom);
     const user = useRecoilValue(userAtom);
     const [events, setEvents] = useState();
-    const [approvals, setApprovals] = useState();
     const [tickets, setTickets] = useState();
     const [searchEvent, setSearchedEvent] = useState();
-    const [searchApproval, setSearchedApproval] = useState();
     const [searchTicket, setSearchedTicket] = useState();
     const searchedEvent = useRef(null);
-    const searchedApproval = useRef(null);
     const searchedTicket = useRef(null);
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (user.userInfo.userType === "organizer") {
             fetchOrganizerEvents();
-            fetchOrganizerApprovals();
         } else if (user.userInfo.userType === "student") {
             fetchUserTickets();
         }
@@ -73,15 +68,6 @@ const Profile = () => {
         setSearchedEvent(searchResult);
     };
 
-    const searchApprovals = () => {
-        const searchResult = approvals.filter((approval) => {
-            return approval.title
-                .toLowerCase()
-                .includes(searchedApproval.current.value.toLowerCase());
-        });
-        setSearchedApproval(searchResult);
-    };
-
     const fetchOrganizerEvents = async () => {
         setLoading(true)
         try {
@@ -100,25 +86,6 @@ const Profile = () => {
         }
         setLoading(false)
     };
-
-    const fetchOrganizerApprovals = async () => {
-        setLoading(true)
-        try {
-            const response = await axios.get(
-                `${BACKEND_URL}/api/approval/organizerapprovals`,
-                {
-                    headers: {
-                        token: user.token
-                    }
-                }
-            );
-            setApprovals(response.data.organizerApprovals);
-        } catch (error) {
-            toast.error(error.response?.data.message || error);
-        }
-        setLoading(false)
-    };
-
 
     return (
         <div
@@ -193,6 +160,8 @@ const Profile = () => {
                                             price={event.eventFee}
                                             organizerId={event.organizerDetails.organizerId}
                                             setEvents={setEvents}
+                                            status={event.status}
+                                            facultyReview={event.organizerDetails.facultyReview}
                                         />
                                     ))
                                 : [...searchEvent]
@@ -216,50 +185,6 @@ const Profile = () => {
                 </div>
             )}
 
-            {user.userInfo.userType === "organizer" && (
-                <div className="w-full flex flex-col gap-10">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">
-                        <span className="flex items-center justify-between w-full sm:w-fit sm:gap-8">
-                            <h2 className="text-2xl sm:text-3xl font-montserrat font-semibold">
-                                My Approvals
-                            </h2>
-                            <Link
-                                to="/addapproval"
-                                className="w-fit flex gap-2 items-center justify-center px-4 py-2 text-black rounded-md text-lg bg-green"
-                            >
-                                <span>Add Approval</span>
-                                <FaPlus className="hidden sm:block" />
-                            </Link>
-                        </span>
-                        <input
-                            type="text"
-                            name="approval title"
-                            className={`w-full sm:w-[40%] lg:w-[25%] p-2 rounded-lg border-[1px] border-gray/50 text-black outline-none text-lg ${currentTheme === "light"
-                                ? "bg-white/60  placeholder-black/60"
-                                : "bg-gray/60 border-white text-white placeholder-white/60"
-                                }`}
-                            placeholder="Search approval by title"
-                            ref={searchedApproval}
-                            onChange={useDebounce(searchApprovals)}
-                        />
-                    </div>
-                    <div className="flex flex-col sm:grid grid-cols-12 gap-10">
-                        {approvals?.length > 0
-                            ? searchedApproval.current.value === ""
-                                ? [...approvals]
-                                    .reverse()
-                                    .map((approval) => (
-                                        <OrganizerApprovalCard approval={approval} key={approval._id} />
-                                    ))
-                                : [...searchApproval]
-                                    .reverse()
-                                    .map((approval) => (
-                                        <OrganizerApprovalCard approval={approval} key={approval._id} />
-                                    ))
-                            : <p className="w-full sm:col-span-6">No approvals found</p>}
-                    </div>
-                </div>
-            )}
             {user.userInfo.userType === "student" && (
                 <div className="w-full flex flex-col gap-10">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 font-lato">

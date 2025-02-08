@@ -217,7 +217,7 @@ const EditEventDetails = ({ event, setEvent }) => {
 
             if (response.status === 200) {
                 toast.success(response.data.message, {
-                    duration: 3000
+                    duration: 4000
                 });
                 setEvent({
                     _id: event._id,

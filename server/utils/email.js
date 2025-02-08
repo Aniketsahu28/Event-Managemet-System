@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendApprovalEmail = async (receiverEmail, approvalTitle, organizerName) => {
+const sendEventApprovalEmail = async (receiverEmail, eventTitle, organizerName) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         port: 465,
@@ -14,8 +14,8 @@ const sendApprovalEmail = async (receiverEmail, approvalTitle, organizerName) =>
     const mailOptions = {
         from: process.env.SMTP_USER,
         to: receiverEmail,
-        subject: `You have new approval request on agnel events from ${organizerName} for ${approvalTitle}`,
-        html: `<p>You are receiving this mail because ${organizerName} club wants approval from you for ${approvalTitle} event. <br/><br/> Visit <a href="https://agnelevents.vercel.app">AgnelEvents</a> to view the approval. </p>`,
+        subject: `You have a new event verification request on agnel events from ${organizerName} for ${eventTitle}`,
+        html: `<p>You are receiving this mail because ${organizerName} club wants event verification from you for ${eventTitle} event. <br/><br/> Visit <a href='${process.env.FRONTENDURL}/approvals'>AgnelEvents</a> to view the event. </p>`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -64,7 +64,7 @@ const sendOTPEmail = async (receiverEmail, username, OTP) => {
 };
 
 module.exports = {
-    sendApprovalEmail,
+    sendEventApprovalEmail,
     sendForgetPasswordEmail,
     sendOTPEmail
 };

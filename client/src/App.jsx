@@ -17,7 +17,6 @@ import OrganizerDetails from './pages/OrganizerDetails';
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast'
 import AdminPanel from './pages/AdminPanel';
-import AddNewApproval from './pages/AddNewApproval';
 import Approvals from './pages/Approvals';
 import Signup from './pages/Signup';
 
@@ -41,7 +40,6 @@ function App() {
           <Route path="/profile" element={<ProtectiveRoutes><Profile /></ProtectiveRoutes>} />
           <Route path="/approvals" element={<ProtectiveRoutes><Approvals /></ProtectiveRoutes>} />
           <Route path="/addevent" element={<ProtectiveRoutes><AddNewEvent /></ProtectiveRoutes>} />
-          <Route path="/addapproval" element={<ProtectiveRoutes><AddNewApproval /></ProtectiveRoutes>} />
           <Route path="/adminpanel" element={<ProtectiveRoutes><AdminPanel /></ProtectiveRoutes>} />
         </Routes>
         <Footer />

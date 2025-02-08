@@ -12,8 +12,9 @@ import PopupScreen from "./PopupScreen";
 import { RxCross2 } from "react-icons/rx";
 import { popupAtom } from "../store/popupAtom";
 import { themeAtom } from "../store/themeAtom";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 import Loader from "./Loader";
+import { MdVerified } from "react-icons/md";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const EventCard = ({
@@ -26,13 +27,15 @@ const EventCard = ({
     time,
     price,
     setEvents,
+    status,
+    facultyReview,
 }) => {
-    const currentTheme = useRecoilValue(themeAtom)
+    const currentTheme = useRecoilValue(themeAtom);
     const user = useRecoilValue(userAtom);
-    const isUserAuthenticated = useRecoilValue(isAuthenticated)
-    const [popup, setPopup] = useRecoilState(popupAtom)
-    const [loading, setLoading] = useState(false)
-    const [loadingMessage, setLoadingMessage] = useState("")
+    const isUserAuthenticated = useRecoilValue(isAuthenticated);
+    const [popup, setPopup] = useRecoilState(popupAtom);
+    const [loading, setLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState("");
     const sanitizedDescription = DOMPurify.sanitize(description);
     const trimmedDescription =
         sanitizedDescription.length > 40
@@ -46,8 +49,8 @@ const EventCard = ({
 
     const deleteEvent = async (e) => {
         e.preventDefault();
-        setLoadingMessage("Deleting event...")
-        setLoading(true)
+        setLoadingMessage("Deleting event...");
+        setLoading(true);
         try {
             const response = await axios.delete(
                 `${BACKEND_URL}/api/event/deleteevent`,
@@ -59,16 +62,16 @@ const EventCard = ({
 
             if (response.status === 200) {
                 toast.success(response.data.message, {
-                    duration: 3000
+                    duration: 3000,
                 });
                 setEvents((prevEvents) => {
-                    return prevEvents.filter((event) => event._id !== id)
-                })
+                    return prevEvents.filter((event) => event._id !== id);
+                });
             }
         } catch (error) {
             toast.error(error.response?.data.message || error);
         }
-        setLoading(false)
+        setLoading(false);
     };
 
     return (
@@ -90,7 +93,10 @@ const EventCard = ({
                                 onClick={() => setPopup(null)}
                             />
                         </span>
-                        <p className="text-center">Are you sure you want to delete this event. You can never restore it.</p>
+                        <p className="text-center">
+                            Are you sure you want to delete this event. You can never restore
+                            it.
+                        </p>
                         <button
                             className="flex gap-2 items-center justify-center px-4 py-2 text-white rounded-md text-lg bg-red"
                             onClick={deleteEvent}
@@ -100,23 +106,75 @@ const EventCard = ({
                     </div>
                 </PopupScreen>
             )}
+            {popup === `viewFacultyReview${id}` && (
+                <PopupScreen>
+                    <div
+                        className={`rounded-lg mx-auto p-4 w-80 sm:w-[60%] lg:w-[40%] flex flex-col gap-8 font-lato mt-32 ${currentTheme === "light"
+                            ? "text-black bg-white"
+                            : "text-white bg-gray"
+                            }`}
+                    >
+                        <span className="flex justify-between items-center">
+                            <p className="text-2xl font-montserrat font-medium">
+                                Faculty review
+                            </p>
+                            <RxCross2
+                                className="text-2xl cursor-pointer"
+                                onClick={() => setPopup(null)}
+                            />
+                        </span>
+                        <p className="text-center">{facultyReview ? facultyReview : "No review"}</p>
+                        <button
+                            className="flex gap-2 items-center justify-center px-4 py-2 w-fit mx-auto rounded-md text-lg border-2"
+                            onClick={() => setPopup(null)}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </PopupScreen>
+            )}
             {loading && <Loader message={loadingMessage} />}
             <Link
                 to={`/events/${id}`}
                 className="hover:scale-95 transition-all w-[320px] sm:w-[330px] custom_shadow rounded-lg p-3 flex flex-col gap-2 bg-blue_200 relative"
             >
-                <button
-                    className={`${isUserAuthenticated && user?.userInfo.userType === 'organizer' && user?.userInfo.organizerId === organizerId ? "block" : "hidden"
-                        } p-3 bg-red w-fit rounded-full absolute right-3`}
+                <MdVerified
+                    className={`${isUserAuthenticated &&
+                        user?.userInfo.userType === "organizer" &&
+                        user?.userInfo.organizerId === organizerId
+                        ? "block"
+                        : "hidden"
+                        } ${status === "pending"
+                            ? "text-yellow"
+                            : status === "accepted"
+                                ? "text-green"
+                                : "text-red"
+                        } absolute top-16 right-3 text-5xl bg-black rounded-full`}
                     onClick={(e) => {
                         e.preventDefault()
-                        setPopup(`deleteEvent${id}`)
+                        setPopup(`viewFacultyReview${id}`)
+                    }}
+                />
+                <button
+                    className={`${isUserAuthenticated &&
+                        user?.userInfo.userType === "organizer" &&
+                        user?.userInfo.organizerId === organizerId
+                        ? "block"
+                        : "hidden"
+                        } p-3 bg-red w-fit rounded-full absolute right-3`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setPopup(`deleteEvent${id}`);
                     }}
                 >
                     <RiDeleteBin6Line className="text-2xl text-white" />
                 </button>
                 <div className="w-full h-40 bg-gray rounded-lg flex items-center justify-center overflow-hidden">
-                    <img src={banner} alt="Event" className="h-full w-full object-cover" />
+                    <img
+                        src={banner}
+                        alt="Event"
+                        className="h-full w-full object-cover"
+                    />
                 </div>
                 <span>
                     <h1 className="self-start text-white text-lg font-montserrat">
