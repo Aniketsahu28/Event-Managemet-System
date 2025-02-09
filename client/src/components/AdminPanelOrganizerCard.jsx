@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { Link } from 'react-router-dom';
 import { themeAtom } from "../store/themeAtom";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import PopupScreen from "./PopupScreen";
@@ -80,7 +81,9 @@ const AdminPanelOrganizerCard = ({ organizer }) => {
                                     Organizer Id : {organizer.organizerId} <br />
                                     Department : {organizer.department} <br />
                                     Faculty Id : {organizer.facultyDetails.userId} <br />
-                                    Organizer type : {organizer.organizerType}
+                                    Organizer type : {organizer.organizerType}<br />
+                                    Email : {organizer.email}<br />
+                                    Phone: {organizer.phone}
                                 </p>
                             </span>
                         </span>
@@ -94,7 +97,7 @@ const AdminPanelOrganizerCard = ({ organizer }) => {
                 </PopupScreen>
             )}
             {loading && <Loader message={loadingMessage} />}
-            <div
+            <Link to={`/organizers/${organizer._id}`}
                 className={`col-span-12 lg:col-span-6 flex flex-col sm:flex-row gap-2 justify-between custom_shadow p-3 rounded-lg ${currentTheme === "light" ? "bg-white" : "bg-black"
                     }`}
             >
@@ -124,14 +127,15 @@ const AdminPanelOrganizerCard = ({ organizer }) => {
                 </div>
                 <button
                     className="flex gap-2 items-center justify-center bg-red p-2 rounded-md text-white"
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.preventDefault()
                         setPopup(`removeorganizer-${organizer.organizerId}`);
                     }}
                 >
                     <span className="sm:hidden">Remove Organizer</span>
                     <RiDeleteBin6Line className="text-xl" />
                 </button>
-            </div>
+            </Link>
         </>
     );
 };

@@ -280,6 +280,8 @@ const OrganizerDetails = () => {
                             </CarouselProvider>
                         </span>
                     </div>
+
+                    <p className={`mt-1 text-lg ${currentTheme === "light" ? "text-black/70" : "text-white/60"}`}>Have queries? Contact : {organizer?.email} / {organizer?.phone}</p>
                 </div>
             </div>
     );

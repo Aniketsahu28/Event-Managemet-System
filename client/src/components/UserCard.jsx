@@ -112,6 +112,18 @@ const UserCard = ({ userDetails }) => {
                                 >
                                     Department : {userDetails.department}
                                 </p>
+                                <p
+                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                                        }`}
+                                >
+                                    Email : {userDetails.email}
+                                </p>
+                                <p
+                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                                        }`}
+                                >
+                                    Phone : {userDetails.phone}
+                                </p>
                             </span>
                         </span>
                         <button
@@ -161,6 +173,18 @@ const UserCard = ({ userDetails }) => {
                                         }`}
                                 >
                                     Department : {userDetails.department}
+                                </p>
+                                <p
+                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                                        }`}
+                                >
+                                    Email : {userDetails.email}
+                                </p>
+                                <p
+                                    className={`${currentTheme === "light" ? "text-black/60" : "text-white/60"
+                                        }`}
+                                >
+                                    Phone : {userDetails.phone}
                                 </p>
                             </span>
                         </span>

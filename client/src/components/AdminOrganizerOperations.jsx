@@ -81,7 +81,6 @@ const AdminOrganizerOperations = () => {
         setSearchedOrganizers(searchQueryResult);
     };
 
-    //organizerId, organizerName, department, --> facultyId, organizerType <--
     const handleAddOrganizer = async (e) => {
         e.preventDefault();
         if (
