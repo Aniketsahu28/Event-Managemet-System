@@ -290,6 +290,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
             const response = await axios.patch(`${BACKEND_URL}/api/otp/resendOTP`,
                 {
                     username: userInfo.name,
+                    email: userInfo.email,
                 },
                 {
                     headers: {
@@ -322,18 +323,23 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                     }
                 }
             )
-            toast.success(response.data.message, {
-                duration: 3000
-            });
-            setUser((oldinfo) => ({
-                ...oldinfo,
-                userInfo: {
-                    ...oldinfo.userInfo,
-                    email: response.data.email,
-                    isVerified: true
-                },
-            }));
-            setPopup(null)
+            if (response.status === 200) {
+                toast.success(response.data.message, {
+                    duration: 3000
+                });
+                setUser((oldinfo) => ({
+                    ...oldinfo,
+                    userInfo: {
+                        ...oldinfo.userInfo,
+                        email: response.data.email,
+                        isVerified: true
+                    },
+                }));
+                setPopup(null)
+            }
+            else {
+                toast.error(response.data.message)
+            }
         }
         catch (error) {
             toast.error(error.response?.data.message || error);
@@ -644,6 +650,7 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
                         </span>
                         <div className="flex flex-col gap-6 items-center justify-center">
                             <OTPInputBox otp={otp} setOtp={setOtp} />
+                            <p className="text-red font-semibold text-center">OTP valid for next 3 minutes</p>
                             <button type="button" className="hover:underline hover:underline-offset-4" onClick={resendOTP}>Re-send OTP</button>
                         </div>
                         <button

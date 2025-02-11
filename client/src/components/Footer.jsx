@@ -54,6 +54,15 @@ const Footer = () => {
                                 <span>Add New Event</span>
                             </Link>
                         )}
+                        {isAuthenticated && user?.userInfo?.userType === "faculty" && (
+                            <Link
+                                to="/approvals"
+                                className={`hover:text-white flex gap-1 items-center hover:gap-2 transition-all w-fit ${location.pathname === "/approvals" ? "text-white" : "text-white/60"}`}
+                            >
+                                <IoIosArrowUp className="rotate-90" />
+                                <span>Approvals</span>
+                            </Link>
+                        )}
                         {isAuthenticated && user?.userInfo?.userType === "admin" && (
                             <Link
                                 to="/adminpanel"

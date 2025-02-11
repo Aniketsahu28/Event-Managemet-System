@@ -16,25 +16,12 @@ otpRouter.post('/generateOTP', userAuth, async (req, res) => {
             })
         }
         else {
-            const OTP = await OtpModel.findOne({ userId });
-            if (OTP) {
-                //update in the existing otp
-                const newOTP = Math.floor(1000 + Math.random() * 9000).toString();
-                await OtpModel.updateOne({ userId }, { $set: { email, otp: newOTP } });
-                await sendOTPEmail(email, username, newOTP)
-                res.status(200).json({
-                    message: "OTP sent on your email"
-                })
-            }
-            else {
-                //generate new otp
-                const newOTP = Math.floor(1000 + Math.random() * 9000).toString();
-                await OtpModel.create({ userId, email, otp: newOTP })
-                await sendOTPEmail(email, username, newOTP)
-                res.status(200).json({
-                    message: "OTP sent on your email"
-                })
-            }
+            const newOTP = Math.floor(1000 + Math.random() * 9000).toString();
+            await OtpModel.create({ userId, email, otp: newOTP })
+            await sendOTPEmail(email, username, newOTP)
+            res.status(200).json({
+                message: "OTP sent on your email"
+            })
         }
     }
     catch (error) {
@@ -46,15 +33,27 @@ otpRouter.post('/generateOTP', userAuth, async (req, res) => {
 
 otpRouter.patch('/resendOTP', userAuth, async (req, res) => {
     const userId = req.userId;
-    const { username } = req.body;
+    const { username, email } = req.body;
     try {
         const OTP = await OtpModel.findOne({ userId });
-        const newOTP = Math.floor(1000 + Math.random() * 9000).toString();
-        await OtpModel.updateOne({ _id: OTP._id }, { $set: { otp: newOTP } });
-        await sendOTPEmail(OTP.email, username, newOTP)
-        res.status(200).json({
-            message: "OTP re-sent on your email"
-        })
+        if (OTP) {
+            //update in the existing otp
+            const newOTP = Math.floor(1000 + Math.random() * 9000).toString();
+            await OtpModel.updateOne({ userId }, { $set: { email, otp: newOTP } });
+            await sendOTPEmail(email, username, newOTP)
+            res.status(200).json({
+                message: "OTP sent on your email"
+            })
+        }
+        else {
+            //generate new otp
+            const newOTP = Math.floor(1000 + Math.random() * 9000).toString();
+            await OtpModel.create({ userId, email, otp: newOTP })
+            await sendOTPEmail(email, username, newOTP)
+            res.status(200).json({
+                message: "OTP sent on your email"
+            })
+        }
     }
     catch (error) {
         res.status(500).json({
@@ -68,19 +67,33 @@ otpRouter.patch('/verifyOTP', userAuth, async (req, res) => {
     const { userEnteredOTP } = req.body;
     try {
         const OTP = await OtpModel.findOne({ userId });
-        for (let i = 0; i <= 3; i++) {
-            if (userEnteredOTP[i] !== OTP.otp.charAt(i)) {
+        if (OTP) {
+            let invalidOTP = false;
+            for (let i = 0; i <= 3; i++) {
+                if (userEnteredOTP[i] !== OTP.otp.charAt(i)) {
+                    invalidOTP = true;
+                    break;
+                }
+            }
+            if (invalidOTP) {
                 res.status(400).json({
                     message: "Invalid OTP"
                 })
             }
+            else {
+                await UserModel.updateOne({ userId }, { $set: { isVerified: true, email: OTP.email } })
+                await OtpModel.deleteOne({ userId })
+                res.status(200).json({
+                    message: "OTP verified successfully",
+                    email: OTP.email
+                })
+            }
         }
-        await UserModel.updateOne({ userId }, { $set: { isVerified: true, email: OTP.email } })
-        await OtpModel.deleteOne({ userId })
-        res.status(200).json({
-            message: "OTP verified successfully",
-            email: OTP.email
-        })
+        else {
+            res.status(400).json({
+                message: "OTP experied",
+            })
+        }
     }
     catch (error) {
         res.status(500).json({

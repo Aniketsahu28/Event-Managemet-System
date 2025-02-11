@@ -178,6 +178,10 @@ const EditEventDetails = ({ event, setEvent }) => {
         }));
     };
 
+    function isPastDate(dateString) {
+        return new Date(dateString) < new Date().setHours(0, 0, 0, 0);
+    }
+
     const handleSaveChanges = async (e) => {
         e.preventDefault();
         setLoadingMessage("Saving Changes...")
@@ -338,10 +342,15 @@ const EditEventDetails = ({ event, setEvent }) => {
                             required
                             value={eventDetails.date}
                             onChange={(e) => {
-                                setEventDetails((prevDetails) => ({
-                                    ...prevDetails,
-                                    date: e.target.value,
-                                }));
+                                if (isPastDate(e.target.value)) {
+                                    toast.error("You cannot select past date")
+                                }
+                                else {
+                                    setEventDetails((prevDetails) => ({
+                                        ...prevDetails,
+                                        date: e.target.value,
+                                    }));
+                                }
                             }}
                         />
                     </div>

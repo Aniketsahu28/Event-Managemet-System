@@ -379,7 +379,7 @@ eventRouter.patch('/verifyEvent', userAuth, async (req, res) => {
                 await EventModel.updateOne({ "_id": eventId }, { $set: { status: "rejected", 'organizerDetails.facultyReview': facultyReview } })
             }
             res.status(200).json({
-                message: "Event verified successfully",
+                message: "Your response has been recorded. Thank you.",
             })
         }
         else {
