@@ -2,9 +2,9 @@ const nodemailer = require("nodemailer");
 
 const sendEventApprovalEmail = async (receiverEmail, eventTitle, organizerName) => {
     const transporter = nodemailer.createTransport({
-        service: "gmail",
-        port: 465,
-        secure: true,
+        host: "SMTP.outlook.com",
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
@@ -23,9 +23,9 @@ const sendEventApprovalEmail = async (receiverEmail, eventTitle, organizerName) 
 
 const sendForgetPasswordEmail = async (receiverEmail, password) => {
     const transporter = nodemailer.createTransport({
-        service: "gmail",
-        port: 465,
-        secure: true,
+        host: "SMTP.outlook.com",
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
@@ -44,9 +44,9 @@ const sendForgetPasswordEmail = async (receiverEmail, password) => {
 
 const sendOTPEmail = async (receiverEmail, username, OTP) => {
     const transporter = nodemailer.createTransport({
-        service: "gmail",
-        port: 465,
-        secure: true,
+        host: "SMTP.outlook.com",
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS,
