@@ -18,7 +18,7 @@ const AdminStudentOperation = () => {
     const currentTheme = useRecoilValue(themeAtom);
     const user = useRecoilValue(userAtom);
     const [popup, setPopup] = useRecoilState(popupAtom);
-    const [students, setStudents] = useState();
+    const [students, setStudents] = useState([]);
     const [searchedStudents, setSearchedStudents] = useState();
     const searchRollno = useRef();
     const addStudentFromRollnoRef = useRef();
@@ -301,7 +301,7 @@ const AdminStudentOperation = () => {
                         ({!students
                             ? "Loading..."
                             : searchRollno.current?.value === ""
-                                ? students.length
+                                ? students?.length
                                 : searchedStudents?.length}{" "}
                         results)
                     </span>
