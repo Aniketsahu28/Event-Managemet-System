@@ -146,9 +146,9 @@ const ProfileCard = ({ name, userId, department, image, email, phone }) => {
     };
 
     const takeProfilePicture = async (event) => {
-        const url = await useHandleFileUpload(event);
         setLoadingMessage("Saving changes...")
         setLoading(true)
+        const url = await useHandleFileUpload(event);
         try {
             if (user.userInfo.userType === "organizer") {
                 const response = await axios.patch(
